@@ -1,4 +1,6 @@
 #include "construction.hh"
+#include "G4RotationMatrix.hh"
+#include <bits/stdc++.h>
 
 MyDetectorConstruction::MyDetectorConstruction()
 {}
@@ -47,36 +49,40 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
 
   G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "physWorld", 0, false, 0, true);
+
+  G4Box *solidRadiator = new G4Box("solidRadiator", 0.1*m, 0.1*m, 0.025*m);
+
+  G4Material *RadiatorMat = nist->FindOrBuildMaterial("G4_Si");
+
+  RadiatorMat->SetMaterialPropertiesTable(mptWorld);
+
   
+  G4LogicalVolume *logicRadiator = new G4LogicalVolume(solidRadiator, RadiatorMat, "logicalRadiator");
 
-  G4Box *solidRadiator = new G4Box("solidRadiator", 0.4*m, 0.4*m, 0.01*m);
+  G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
+     
+  G4int Pos[2] = {-1,1};
 
-  G4LogicalVolume *logicRadiator = new G4LogicalVolume(solidRadiator, Aerogel, "logicalRadiator");
+  new_rotmX.rotateX(90 * deg);
+  new_rotmY.rotateY(90 * deg);  
+  new_rotmZ.rotateZ(90 * deg);
 
-  G4VPhysicalVolume *physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.25*m), logicRadiator, "physRadiator", logicWorld, false, 0, true);
-
-  G4Box *solidDetector = new G4Box("solidDetector", 0.005*m, 0.005*m, 0.01*m);
-
-  logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
-
-  for(G4int i=0; i<100; i++)
-    {
-      for(G4int j=0; j<100; j++)
-  	{
-  	  G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(-0.5*m+(i+0.5)*m/100,
-									       -0.5*m+(j+0.5)*m/100,
-									       0.49*m),
-							      logicDetector, "physDetector", logicWorld,
-							      false, j+i*100, true);
-  	}
+  std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
+  G4ThreeVector position;
+  
+   for (G4int i=0; i<3; i++){     
+    for (G4int j=0; j<2; j++){
+      
+      if (i==0) position = G4ThreeVector(0.0,Pos[j]*0.125*m, 0.0);
+      if (i==1) position = G4ThreeVector(Pos[j]*0.125*m,0.0, 0.0);
+      if (i ==2) position = G4ThreeVector(0.0, 0.0, Pos[j]*0.125*m);
+     
+      G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+      G4VPhysicalVolume *physRadiator = new G4PVPlacement(transform, logicRadiator, "physRadiator", logicWorld, false, (i+1)*(j+1), true);
     }
-  
+   }
+     
+   
     return physWorld;
 }
 
-void MyDetectorConstruction::ConstructSDandField()
-{
-  MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
-
-  logicDetector->SetSensitiveDetector(sensDet);
-}
