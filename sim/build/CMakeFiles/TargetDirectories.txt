@@ -1,4 +1,0 @@
-/home/chetan/Work/geant4/sim/build/CMakeFiles/rebuild_cache.dir
-/home/chetan/Work/geant4/sim/build/CMakeFiles/Simulation.dir
-/home/chetan/Work/geant4/sim/build/CMakeFiles/edit_cache.dir
-/home/chetan/Work/geant4/sim/build/CMakeFiles/sim.dir
