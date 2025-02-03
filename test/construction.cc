@@ -81,8 +81,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
       G4VPhysicalVolume *physRadiator = new G4PVPlacement(transform, logicRadiator, "physRadiator", logicWorld, false, (i+1)*(j+1), true);
     }
    }
-     
    
-    return physWorld;
+  return physWorld;
 }
 
