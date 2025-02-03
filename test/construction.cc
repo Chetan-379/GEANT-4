@@ -51,7 +51,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "physWorld", 0, false, 0, true);
 
   
-  // Trapezoid shape                                                                                                                                                                                               
+  // Trapezoid shape                                                                                     
   G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
   G4double rad_dz = 5 * cm;
   G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
@@ -59,11 +59,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4Trd *solidRadiator =
     new G4Trd("solidRadiator",  // its name
   	      0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
-              0.5 * rad_dz);  // its size
-
-  // G4Trd *solidRadiator =
-  //   new G4Trd("solidRadiator", 22.5*cm, 28.5*cm, 22.5*cm, 28.5*cm, 3*cm); // its name
-	      
+              0.5 * rad_dz);  // its size	      
 
   G4Material *RadiatorMat = nist->FindOrBuildMaterial("G4_Si");
 
@@ -73,17 +69,6 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 						      RadiatorMat, // its material
 						      "logicalRadiator");  // its name
 
-  // new G4PVPlacement(nullptr,  // no rotation
-  //                   pos2,  // at position
-  //                   logicShape2,  // its logical volume
-  //                   "Shape2",  // its name
-  //                   logicEnv,  // its mother  volume
-  //                   false,  // no boolean operation
-  //                   0,  // copy number
-  //                   checkOverlaps);  // overlaps checking
-
-  //G4VPhysicalVolume *physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicRadiator, "physRadiator", logicWorld, false, 0, true);
-
   G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
      
   G4int Pos[2] = {-1,1};
@@ -92,16 +77,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   new_rotmY.rotateY(90 * deg);  
   new_rotmZ.rotateZ(90 * deg);
 
-  //std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
   G4ThreeVector position;
   
   for (G4int i=0; i<3; i++){     
     for (G4int j=0; j<2; j++){
       std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
-
-      // if (i==0) position = G4ThreeVector(0.0, 0.5*Pos[j]*0.51*m, 0.0);
-      // if (i==1) position = G4ThreeVector(-0.5*Pos[j]*0.51*m, 0.0, 0.0);      
-      // if (i==2) position = G4ThreeVector(0.0, 0.0, -0.5*Pos[j]*0.51*m);
 
       if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
       if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
@@ -118,7 +98,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   }
  
 
-  //============================Working Don't Edit===================================================================================================
+  //============================Working for cuboidal volumes Don't Edit===================================================================================================
   // G4Box *solidRadiator = new G4Box("solidRadiator", 0.1*m, 0.1*m, 0.025*m);
 
   // G4Material *RadiatorMat = nist->FindOrBuildMaterial("G4_Si");
