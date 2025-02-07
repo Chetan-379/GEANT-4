@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 
 project(Simulation)
 
+find_package(ROOT REQUIRED)
+
+include_directories(${ROOT_INCLUDE_DIRS})
+
 find_package(Geant4 REQUIRED ui_all vis_all)
+
+link_directories(${ROOT_LIBRARY_DIRS})
 
 include(${Geant4_USE_FILE})
 
@@ -17,5 +23,5 @@ file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 
 add_executable(sim sim.cc ${sources} ${headers})
 target_link_libraries(sim ${Geant4_LIBRARIES})
-
+target_link_libraries(sim ${ROOT_LIBRARIES})
 add_custom_target(Simulation DEPENDS sim)

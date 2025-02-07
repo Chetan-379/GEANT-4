@@ -3,6 +3,11 @@
 
 #include "G4UserRunAction.hh"
 #include "G4AnalysisManager.hh"
+#include <TROOT.h>
+#include "TH2.h"
+#include "TTree.h"
+#include "TFile.h"
+
 #include "G4Run.hh"
 
 class MyRunAction : public G4UserRunAction
@@ -13,6 +18,22 @@ public:
 
   virtual void BeginOfRunAction(const G4Run*);
   virtual void EndOfRunAction(const G4Run*);
+
+  TFile *hfile;
+  TTree *tree;
+  int x=90;
+  
+  void FillTree(std::vector<G4double> p)
+  {
+    tree->Branch("positionX", &p, "positionX/I");
+    tree->Fill();
+  }
+
+private:
+  //int x=1;
+  //std::vector<G4double> *Xcoord;
+  
+  
 };
 
 #endif

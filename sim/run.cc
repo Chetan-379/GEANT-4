@@ -15,6 +15,18 @@ MyRunAction::MyRunAction()
   man->CreateNtupleDColumn("sumX");
   man->FinishNtuple(1);
 
+  man->CreateNtuple("position", "position");
+  man->CreateNtupleDColumn("XCoord");
+  man->FinishNtuple(2);
+
+  //std::cout << man << std::endl;
+
+  tree = new TTree("tree","positon coordinates");
+  //x=p;
+  //tree = nullptr;
+  //Xcoord = 0;
+  
+
 }
 
 MyRunAction::~MyRunAction()
@@ -30,7 +42,28 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   strRunID << runID;
 
   man->OpenFile("output"+strRunID.str()+".root");
+
+  //TFile *hfile;
+  //hfile = TFile::Open("position.root","RECREATE");
+  //TFile *hfile;
+  hfile = hfile = TFile::Open("position.root","RECREATE");
+  
+  
+  //tree->Branch("positionX", &Xcoord, "positionX/I");
+  
+ 
+  //std::cout << man << std::endl;
 }
+
+//void MyRunAction::FillTree(std::vector<double> Xvec){
+ 
+//}
+
+
+// void MyRunAction::FillTreee(){
+//   tree->Fill(); 
+//}
+
 
 void MyRunAction::EndOfRunAction(const G4Run*)
 {
@@ -38,5 +71,16 @@ void MyRunAction::EndOfRunAction(const G4Run*)
   
   man->Write();
   man->CloseFile();
+
+  //TTree *tree;
+  //tree->Write();
+  //tree->Close();
+  //  tree->Branch("positionX", &x, "positionX/I");
+  //tree->Fill();
+  tree->Write();
+  tree->Print();
+    
+  hfile->Close();
+  //std::cout << man << std::endl;
 }
 
