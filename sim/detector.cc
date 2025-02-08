@@ -1,8 +1,10 @@
 #include "detector.hh"
 
+//MySensitiveDetector::MySensitiveDetector(G4String name, MyEventAction *eventAction) :
 MySensitiveDetector::MySensitiveDetector(G4String name) :
   G4VSensitiveDetector(name)
-{}
+{ //fEventAction = eventAction;
+}
 
 MySensitiveDetector::~MySensitiveDetector()
 {}
@@ -25,6 +27,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   //G4cout << "Copy number: " << copyNo << G4endl;
 
   G4VPhysicalVolume *physVol = touchable->GetVolume();
+  //G4ThreeVector posDetector = physVol->GetTranslation();
   G4ThreeVector posDetector = physVol->GetTranslation();
 
   G4cout << "Detector position: " << posDetector << G4endl;
@@ -39,7 +42,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
   man->AddNtupleRow(0);
 
-  
+  //fEventAction->StoreX(posDetector[0]);
+
+    
   
   return 0;
 }

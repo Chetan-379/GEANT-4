@@ -17,7 +17,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4double Zcord = position[2];
 
   fEventAction->AddX(Xcord);
-  fEventAction->StoreX(Xcord);
+  //fEventAction->StoreX(Xcord);
   //fEventAction->FillTree();
   // fEventAction->StoreY(Ycord);
   // fEventAction->StoreZ(Zcord);

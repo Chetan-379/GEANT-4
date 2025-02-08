@@ -21,13 +21,17 @@ public:
 
   TFile *hfile;
   TTree *tree;
-  int x=90;
+  //int x=90;
+  std::vector<double> p;
+
+  //tree->Branch("positionX", &p);
   
-  void FillTree(std::vector<G4double> p)
-  {
-    tree->Branch("positionX", &p, "positionX/I");
-    tree->Fill();
-  }
+  //void FillTree(std::vector<G4double> m)
+  //void FillTree()
+  //void FillTree(G4double p)
+  //{ //p = &m;
+  //tree->Fill();
+  //}
 
 private:
   //int x=1;

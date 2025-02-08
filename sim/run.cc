@@ -22,6 +22,7 @@ MyRunAction::MyRunAction()
   //std::cout << man << std::endl;
 
   tree = new TTree("tree","positon coordinates");
+  tree->Branch("positionX", &p);
   //x=p;
   //tree = nullptr;
   //Xcoord = 0;

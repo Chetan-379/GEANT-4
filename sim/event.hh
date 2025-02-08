@@ -26,6 +26,7 @@ public:
 
   void StoreX(G4double XCoord)
   {
+    //Xarray->push_back(XCoord);
     Xarray.push_back(XCoord);
   }
 
@@ -40,10 +41,11 @@ public:
 
 private:
   G4double fX;
-  int x=56;
+  //int x=56;
   std::vector<G4double> Xarray; //, Yarray, Zarray;
   //std::vector<G4ThreeVector> HitsArray;
   MyRunAction *runObject;
+  G4int ievent=1;
   
 
 // public:
