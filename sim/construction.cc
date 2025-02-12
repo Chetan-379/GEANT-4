@@ -53,6 +53,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G4LogicalVolume *logicRadiator = new G4LogicalVolume(solidRadiator, Aerogel, "logicalRadiator");
 
+  fScoringVolume = logicRadiator;
+
   G4VPhysicalVolume *physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.25*m), logicRadiator, "physRadiator", logicWorld, false, 0, true);
 
   G4Box *solidDetector = new G4Box("solidDetector", 0.005*m, 0.005*m, 0.01*m);
@@ -72,7 +74,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-  MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
+  //MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
+  sensDet = new MySensitiveDetector("SensitiveDetector");
 
   logicDetector->SetSensitiveDetector(sensDet);
 }

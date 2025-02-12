@@ -6,7 +6,7 @@
 
 #include "construction.hh"
 #include "event.hh"
-#include "run.hh"
+//#include "run.hh"
 
 class MySteppingAction : public G4UserSteppingAction
 {

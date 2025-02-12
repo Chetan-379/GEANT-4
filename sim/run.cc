@@ -21,8 +21,11 @@ MyRunAction::MyRunAction()
 
   //std::cout << man << std::endl;
 
-  tree = new TTree("tree","positon coordinates");
-  tree->Branch("positionX", &p);
+  tree = new TTree("tree","HitInfo");
+  tree->Branch("positionX", &X);
+  tree->Branch("positionY", &Y);
+  tree->Branch("positionZ", &Z);
+  tree->Branch("Energy", &E);
   //x=p;
   //tree = nullptr;
   //Xcoord = 0;
@@ -47,7 +50,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   //TFile *hfile;
   //hfile = TFile::Open("position.root","RECREATE");
   //TFile *hfile;
-  hfile = hfile = TFile::Open("position.root","RECREATE");
+  hfile = hfile = TFile::Open("test.root","RECREATE");
   
   
   //tree->Branch("positionX", &Xcoord, "positionX/I");

@@ -4,7 +4,8 @@
 #include "G4VSensitiveDetector.hh"
 #include "G4AnalysisManager.hh"
 #include "G4RunManager.hh"
-#include "event.hh"
+//#include "run.hh"
+//#include "event.hh"
 
 
 class MySensitiveDetector : public G4VSensitiveDetector
@@ -12,11 +13,14 @@ class MySensitiveDetector : public G4VSensitiveDetector
 public:
   MySensitiveDetector(G4String);
   ~MySensitiveDetector();
+  G4ThreeVector posDetector;
+  G4double edep;
+  
 
 private:
   virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
   //MyEventAction *fEventAction;
-  G4ThreeVector posDetector;
+  
   
 };
 

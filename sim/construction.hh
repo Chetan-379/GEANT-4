@@ -16,13 +16,18 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 public:
   MyDetectorConstruction();
   ~MyDetectorConstruction();
-  
-  virtual G4VPhysicalVolume *Construct();
 
+  G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
+
+  virtual G4VPhysicalVolume *Construct();
+  MySensitiveDetector *sensDet;
 
 private:
   G4LogicalVolume *logicDetector;
   virtual void ConstructSDandField();
+  
+  G4LogicalVolume *fScoringVolume;
+  
 };
   
 #endif

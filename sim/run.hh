@@ -9,6 +9,7 @@
 #include "TFile.h"
 
 #include "G4Run.hh"
+#include "detector.hh"
 
 class MyRunAction : public G4UserRunAction
 {
@@ -22,7 +23,7 @@ public:
   TFile *hfile;
   TTree *tree;
   //int x=90;
-  std::vector<double> p;
+  std::vector<double> X, Y, Z, E;
 
   //tree->Branch("positionX", &p);
   

@@ -3,7 +3,6 @@
 
 #include "G4UserEventAction.hh"
 #include "G4Event.hh"
-//#include <TROOT.h>
 #include "G4AnalysisManager.hh"
 
 #include "run.hh"
@@ -17,44 +16,25 @@ public:
   virtual void BeginOfEventAction(const G4Event*);
   virtual void EndOfEventAction(const G4Event*);
 
-  //void AddX(G4double XCoord) {fX += XCoord;}
   void AddX(G4double XCoord) {fX += 1;}
-  // void StoreHitPos(G4ThreeVector Position)
-  // {   
-  //   HitsArray.push_back(Position);
-  // }
 
-  void StoreX(G4double XCoord)
+  void StorePos(G4double XCoord, G4double YCoord, G4double ZCoord, G4double edep)
   {
-    //Xarray->push_back(XCoord);
     Xarray.push_back(XCoord);
+    Yarray.push_back(YCoord);
+    Zarray.push_back(ZCoord);
+    Earray.push_back(edep);
   }
 
-  //int x=90;
-  //MyRunAction runObject;
-  // void StoreZ(G4double ZCoord)
-  // {
-  //   Zarray.push_back(ZCoord);
-  // }
+  //void AddEdep(G4double edep) {fEdep += edep;}
   
-  //int x=1;  
-
 private:
   G4double fX;
-  //int x=56;
-  std::vector<G4double> Xarray; //, Yarray, Zarray;
-  //std::vector<G4ThreeVector> HitsArray;
+  std::vector<G4double> Xarray, Yarray, Zarray, Earray;
   MyRunAction *runObject;
   G4int ievent=1;
+  G4double fEdep;
   
-
-// public:
-//   void FillTree()
-//   {
-//     //
-//     //runObject.tree->Fill();
-//   }
-
 };
 
 #endif

@@ -1,13 +1,19 @@
 #include "detector.hh"
 
+
 //MySensitiveDetector::MySensitiveDetector(G4String name, MyEventAction *eventAction) :
 MySensitiveDetector::MySensitiveDetector(G4String name) :
   G4VSensitiveDetector(name)
 { //fEventAction = eventAction;
 }
 
+// MySensitiveDetector::MySensitveDetector()
+// {}
+
+
 MySensitiveDetector::~MySensitiveDetector()
 {}
+
 
 G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
@@ -17,9 +23,11 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
   G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
 
-  G4ThreeVector posPhoton = preStepPoint->GetPosition();
+  //G4ThreeVector posPhoton = preStepPoint->GetPosition();
+  edep = aStep->GetTotalEnergyDeposit();
 
   //G4cout << "Photon position: " << posPhoton << G4endl;
+  //const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
   const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
 
   G4int copyNo = touchable->GetCopyNumber();
@@ -28,7 +36,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
   G4VPhysicalVolume *physVol = touchable->GetVolume();
   //G4ThreeVector posDetector = physVol->GetTranslation();
-  G4ThreeVector posDetector = physVol->GetTranslation();
+  posDetector = physVol->GetTranslation();
 
   G4cout << "Detector position: " << posDetector << G4endl;
 
@@ -41,6 +49,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   man->FillNtupleDColumn(3, posDetector[2]);
 
   man->AddNtupleRow(0);
+
+  //  MyEventAction *fEventAction = new MyEventAction(MyRunAction* RunAction);
+  //fEventAction->StoreX(posDetector);
 
   //fEventAction->StoreX(posDetector[0]);
 
