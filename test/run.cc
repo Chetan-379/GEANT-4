@@ -26,6 +26,7 @@ MyRunAction::MyRunAction()
   tree->Branch("positionY", &Y);
   tree->Branch("positionZ", &Z);
   tree->Branch("Energy", &E);
+  tree->Branch("Total_Edep", &Total_E);
   //x=p;
   //tree = nullptr;
   //Xcoord = 0;

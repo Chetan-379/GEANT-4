@@ -1,15 +1,8 @@
 #include "detector.hh"
 
-
-//MySensitiveDetector::MySensitiveDetector(G4String name, MyEventAction *eventAction) :
 MySensitiveDetector::MySensitiveDetector(G4String name) :
   G4VSensitiveDetector(name)
-{ //fEventAction = eventAction;
-}
-
-// MySensitiveDetector::MySensitveDetector()
-// {}
-
+{}
 
 MySensitiveDetector::~MySensitiveDetector()
 {}
@@ -27,7 +20,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   edep = aStep->GetTotalEnergyDeposit();
 
   //G4cout << "Photon position: " << posPhoton << G4endl;
-  //const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
   const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
 
   G4int copyNo = touchable->GetCopyNumber();
@@ -35,10 +27,13 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   //G4cout << "Copy number: " << copyNo << G4endl;
 
   G4VPhysicalVolume *physVol = touchable->GetVolume();
-  //G4ThreeVector posDetector = physVol->GetTranslation();
   posDetector = physVol->GetTranslation();
 
   G4cout << "Detector position: " << posDetector << G4endl;
+  // random++;
+  // G4cout << "hit No." << random << G4endl;
+  
+  //test_pos.push_back(posDetector);
 
   G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
@@ -49,13 +44,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   man->FillNtupleDColumn(3, posDetector[2]);
 
   man->AddNtupleRow(0);
-
-  //  MyEventAction *fEventAction = new MyEventAction(MyRunAction* RunAction);
-  //fEventAction->StoreX(posDetector);
-
-  //fEventAction->StoreX(posDetector[0]);
-
-    
   
   return 0;
 }

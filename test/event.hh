@@ -26,7 +26,7 @@ public:
     Earray.push_back(edep);
   }
 
-  //void AddEdep(G4double edep) {fEdep += edep;}
+  void AddEdep(G4double edep) {fEdep += edep;}
   
 private:
   G4double fX;

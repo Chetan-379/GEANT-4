@@ -9,7 +9,7 @@
 #include "TFile.h"
 
 #include "G4Run.hh"
-#include "detector.hh"
+//#include "detector.hh"
 
 class MyRunAction : public G4UserRunAction
 {
@@ -24,6 +24,7 @@ public:
   TTree *tree;
   //int x=90;
   std::vector<double> X, Y, Z, E;
+  G4double Total_E;
 
   //tree->Branch("positionX", &p);
   

@@ -27,7 +27,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4double Zcord = position[2];
 
   //G4double edep = step->GetTotalEnergyDeposit();
-  //fEventAction->AddEdep(edep);
+  fEventAction->AddEdep(Energy_dep);
 
   fEventAction->AddX(Xcord);
   fEventAction->StorePos(Xcord, Ycord, Zcord, Energy_dep);

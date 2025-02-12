@@ -13,13 +13,15 @@ class MySensitiveDetector : public G4VSensitiveDetector
 public:
   MySensitiveDetector(G4String);
   ~MySensitiveDetector();
-  G4ThreeVector posDetector;
+  //G4double random=0;
   G4double edep;
+  G4ThreeVector posDetector;
   
 
 private:
   virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
   //MyEventAction *fEventAction;
+  //std::vector<G4ThreeVector> test_pos;
   
   
 };
