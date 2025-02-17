@@ -1,4 +1,5 @@
 #include "detector.hh"
+//#include "TileHit.hh"
 
 MySensitiveDetector::MySensitiveDetector(G4String name) :
   G4VSensitiveDetector(name)
@@ -19,8 +20,16 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
   //G4ThreeVector posPhoton = preStepPoint->GetPosition();
   edep = aStep->GetTotalEnergyDeposit();
 
+  //if (edep == 0.) return false;
+
+  // auto newHit = new TileHit();
+  // newHit->SetEdep(edep);
+  // newHit->SetPos(aStep->GetPostStepPoint()->GetPosition());
+
+
   //G4cout << "Photon position: " << posPhoton << G4endl;
   const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
+  //const G4VTouchable *touchable = aStep->GetPostStepPoint()->GetTouchable();
 
   G4int copyNo = touchable->GetCopyNumber();
 
@@ -28,7 +37,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
   G4VPhysicalVolume *physVol = touchable->GetVolume();
   posDetector = physVol->GetTranslation();
-
+  //if (edep<0) G4cout << "\n\njsdlkjf\n\n" << G4endl;
   G4cout << "Detector position: " << posDetector << G4endl;
   // random++;
   // G4cout << "hit No." << random << G4endl;

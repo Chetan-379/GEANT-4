@@ -18,6 +18,7 @@ MyEventAction::~MyEventAction()
   Yarray.clear();
   Zarray.clear();
   Earray.clear();
+  G4cout << "event No.: " << ievent << G4endl;
 
 }
 
@@ -30,6 +31,9 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 
   man->FillNtupleDColumn(1, 0, fX);
   man->AddNtupleRow(1);
+
+  man->FillNtupleDColumn(3, 0, fEdep);
+  man->AddNtupleRow(3);
 
   runObject->X = Xarray;
   runObject->Y = Yarray;

@@ -18,6 +18,8 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 public:
   MyDetectorConstruction();
   ~MyDetectorConstruction();
+
+  G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
   
   virtual G4VPhysicalVolume *Construct();
   MySensitiveDetector *sensDet;

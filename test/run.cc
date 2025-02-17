@@ -19,7 +19,9 @@ MyRunAction::MyRunAction()
   man->CreateNtupleDColumn("XCoord");
   man->FinishNtuple(2);
 
-  //std::cout << man << std::endl;
+  man->CreateNtuple("Scoring", "Scoring");
+  man->CreateNtupleDColumn("fEdep");
+  man->FinishNtuple(3);
 
   tree = new TTree("tree","HitInfo");
   tree->Branch("positionX", &X);
@@ -27,10 +29,6 @@ MyRunAction::MyRunAction()
   tree->Branch("positionZ", &Z);
   tree->Branch("Energy", &E);
   tree->Branch("Total_Edep", &Total_E);
-  //x=p;
-  //tree = nullptr;
-  //Xcoord = 0;
-  
 
 }
 
@@ -48,26 +46,9 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 
   man->OpenFile("output"+strRunID.str()+".root");
 
-  //TFile *hfile;
-  //hfile = TFile::Open("position.root","RECREATE");
-  //TFile *hfile;
-  hfile = hfile = TFile::Open("test.root","RECREATE");
-  
-  
-  //tree->Branch("positionX", &Xcoord, "positionX/I");
-  
- 
-  //std::cout << man << std::endl;
+  hfile = hfile = TFile::Open("testing.root","RECREATE");
 }
 
-//void MyRunAction::FillTree(std::vector<double> Xvec){
- 
-//}
-
-
-// void MyRunAction::FillTreee(){
-//   tree->Fill(); 
-//}
 
 
 void MyRunAction::EndOfRunAction(const G4Run*)
@@ -77,15 +58,9 @@ void MyRunAction::EndOfRunAction(const G4Run*)
   man->Write();
   man->CloseFile();
 
-  //TTree *tree;
-  //tree->Write();
-  //tree->Close();
-  //  tree->Branch("positionX", &x, "positionX/I");
-  //tree->Fill();
   tree->Write();
   tree->Print();
     
   hfile->Close();
-  //std::cout << man << std::endl;
 }
 
