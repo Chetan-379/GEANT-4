@@ -12,13 +12,15 @@ MySensitiveDetector::~MySensitiveDetector()
 G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
   G4Track *track = aStep->GetTrack();
-  track->SetTrackStatus(fStopAndKill);
+  //track->SetTrackStatus(fStopAndKill);
 
   G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
   G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
 
   //G4ThreeVector posPhoton = preStepPoint->GetPosition();
-  edep = aStep->GetTotalEnergyDeposit();
+  posPhoton = preStepPoint->GetPosition();
+   // if (preStepPoint->GetProcessDefinedStep()) G4cout << "Proc Name: " << preStepPoint->GetProcessDefinedStep()->GetProcessName() << G4endl; 
+  //edep = aStep->GetTotalEnergyDeposit();
 
   //if (edep == 0.) return false;
 
@@ -37,8 +39,8 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
   G4VPhysicalVolume *physVol = touchable->GetVolume();
   posDetector = physVol->GetTranslation();
-  //if (edep<0) G4cout << "\n\njsdlkjf\n\n" << G4endl;
-  G4cout << "Detector position: " << posDetector << G4endl;
+ 
+  //G4cout << "Detector position: " << posDetector << G4endl;
   // random++;
   // G4cout << "hit No." << random << G4endl;
   

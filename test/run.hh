@@ -24,7 +24,7 @@ public:
   TTree *tree;
   //int x=90;
   std::vector<double> X, Y, Z, E;
-  G4double Total_E;
+  G4double Total_E, Total_Compt_Edep, Photo_Edep, diff_edep_ComptPhoto;
 
   //tree->Branch("positionX", &p);
   

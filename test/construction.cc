@@ -32,7 +32,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   // Trapezoid shape                                                                                     
   G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
-  G4double rad_dz = 5 * cm;
+  G4double rad_dz = 5.0 * cm;
   G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
   
   G4Trd *solidDetector =
@@ -41,6 +41,23 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
               0.5 * rad_dz);  // its size	      
 
   G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+
+   // G4Element *Cd = nist->FindOrBuildElement("G4_Cd");
+   // G4Element *Zn = nist->FindOrBuildElement("G4_Zn");
+   // G4Element *Te = nist->FindOrBuildElement("G4_Te");
+
+  //  G4Material *DetectorMat = new G4Material("CdZnTe", 5.76*g/cm3, 3);
+  // G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Cd, 40*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Zn, 10*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Te, 50*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+
+   
 
   DetectorMat->SetMaterialPropertiesTable(mptWorld);
 

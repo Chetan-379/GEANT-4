@@ -15,7 +15,7 @@ public:
   ~MySensitiveDetector();
   //G4double random=0;
   G4double edep = 0;
-  G4ThreeVector posDetector;
+  G4ThreeVector posDetector, posPhoton;
   
 
 private:

@@ -29,6 +29,9 @@ MyRunAction::MyRunAction()
   tree->Branch("positionZ", &Z);
   tree->Branch("Energy", &E);
   tree->Branch("Total_Edep", &Total_E);
+  tree->Branch("Edep_Compt", &Total_Compt_Edep);
+  tree->Branch("Edep_Photo", &Photo_Edep);
+  tree->Branch("diff_Edep_ComptPhoto", &diff_edep_ComptPhoto);
 
 }
 
@@ -46,7 +49,9 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 
   man->OpenFile("output"+strRunID.str()+".root");
 
-  hfile = hfile = TFile::Open("testing.root","RECREATE");
+  //hfile = hfile = TFile::Open("testing_BGO.root","RECREATE");
+  //hfile = hfile = TFile::Open("test.root","RECREATE");
+  hfile = hfile = TFile::Open("compt_photo_PbWO4_10000evts.root","RECREATE");
 }
 
 

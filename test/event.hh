@@ -16,6 +16,7 @@ public:
   virtual void BeginOfEventAction(const G4Event*);
   virtual void EndOfEventAction(const G4Event*);
 
+  std::vector<G4double> Compt_edep, Photo_edep;  
   void AddX(G4double XCoord) {fX += 1;}
 
   void StorePos(G4double XCoord, G4double YCoord, G4double ZCoord, G4double edep)
@@ -34,6 +35,7 @@ private:
   MyRunAction *runObject;
   G4int ievent=1;
   G4double fEdep;
+  G4double compt_total_edep, photo_total_edep;
   
 };
 
