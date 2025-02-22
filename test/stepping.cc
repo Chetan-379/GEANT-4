@@ -34,44 +34,59 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   // G4double KE_f = postStepPoint->GetTotalEnergy();
   
   //if (step->GetPreStepPoint()->GetProcessDefinedStep()){
-  G4cout << "step pos: (" << phopos_post[0] << ", " << phopos_post[1] << ", " << phopos_post[2] << ") " << G4endl;
-  G4cout << "Proc Name: " <<  proc << G4endl;
-  G4cout << "step edep: " << edep << G4endl;
 
-  G4cout << "energy at pre: " << KE_i << G4endl;
+  //============
+  // G4cout << "step pos: " << phopos_post << G4endl;
+  // G4cout << "Proc Name: " <<  proc << G4endl;
+  // G4cout << "step edep: " << edep << G4endl;
 
-  G4cout << "energy at post: " << KE_f << G4endl;
+  // G4cout << "energy at pre: " << KE_i << G4endl;
 
-  G4cout << "difference between pre and post: " << KE_i-KE_f << G4endl;
+  // G4cout << "energy at post: " << KE_f << G4endl;
+
+  // G4cout << "difference between pre and post: " << KE_i-KE_f << G4endl;
+
+  // G4cout << "parentID: " << step-> GetTrack()->GetParentID() << G4endl;
+  //========================
   //}
 
-  if (proc == "compt" || proc == "Rayl") fEventAction-> Compt_edep.push_back(KE_i - KE_f);
-  if (proc == "phot") fEventAction-> Photo_edep.push_back(KE_i - KE_f);
-
-
+  if (step->GetTrack()->GetParentID() == 0){
+    if (proc == "compt" || proc == "Rayl") {
+      fEventAction-> Compt_edep.push_back(KE_i - KE_f);
+    }
+    
+    if (proc == "phot") {
+      
+      fEventAction-> Photo_edep.push_back(KE_i - KE_f);
+      // if (fEventAction->Photo_edep.size() == 0 && fEventAction->Compt_edep.size() == 0) fEventAction->Compt_Before_Photo = false;
+      // if (fEventAction->Photo_edep.size() == 0 && fEventAction->Compt_edep.size() > 0) fEventAction->Compt_Before_Photo = true;
+      // if (fEventAction->Photo_edep.size() == 0) fEventAction->nCompton_Before_Photo = Compt_edep.size();
+      
+      //break;
+    }
+  }
+    
+  
   //G4cout << "compton scattering postion " << compt_scatter_point << G4endl;
    
   if (proc == "eIoni")
-    { 
-      G4cout << "ionisation pre coord: (" << phopos_pre[0] << ", " << phopos_pre[1] << ", " << phopos_pre[2] << ") " << G4endl;
-      G4cout << "ionisation post coord: (" << phopos_post[0] << ", " << phopos_post[1] << ", " << phopos_post[2] << ") " << G4endl;
+    { //====================
+      // G4cout << "ionisation pre coord: " << phopos_pre << G4endl;
+      // G4cout << "ionisation post coord: " << phopos_post << G4endl;
+      //===================
 
-      // if (phopos_pre == compt_scatter_point) {
-      // 	G4cout << "energy deposited in compton: " << edep << G4endl;
-      // }
-
+      
       //if (step->GetPreStepPoint()->GetProcessDefinedStep())
       //G4cout << "prestep process: " << preStepPoint->GetProcessDefinedStep()->GetProcessName() << G4endl;      
     }
-  G4cout << G4endl;
+  //G4cout << G4endl;
 
-  //G4cout << "Energy deposited via compton: " << Compt_edep << G4endl;
-  //G4cout << "Energy deposited via photoelectric: " << Photo_edep << G4endl;
+  // G4cout << "Energy deposited via compton: " << Compt_edep << G4endl;
+  // G4cout << "Energy deposited via photoelectric: " << Photo_edep << G4endl;
 
-  G4cout << G4endl;
+  // G4cout << G4endl;
     
   G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-
   
   // if(volume != fScoringVolume)
   // return; 
@@ -85,12 +100,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4double Xcord = position[0];
   G4double Ycord = position[1];
   G4double Zcord = position[2];
-
   
-  //if (edep ==0) return;
   fEventAction->AddEdep(edep);
-  //fEventAction->AddEdep(Energy_dep);
-  
   fEventAction->AddX(Xcord);
   fEventAction->StorePos(Xcord, Ycord, Zcord, edep);
   

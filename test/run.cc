@@ -51,7 +51,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 
   //hfile = hfile = TFile::Open("testing_BGO.root","RECREATE");
   //hfile = hfile = TFile::Open("test.root","RECREATE");
-  hfile = hfile = TFile::Open("compt_photo_PbWO4_10000evts.root","RECREATE");
+  hfile = hfile = TFile::Open("test.root","RECREATE");
 }
 
 

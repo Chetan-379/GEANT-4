@@ -15,7 +15,8 @@ public:
 
   virtual void BeginOfEventAction(const G4Event*);
   virtual void EndOfEventAction(const G4Event*);
-
+  bool Compt_Before_Photo = false;
+  G4int nCompt_Before_Photo;
   std::vector<G4double> Compt_edep, Photo_edep;  
   void AddX(G4double XCoord) {fX += 1;}
 
