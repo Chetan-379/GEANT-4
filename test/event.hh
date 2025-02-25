@@ -29,10 +29,12 @@ public:
   }
 
   void AddEdep(G4double edep) {fEdep += edep;}
+
+  std::vector<G4double> Xarray, Yarray, Zarray, Earray;
   
 private:
   G4double fX;
-  std::vector<G4double> Xarray, Yarray, Zarray, Earray;
+  //std::vector<G4double> Xarray, Yarray, Zarray, Earray;
   MyRunAction *runObject;
   G4int ievent=1;
   G4double fEdep;

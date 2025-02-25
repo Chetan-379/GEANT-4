@@ -64,6 +64,9 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       
       //break;
     }
+    fEventAction->Xarray.push_back(phopos_post[0]);
+    fEventAction->Yarray.push_back(phopos_post[1]);
+    fEventAction->Zarray.push_back(phopos_post[2]);
   }
     
   
@@ -93,7 +96,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   
   const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
   G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
-  G4ThreeVector position = detectorConstruction->sensDet->posDetector;
+  //G4ThreeVector position = detectorConstruction->sensDet->posDetector;
+  G4ThreeVector position = phopos_post;
   //G4ThreeVector position = detectorConstruction->sensDet->posPhoton;
   //G4double Energy_dep = detectorConstruction->sensDet->edep;
 
@@ -103,6 +107,6 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   
   fEventAction->AddEdep(edep);
   fEventAction->AddX(Xcord);
-  fEventAction->StorePos(Xcord, Ycord, Zcord, edep);
+  //fEventAction->StorePos(Xcord, Ycord, Zcord, edep);
   
 }
