@@ -40,8 +40,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   	      0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
               0.5 * rad_dz);  // its size	      
 
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
+  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
   //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
 
    // G4Element *Cd = nist->FindOrBuildElement("G4_Cd");

@@ -24,7 +24,7 @@ MyEventAction::~MyEventAction()
   photo_total_edep=0;
   nCompt_Before_Photo = 0;
   
-  // G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
 }
 
@@ -32,8 +32,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 {
   //G4cout << "no. of hits: " << fX << G4endl;
   if (Photo_edep.size() < 1) Photo_edep.push_back(0);
-  //if (Photo_edep.size() > 1) {
-  //}
+  
   //G4cout << "Energy deposition: " << fEdep << "\n" << G4endl;
   
   G4AnalysisManager *man = G4AnalysisManager::Instance(); 
@@ -60,22 +59,46 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   //if ((compt_total_edep+Photo_edep[0]) > 0.5)
   if (fabs(edep_ComptPhot) > 0.0001)
     {
-      G4cout << "\nDetails of the event where fEdep is less than sum of Compt and Pho:" << G4endl;
-      G4cout << "fEdep: " << fEdep << G4endl;
-      G4cout << "Energy deposited in compt: " << compt_total_edep << G4endl;
-      G4cout << "Energy deposited in photo: " << Photo_edep[0] << G4endl;
+      // G4cout << "\nDetails of the event where fEdep is less than sum of Compt and Pho:" << G4endl;
+      // G4cout << "fEdep: " << fEdep << G4endl;
+      // G4cout << "Energy deposited in compt: " << compt_total_edep << G4endl;
+      // G4cout << "Energy deposited in photo: " << Photo_edep[0] << G4endl;
     }
   
   runObject->X = Xarray;
   runObject->Y = Yarray;
   runObject->Z = Zarray;
   runObject->E = Earray;
-  //runObject->Total_E = fEdep;
-  runObject->Total_E = compt_total_edep + Photo_edep[0];
+  runObject->Total_E = fEdep;
+  //runObject->Total_E = compt_total_edep + Photo_edep[0];
   runObject->Total_Compt_Edep = compt_total_edep;
   runObject->Photo_Edep = Photo_edep[0];
   runObject->diff_edep_ComptPhoto = edep_ComptPhot;
   runObject->tree->Fill();
+  
+  // auto EvtMan = G4EventManager::GetEventManager();
+  // if (ievent == 9) {
+  //   EvtMan->KeepTheCurrentEvent();
+  // }
+
+  if (ievent == 7) {
+  G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+}
+
+  // if (ievent == 5) {
+  //   G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
+  //   if (trajectoryContainer) {
+  //     for (size_t i = 0; i < trajectoryContainer->entries(); i++) {
+  // 	G4Trajectory* trajectory = (*trajectoryContainer)[i];
+  // 	// Draw trajectories or particles for this event
+  // 	trajectory->DrawTrajectory();
+  //     }
+  //   }
+  // }
 
 ievent++;
+ if (fEdep < 0.5) G4cout << "\n\nLOOK AT THIS EVENT CAREFULLY\n\n" << G4endl; 
+ G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
+ 
+ 
 }
