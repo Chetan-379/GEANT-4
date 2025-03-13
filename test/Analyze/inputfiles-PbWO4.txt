@@ -1,1 +1,1 @@
-src_root_files/PbWO4_FluON.root
+src_root_files/BGO_FluON_10000Evts.root

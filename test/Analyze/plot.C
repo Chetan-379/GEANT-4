@@ -1,7 +1,7 @@
 const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
-TString legend_text[10] = {"SR","CR","hist3", "hist4", "pMSSM_MCMC_106_19786","pMSSM_MCMC_473_54451"};
+TString legend_text[10] = {"Integral","PbWO4","BGO", "CZT", "pMSSM_MCMC_106_19786","pMSSM_MCMC_473_54451"};
 int line_width[12] = {2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[12] = {1,1,1,1,1,1,1,1,1,1,1,1};
 int line_color[9] = {kBlue, kBlack, kRed, kGreen+2, kMagenta, kAzure + 7 , kCyan + 1 , kGreen + 3 };
@@ -92,7 +92,7 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
 //important function - change in this function if you want to change decoration of a plot
 //void generate_1Dplot(vector<TH1F*> hist, TH1* hist_ratio,char const *tag_name="", float energy=-1, int xmax=-1,int xmin=-1,char const *leg_head="",
 //		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
-  void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-1, int xmax=-1,int xmin=-1,char const *leg_head="",
+  void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", int xmax=-1,int xmin=-1,char const *leg_head="",
 		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
 
   TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
@@ -100,47 +100,22 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
   canvas_n1->SetFillColor(0);
   canvas_n1->SetBorderMode(0);
   canvas_n1->SetBorderSize(2);
-  // canvas_n1->SetRightMargin(0.045);
-  // canvas_n1->SetLeftMargin(0.12);
-  // canvas_n1->SetTopMargin(0.06);
-  // canvas_n1->SetBottomMargin(0.12);
-  // auto *pad_1 = new TPad("pad_1","pad_1",0.,0.0,1.,0.32); pad_1->Draw();
-  // pad_1->SetTopMargin(0.06);
-  // pad_1->SetBottomMargin(0.3);
-  // pad_1->SetRightMargin(0.025);
-  // pad_1->SetLeftMargin(0.14);
-  
-  // auto *p1 = new TPad("p1","p1",0.,0.32,1.,1.);  p1->Draw();
-  // p1->SetBottomMargin(0.04);
-  // p1->SetRightMargin(0.025);
-  // p1->SetLeftMargin(0.14);
-  // p1->SetTopMargin(0.05);
-  // p1->cd();
   gStyle->SetOptStat(0);
 
-  // auto *pad_1 = new TPad("pad_1","pad_1",0.,0.0,1.,0.32); pad_1->Draw();
-  // pad_1->SetTopMargin(0.04);
-  // //pad_1->SetTopMargin(0.001);
-  // pad_1->SetBottomMargin(0.33);
-  // pad_1->SetRightMargin(0.035);
-  // pad_1->SetLeftMargin(0.13);
   auto *p1 = new TPad("p1","p1",0.,0.1,1.,1.);  p1->Draw();
-  //p1->SetBottomMargin(0.026);
   p1->SetBottomMargin(0.12);  
   p1->SetRightMargin(0.035);
   p1->SetLeftMargin(0.13);
   p1->SetTopMargin(1);
 
   p1->cd();
-  //p1->SetGridx();
-  //pad_1->SetGridx();
   
   vector<TString> legName;
   std::string leg_head_str = leg_head;
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.52,0.76,0.66,0.89);  
+  legend = new TLegend(0.47,0.76,0.55,0.89);  
   legend->SetTextSize(0.030);
   legend->SetLineColor(kWhite);
   char* lhead = new char[100];
@@ -260,13 +235,12 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
   
   if(logx)
     gPad->SetLogx();
-  
-  gPad->Update();
 
+  gPad->Update();
+  
  
   TLatex* textOnTop = new TLatex();
   textOnTop->SetTextSize(0.04);
-  //textOnTop->DrawLatexNDC(0.12,0.96,"CMS #it{#bf{Preliminary}}");
   textOnTop->DrawLatexNDC(0.12,0.91," #it{#bf{GEANT4 Simulation}}");
   
   // char* en_lat = new char[500];
@@ -288,95 +262,54 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
     // canvas_n1->SaveAs(canvas_name);
     
   }  
-}
+  }
 
 const int nfiles=100,nBG=6;                                                                                                                                                              
 
 void plot(string pathname)
 {
-  char* hname = new char[200];
-  char* hist_name  = new char[200];
-  char* hist_name1 = new char[200];
-  char* hist_name2 = new char[200];
-  char* hist_name3 = new char[200];
-  char* hist_name4 = new char[200];
-  char* hist_name5 = new char[200];
-  char* hist_name6 = new char[200];
-  char* hist_name7 = new char[200];
-  char* full_path = new char[2000];
-  char* full_path1 = new char[2000];
-  char* full_path2 = new char[2000];
-  char* path2 = new char[2000];
-  char* title= new char[2000];
-  //string filetag;//=new char[20000];                                                                                                                                                                   
-  char* full_path3 = new char[2000];
-  char* full_path4 = new char[2000];
-  char* full_path5 = new char[2000];
-  char* full_path6 = new char[2000];
-  char* full_path7 = new char[2000];
-  char* full_path8 = new char[2000];
-  char* full_path9 = new char[2000];
-  char* full_path10 = new char[2000];
-  char* full_path11= new char[2000];
-  char *leg_head = new char[200];
-
+  char *hist_name = new char[100];
+  char *full_path = new char[1000];
+  char *leg_head = new char[100];
   vector<string> f;
   vector<string> filetag;
   vector<string> folder;
-  //  string identifier;
-  //int combine;
 
-  //combine =4;
   
-  // if (combine==0) {
-  //   f = {"./root_files/Summer20UL18_TTJets.root", "./root_files/Summer20UL18_TTGJets_Tune.root", "./root_files/Summer20UL18_WJetsToLNu_HT.root", "./root_files/Summer20UL18_WGJets_MonoPhoton.root"};
-  //   filetag={"TTJets_2018", "TTGJets_2018", "WJets_2018", "WGJets_2018"};
-  //   folder = {"plots/LL_plots/Lost_mu/TT_/", "plots/LL_plots/Lost_mu/TTG_/", "plots/LL_plots/Lost_mu/WLNu_/", "plots/LL_plots/Lost_mu/WG_/"};
-  //   identifier = "Single";
-  // }
+  // f = {"out_root_files/Si_FluON_10000evts_out.root"};
+  // filetag = {"Si"};
+  // folder = {"plots/Si"};
 
-  // if (combine==2) {
-  //   f = {"./root_files/TTGJets_process_combined_Summer20UL18.root", "./root_files/WGJets_process_combined_Summer20UL18.root"};
-  //   filetag={"TTGJets_Process_2018", "WGJets_Process_2018"};
-  //   folder = {"plots/LL_plots/combined/", "plots/LL_plots/combined/"};
-  //   identifier = "Combined";
-  // }
+  // f = {"out_root_files/PbWO4_FluON_10000evts_out.root"};
+  // filetag={"PbWO4"};
+  // folder = {"plots/PbWO4"};
 
-  // if (combine==4) {
-  //   f= {"./root_files/All_combined_Summer20UL18.root"};
-  //   filetag={"TTG+WG_2018"};
-  //   folder = {"plots/LL_plots/All_cat_combined/combined/"};
-  //   //folder = {"plots/LL_plots/Lost_mu_had_tau/combined/"};
-  //   identifier = "Combined";
-  // }
+  f = {"out_root_files/Si_FluON_10000evts_out.root", "out_root_files/PbWO4_FluON_10000evts_out.root", "out_root_files/BGO_FluON_10000evts_out.root"};
+  filetag={"Si", "PbWO4", "BGO"};
+  folder = {"plots/Si", "plots/PbWO4", "plots/BGO"};
+ 
+ 
+  
+  vector<string> histnames1, histnames2; 
+  histnames1 = {"Total_Edep"};       //array of the histograms to be overlayed 
+  histnames2 = {"Edep_fine"};
+  
+  vector<vector<string>> bigbaseline;     //array of different variable to be plotted
+  vector<string> baseline1, baseline2; //baseline2, baseline3, baseline4;
 
-      f = {"corrected_out.root"};
-    filetag={"PbWO4"};
-    folder = {"plots/PbWO4"};
-    
-  
-    vector<string> histnames1; 
-    histnames1 = {"Total_Edep"}; 
-  
-  
-  vector<vector<string>> bigbaseline;
-  vector<string> baseline1; //baseline2, baseline3, baseline4;
   for (int i=0; i<histnames1.size();i++){
-    baseline1.push_back(histnames1[i]);
-    // baseline2.push_back(histnames2[i]);
-    // baseline3.push_back(histnames3[i]);   
-    // baseline4.push_back(histnames4[i]);
+    baseline1.push_back(histnames1[i]);    
   }
 
+  for (int i=0; i<histnames2.size();i++){
+    baseline2.push_back(histnames2[i]);    
+  }
+  
   //bigbaseline = {baseline1, baseline2, baseline3, baseline4};
-  bigbaseline = {baseline1};
+  bigbaseline = {baseline1, baseline2};
   
   for (int bigi=0; bigi<bigbaseline.size(); bigi++)
     {      
-      //luminosity for each year - depends if you want to use it or - generate1Dplot uses this number and add it on the top
-      vector<float>energyy;
-      energyy={59.74,41.529};//,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,19.5,19.5,19.5,19.5,19.5,19.5,19.5,36.0,36.0,36.0,36.0,36.0,36.0,36.0};
-
       //rebin values
       vector<int >rebin = {2,2,2,2,2,2,2,2,2}; //keep it 1 if you don't want to change hist bins
       
@@ -397,26 +330,22 @@ void plot(string pathname)
 	    hist_list_Njets.push_back(resp);
 	  }
 
-	float energy=energyy[0];
 	int xrange=0.0;	  
-	//TH1D* h_CR =(TH1D*)hist_list_Njets.at(1)->Clone();
-	//TH1D* h_TF = (TH1D*)hist_list_Njets.at(0)->Clone();       
-	//h_TF->Divide(h_CR); 
 	
 	//x axis title for all plots///
 	vector<string>diff_title;
-	//diff_title = {"Pho_Pt", "PT_Miss", "NHadJets", "NbJets"};
-	diff_title = {"Edep"};
+	
+	diff_title = {"Edep", "Edep_fine"};    //put the name of different variables here
 	vector<string>xtitle;
-	//xtitle = {diff_title[0], diff_title[1], diff_title[2], diff_title[3]};
-	xtitle = {diff_title[0]};
+
+	xtitle = {diff_title[0], diff_title[1]};
 
 	//path to save the files a jpg or pdf
-	sprintf(full_path,"%s/%s%s_%s",pathname.c_str(),folder[ibkg].c_str(), diff_title[bigi].c_str(),filetag[ibkg].c_str());
+	sprintf(full_path,"%s/%s/%s_%s_FluON",pathname.c_str(),folder[ibkg].c_str(), diff_title[bigi].c_str(),filetag[ibkg].c_str());
 
 	//calling generate_1Dplot which will take this vector of histograms 
-	generate_1Dplot(hist_list_Njets,full_path,energy,xmax[bigi],xmin[bigi],leg_head,false,true,false,true,filetag[ibkg].c_str(),xtitle[bigi].c_str(),rebin[bigi]);
-    
+	generate_1Dplot(hist_list_Njets,full_path,xmax[bigi],xmin[bigi],leg_head,false,true,false,true,filetag[ibkg].c_str(),xtitle[bigi].c_str(),rebin[bigi]);
+
       }
     }
 }

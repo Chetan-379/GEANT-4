@@ -81,7 +81,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   //   EvtMan->KeepTheCurrentEvent();
   // }
 
-  if (ievent == 7) {
+  if (ievent == 10) {
   G4EventManager::GetEventManager()->KeepTheCurrentEvent();
 }
 

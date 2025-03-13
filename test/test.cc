@@ -35,20 +35,18 @@ int main(int argc, char** argv)
   visManager->Initialize();
 
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
+
+  UImanager->ApplyCommand("/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"); // very high time threshold to allow all decays to happen
+  UImanager->ApplyCommand("/tracking/verbose 1");
+  // UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");
+  // UImanager->ApplyCommand("/run/setCutForAGivenParticle e+ 0.01 mm");
+  // UImanager->ApplyCommand("/run/setCutForAGivenParticle gamma 0.01 mm");
+  UImanager->ApplyCommand("/run/initialize");          
+
   
   if(ui)
-    {
-       // UImanager->ApplyCommand("/process/em/fluo true");
-       // UImanager->ApplyCommand("/run/initialize");
-      UImanager->ApplyCommand("/tracking/verbose 1");
-      //UImanager->ApplyCommand("/run/setLowEdge 10 eV");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle e+ 0.01 mm");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle gamma 0.01 mm");
-      UImanager->ApplyCommand("/run/initialize");          
-
-      UImanager->ApplyCommand("/control/execute vis.mac");
-      
+    {    
+      UImanager->ApplyCommand("/control/execute vis.mac");      
       ui->SessionStart();
     }
 
@@ -56,18 +54,7 @@ int main(int argc, char** argv)
     {
       G4String command = "/control/execute ";
       G4String fileName = argv[1];
-       
-      //UImanager->ApplyCommand("/process/em/fluo true");
-      UImanager->ApplyCommand("/tracking/verbose 1");
-      //UImanager->ApplyCommand("/run/setLowEdge 10 eV");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle e+ 0.01 mm");
-      UImanager->ApplyCommand("/run/setCutForAGivenParticle gamma 0.01 mm");
-      UImanager->ApplyCommand("/run/initialize");          
-      UImanager->ApplyCommand(command+fileName);
-      
-      //UImanager->ApplyCommand("/process/em/fluo true");
-      
+      UImanager->ApplyCommand(command+fileName);      
     }
 
   return 0;

@@ -20,8 +20,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
   mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
-
   worldMat->SetMaterialPropertiesTable(mptWorld);
+
+  G4Isotope *Na22 = new G4Isotope("Na22", 11, 22, 21.9944 * g / mole);
+  G4Element *elNa22 = new G4Element("Sodium-22", "Na22", 1);
+  elNa22-> AddIsotope(Na22, 100.0 * perCent);
+  
+  G4Material *matNa22 = new G4Material("Na22Source", 0.97 * g / cm3, 1);
+  matNa22->AddElement(elNa22, 100.0 * perCent);
 
   G4Box *solidWorld = new G4Box("solidWorld", 0.5*m, 0.5*m, 0.5*m);
 
@@ -29,6 +35,16 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "physWorld", 0, false, 0, true);
 
+  //spherical Radioactive source
+  G4double sourceRadius = 1. * mm;
+  
+  G4Sphere *solidSource = new G4Sphere("solidSource", 0.0, sourceRadius, 0.0, 360. * deg, 0.0, 180. * deg);
+  G4LogicalVolume *logicSource = new G4LogicalVolume(solidSource, matNa22, "logicSource");
+  G4VPhysicalVolume * physSource = new G4PVPlacement(0, G4ThreeVector(0., 0., -1. * cm), logicSource, "physSource", logicWorld, false, 0, true);
+
+  G4VisAttributes *sourceVisAtt = new G4VisAttributes(G4Color(1.0, 0.0, 1.0, 0.5));
+  sourceVisAtt->SetForceSolid(true);
+  logicSource->SetVisAttributes(sourceVisAtt);
   
   // Trapezoid shape                                                                                     
   G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
@@ -40,8 +56,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   	      0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
               0.5 * rad_dz);  // its size	      
 
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
+  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
   //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
 
    // G4Element *Cd = nist->FindOrBuildElement("G4_Cd");

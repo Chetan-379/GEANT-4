@@ -6,6 +6,9 @@
 #include "G4ParticleGun.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
+#include "G4DecayTable.hh"
+#include "G4IonTable.hh"
+#include "G4Geantino.hh"
 
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {
