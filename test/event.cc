@@ -23,6 +23,7 @@ MyEventAction::~MyEventAction()
   compt_total_edep=0;
   photo_total_edep=0;
   nCompt_Before_Photo = 0;
+  nOptPho = 0;
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
@@ -74,6 +75,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   runObject->Total_Compt_Edep = compt_total_edep;
   runObject->Photo_Edep = Photo_edep[0];
   runObject->diff_edep_ComptPhoto = edep_ComptPhot;
+  runObject->nOpticalPhotons = nOptPho;
   runObject->tree->Fill();
   
   // auto EvtMan = G4EventManager::GetEventManager();
@@ -84,6 +86,8 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   if (ievent == 10) {
   G4EventManager::GetEventManager()->KeepTheCurrentEvent();
 }
+
+  G4cout << "Total Optical photon generated = " << nOptPho << G4endl;
 
   // if (ievent == 5) {
   //   G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();

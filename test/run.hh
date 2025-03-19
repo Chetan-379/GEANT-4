@@ -25,7 +25,7 @@ public:
   //int x=90;
   std::vector<double> X, Y, Z, E;
   G4double Total_E, Total_Compt_Edep, Photo_Edep, diff_edep_ComptPhoto;
-
+  G4int nOpticalPhotons;
   //tree->Branch("positionX", &p);
   
   //void FillTree(std::vector<G4double> m)

@@ -2,13 +2,13 @@
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
   fParticleGun = new G4ParticleGun(1);
-  G4ThreeVector pos(0.*cm, 0.*cm, -1.*cm);
+  G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
   G4ThreeVector mom(0., 0., 1.);
   
   fParticleGun->SetParticlePosition(pos);
   fParticleGun->SetParticleMomentumDirection(mom);
-  fParticleGun->SetParticleMomentum(0.0*GeV);
-  fParticleGun->SetParticleEnergy(0.0 * eV);
+  fParticleGun->SetParticleMomentum(0.5*MeV);
+  //fParticleGun->SetParticleEnergy(0.0 * eV);
    
 }
 
@@ -18,34 +18,33 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 }
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
-{
-  if (fParticleGun->GetParticleDefinition() == G4Geantino::Geantino()) {
-    
-    //G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
-    //G4String particleName="proton";
-    //G4ParticleDefinition *particle = particleTable->FindParticle("proton");
+{    
+    G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
+    G4String particleName="gamma";
+    G4ParticleDefinition *particle = particleTable->FindParticle("gamma");
     
     // G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
     // G4ThreeVector mom(0., 0., 0.);
 
+    // if (fParticleGun->GetParticleDefinition() == G4Geantino::Geantino()) {
     // fParticleGun->SetParticlePosition(pos);
     // fParticleGun->SetParticleMomentumDirection(mom);
     // fParticleGun->SetParticleMomentum(100.*GeV);
-    // fParticleGun->SetParticleDefinition(particle);
+    fParticleGun->SetParticleDefinition(particle);
 
     // G4int Z = 9;
     // G4int A = 18;
 
-    G4int Z = 11;
-    G4int A = 22;
+    // G4int Z = 11;
+    // G4int A = 22;
 
-    G4double charge = 0. * eplus;
-    G4double energy = 0 * keV;
+    // G4double charge = 0. * eplus;
+    // G4double energy = 0 * keV;
 
-    G4ParticleDefinition *ion = G4IonTable::GetIonTable()->GetIon(Z, A, energy);
-    fParticleGun->SetParticleDefinition(ion);
-    fParticleGun->SetParticleCharge(charge);
-    }
+    // G4ParticleDefinition *ion = G4IonTable::GetIonTable()->GetIon(Z, A, energy);
+    // fParticleGun->SetParticleDefinition(ion);
+    // fParticleGun->SetParticleCharge(charge);
+    // }
   
 
   //fParticleGun->SetParticleEnergy(energy);

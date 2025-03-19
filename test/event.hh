@@ -32,6 +32,7 @@ public:
   void AddEdep(G4double edep) {fEdep += edep;}
 
   std::vector<G4double> Xarray, Yarray, Zarray, Earray;
+  G4int nOptPho;
   
 private:
   G4double fX;
@@ -40,6 +41,7 @@ private:
   G4int ievent=1;
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
+  
   
 };
 

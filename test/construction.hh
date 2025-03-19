@@ -11,6 +11,8 @@
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalBorderSurface.hh"
 
 #include "detector.hh"
 #include "globals.hh"

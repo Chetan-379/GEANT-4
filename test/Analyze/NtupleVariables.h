@@ -38,6 +38,7 @@ class NtupleVariables : public TSelector {
    Double_t        Edep_Compt;
    Double_t        Edep_Photo;
    Double_t        diff_Edep_ComptPhoto;
+   Int_t           nOpticalPhotons;
 
    // List of branches
    TBranch        *b_positionX;   //!
@@ -48,6 +49,7 @@ class NtupleVariables : public TSelector {
    TBranch        *b_Edep_Compt;   //!
    TBranch        *b_Edep_Photo;   //!
    TBranch        *b_diff_Edep_ComptPhoto;   //!
+   TBranch        *b_nOpticalPhotons;
    
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
    ~NtupleVariables() { }
@@ -101,6 +103,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Edep_Compt", &Edep_Compt, &b_Edep_Compt);
    fChain->SetBranchAddress("Edep_Photo", &Edep_Photo, &b_Edep_Photo);
    fChain->SetBranchAddress("diff_Edep_ComptPhoto", &diff_Edep_ComptPhoto, &b_diff_Edep_ComptPhoto);
+   fChain->SetBranchAddress("nOpticalPhotons", &nOpticalPhotons, &b_nOpticalPhotons);
 
    Notify();
 }

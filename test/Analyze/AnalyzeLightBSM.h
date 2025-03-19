@@ -33,6 +33,8 @@ class AnalyzeLightBSM : public NtupleVariables{
   //TH1F *h_selectBaselineYields_;
   TH1D *h_Compt_Edep, *h_Photo_Edep, *h_Total_Edep, *h_Total_Edep_fine_binned;
   TH2D *h_ComptVsPhoto_Edep;
+  TH1I *h_nOptPho;
+  TH2D *h_nOptPho_Edep;
 
   TFile *oFile;
   /* TH1F *h_events; */
@@ -53,8 +55,14 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_ComptVsPhoto_Edep->SetXTitle("Compton_Edep");
   h_ComptVsPhoto_Edep->SetYTitle("PhotoElectric_Edep");
 
-  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",700,0,0.7);
+  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",70,0,0.7);
   h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
+
+  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 60, 0, 60);
+
+  h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
+  h_nOptPho_Edep->SetXTitle("Total Edep");
+  h_nOptPho_Edep->SetYTitle("nOptical Photons");
 
 }
 

@@ -73,6 +73,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_ComptVsPhoto_Edep->Fill(Edep_Compt, Edep_Photo);
 	h_Total_Edep-> Fill(Total_Edep);
 	h_Total_Edep_fine_binned->Fill(Total_Edep);
+	h_nOptPho-> Fill(nOpticalPhotons);
+	h_nOptPho_Edep-> Fill(Total_Edep, nOpticalPhotons);
 
 
       }

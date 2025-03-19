@@ -16,15 +16,30 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4ThreeVector phopos_pre = preStepPoint->GetPosition();
   G4ThreeVector phopos_post = postStepPoint->GetPosition();
 
+  const G4TouchableHandle& preStepTouch = preStepPoint->GetTouchableHandle();
+  const G4VPhysicalVolume* Volume = preStepTouch->GetVolume();
+  const G4String& VolName = Volume->GetName();
+  
+  const G4VPhysicalVolume* NxtVolume = preStepTouch->GetVolume();
+  const G4String& NxtVolName = Volume->GetName();
+
+  G4Track *track = step->GetTrack();
+  if (VolName == "physDetector" && postStepPoint->GetStepStatus() == fGeomBoundary) {
+    track->SetTrackStatus(fStopAndKill);
+  }
+
+  G4ParticleDefinition* particleDef = track->GetDefinition();
+  G4String particleName = particleDef->GetParticleName();
+  if (particleName == "opticalphoton") fEventAction->nOptPho++;
+  
   G4double edep = step->GetTotalEnergyDeposit();
-
   G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
-
+  
   // G4String pre_proc;
   // if (step->GetPreStepPoint()->GetProcessDefinedStep()){
   //   pre_proc= step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName();
   // }
-    
+  
   G4double KE_i = preStepPoint->GetKineticEnergy();
   G4double KE_f = postStepPoint->GetKineticEnergy();
 
@@ -88,6 +103,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   // G4cout << "Energy deposited via photoelectric: " << Photo_edep << G4endl;
 
   // G4cout << G4endl;
+
+
     
   G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
   

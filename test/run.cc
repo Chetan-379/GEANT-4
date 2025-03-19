@@ -32,6 +32,7 @@ MyRunAction::MyRunAction()
   tree->Branch("Edep_Compt", &Total_Compt_Edep);
   tree->Branch("Edep_Photo", &Photo_Edep);
   tree->Branch("diff_Edep_ComptPhoto", &diff_edep_ComptPhoto);
+  tree->Branch("nOpticalPhotons", &nOpticalPhotons);
 
 }
 
