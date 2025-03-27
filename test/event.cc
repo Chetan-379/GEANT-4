@@ -24,6 +24,11 @@ MyEventAction::~MyEventAction()
   photo_total_edep=0;
   nCompt_Before_Photo = 0;
   nOptPho = 0;
+  OptPho_PosX.clear();
+  OptPho_PosY.clear();
+  OptPho_PosZ.clear();
+  OptPho_Energy.clear();
+  TrkOnDet = 0;
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
@@ -76,6 +81,11 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   runObject->Photo_Edep = Photo_edep[0];
   runObject->diff_edep_ComptPhoto = edep_ComptPhot;
   runObject->nOpticalPhotons = nOptPho;
+  runObject->nOptPhoOnDetEnd = TrkOnDet;
+  runObject->Opt_Photon_PosX = OptPho_PosX;
+  runObject->Opt_Photon_PosY = OptPho_PosY;
+  runObject->Opt_Photon_PosZ = OptPho_PosZ;
+  runObject->Opt_Photon_Energy = OptPho_Energy;
   runObject->tree->Fill();
   
   // auto EvtMan = G4EventManager::GetEventManager();
@@ -83,25 +93,21 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   //   EvtMan->KeepTheCurrentEvent();
   // }
 
-  if (ievent == 10) {
-  G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-}
+ //  if (ievent == 10) {
+//   G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+// }
+
+  for (G4int i =0; i < OptPho_PosZ.size(); i++){
+    if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+      G4cout << "\n\nOptPhoton_z: " << OptPho_PosZ[i] << G4endl;
+      G4cout << "Event no. is: " << ievent << G4endl;}
+  }
 
   G4cout << "Total Optical photon generated = " << nOptPho << G4endl;
+  G4cout << "Total Optical photons on Det = " << TrkOnDet << G4endl;
 
-  // if (ievent == 5) {
-  //   G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
-  //   if (trajectoryContainer) {
-  //     for (size_t i = 0; i < trajectoryContainer->entries(); i++) {
-  // 	G4Trajectory* trajectory = (*trajectoryContainer)[i];
-  // 	// Draw trajectories or particles for this event
-  // 	trajectory->DrawTrajectory();
-  //     }
-  //   }
-  // }
 
 ievent++;
- if (fEdep < 0.5) G4cout << "\n\nLOOK AT THIS EVENT CAREFULLY\n\n" << G4endl; 
  G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
  
  

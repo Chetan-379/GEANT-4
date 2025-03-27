@@ -75,7 +75,19 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_Total_Edep_fine_binned->Fill(Total_Edep);
 	h_nOptPho-> Fill(nOpticalPhotons);
 	h_nOptPho_Edep-> Fill(Total_Edep, nOpticalPhotons);
+	
+	
+	int nOptPhotOnDet = 0;
+	for (int i =0; i< positionX->size(); i++){
+	  if (abs((*OptPho_PosX)[i]) < 40 && abs((*OptPho_PosY)[i]) < 40 && (*OptPho_PosZ)[i] == 150.) nOptPhotOnDet++;
+	  //cout << 1240e-6/(*OptPho_Energy)[i] << endl;	  
+	}
 
+	for (int i =0; i< OptPho_Energy->size(); i++){
+	  h_OptPho_lmbda-> Fill((1240e-6)/(*OptPho_Energy)[i]);  
+	}
 
+	h_OptPhoOnDet -> Fill(nOptPhotOnDet);
+	h_nOptPhoOnDet_genOptPho-> Fill(nOptPhotOnDet, nOpticalPhotons);
       }
 }

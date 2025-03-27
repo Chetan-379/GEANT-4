@@ -32,7 +32,8 @@ public:
   void AddEdep(G4double edep) {fEdep += edep;}
 
   std::vector<G4double> Xarray, Yarray, Zarray, Earray;
-  G4int nOptPho;
+  std::vector<G4double> OptPho_PosX, OptPho_PosY, OptPho_PosZ, OptPho_Energy;
+  G4int nOptPho, TrkOnDet;
   
 private:
   G4double fX;

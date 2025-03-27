@@ -37,7 +37,6 @@ int main(int argc, char** argv)
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
   UImanager->ApplyCommand("/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"); // very high time threshold to allow all decays to happen
-  UImanager->ApplyCommand("/tracking/verbose 1");
   // UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");
   // UImanager->ApplyCommand("/run/setCutForAGivenParticle e+ 0.01 mm");
   // UImanager->ApplyCommand("/run/setCutForAGivenParticle gamma 0.01 mm");
@@ -46,14 +45,16 @@ int main(int argc, char** argv)
   
   if(ui)
     {    
-      UImanager->ApplyCommand("/control/execute vis.mac");      
+      UImanager->ApplyCommand("/control/execute vis.mac");
+      UImanager->ApplyCommand("/tracking/verbose 1");
       ui->SessionStart();
     }
 
   else
     {
       G4String command = "/control/execute ";
-      G4String fileName = argv[1];
+      //UImanager->ApplyCommand("/tracking/verbose 1");
+      G4String fileName = argv[1];       
       UImanager->ApplyCommand(command+fileName);      
     }
 

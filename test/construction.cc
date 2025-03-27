@@ -18,10 +18,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4double rindexWorld[2] = {1.0, 1.0};
 
   std::vector<G4double> photonEnergy = {
-					2.034 * eV, 2.068 * eV, 2.103 * eV, 2.139 * eV, 2.177 * eV, 2.216 * eV, 2.256 * eV, 2.298 * eV,
-					2.341 * eV, 2.386 * eV, 2.433 * eV, 2.481 * eV, 2.532 * eV, 2.585 * eV, 2.640 * eV, 2.697 * eV,
-					2.757 * eV, 2.820 * eV, 2.885 * eV, 2.954 * eV, 3.026 * eV, 3.102 * eV, 3.181 * eV, 3.265 * eV,
-					3.353 * eV, 3.446 * eV, 3.545 * eV, 3.649 * eV, 3.760 * eV, 3.877 * eV, 4.002 * eV, 4.136 * eV};
+   2.034 * eV, 2.068 * eV, 2.103 * eV, 2.139 * eV, 2.177 * eV, 2.216 * eV, 2.256 * eV, 2.298 * eV,
+   2.341 * eV, 2.386 * eV, 2.433 * eV, 2.481 * eV, 2.532 * eV, 2.585 * eV, 2.640 * eV, 2.697 * eV,
+   2.757 * eV, 2.820 * eV, 2.885 * eV, 2.954 * eV, 3.026 * eV, 3.102 * eV, 3.181 * eV, 3.265 * eV,
+   3.353 * eV, 3.446 * eV, 3.545 * eV, 3.649 * eV, 3.760 * eV, 3.877 * eV, 4.002 * eV, 4.136 * eV};
 
 
   //World(Air)
@@ -33,8 +33,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   worldMat->SetMaterialPropertiesTable(mptWorld);
 
   //Detector Tile
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  //DetectorMat->SetMaterialPropertiesTable(mptWorld);
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
+  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+  
 
     std::vector<G4double> refractiveIndex1 = {
     1.3435, 1.344, 1.3445, 1.345,  1.3455, 1.346,  1.3465, 1.347,  1.3475, 1.348,  1.3485,
@@ -88,7 +89,6 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // Spline interpolation isn't used for scintillation.
   // Arguments spline and createNewKey both take default value false.
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", energyArray, scintilFastArray, lenArray);
-
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, scintilSlow, false, true);
   myMPT1->AddConstProperty("SCINTILLATIONYIELD", 50. / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
@@ -201,20 +201,20 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
       
       G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
 
-      //----------------Defining Surface---------------
-      // Detectors
-      auto opDetSurface = new G4OpticalSurface("DetSurface");
-      opDetSurface->SetType(dielectric_LUTDAVIS);
-      opDetSurface->SetFinish(Rough_LUT);
-      opDetSurface->SetModel(DAVIS);
+      // //----------------Defining Surface---------------
+  //     // Detectors
+  //     auto opDetSurface = new G4OpticalSurface("DetSurface");
+  //     opDetSurface->SetType(dielectric_LUTDAVIS);
+  //     opDetSurface->SetFinish(Rough_LUT);
+  //     opDetSurface->SetModel(DAVIS);
 
       
-      auto DetSurface =
-      	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
+  //     auto DetSurface =
+  //     	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
       
-      auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
-      DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
-      if (opticalSurface) opticalSurface->DumpInfo();  
+  //     auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
+  //     DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
+  //     //if (opticalSurface) opticalSurface->DumpInfo();  
     }
   }
   

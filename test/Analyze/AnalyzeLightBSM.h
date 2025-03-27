@@ -33,8 +33,10 @@ class AnalyzeLightBSM : public NtupleVariables{
   //TH1F *h_selectBaselineYields_;
   TH1D *h_Compt_Edep, *h_Photo_Edep, *h_Total_Edep, *h_Total_Edep_fine_binned;
   TH2D *h_ComptVsPhoto_Edep;
-  TH1I *h_nOptPho;
+  TH1I *h_nOptPho, *h_OptPhoOnDet;
   TH2D *h_nOptPho_Edep;
+  TH2I *h_nOptPhoOnDet_genOptPho;
+  TH1D *h_OptPho_lmbda;
 
   TFile *oFile;
   /* TH1F *h_events; */
@@ -63,6 +65,14 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
   h_nOptPho_Edep->SetXTitle("Total Edep");
   h_nOptPho_Edep->SetYTitle("nOptical Photons");
+
+  h_OptPhoOnDet = new TH1I("nOptPhoton_OnDet", "nOptPhoton_OnDet", 50, 0, 50);
+
+  h_nOptPhoOnDet_genOptPho = new TH2I("OptPhotOnDet_vs_genOptPhot", "OptPhotOnDet_vs_genOptPhot", 50, 0,50, 50, 0, 50);
+  h_nOptPhoOnDet_genOptPho -> SetXTitle("nOptPhotOnDet");
+  h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
+
+  h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",500,0,1000);
 
 }
 

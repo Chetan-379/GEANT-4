@@ -24,13 +24,43 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   const G4String& NxtVolName = Volume->GetName();
 
   G4Track *track = step->GetTrack();
+  G4ParticleDefinition* particleDef = track->GetDefinition();
+  G4String particleName = particleDef->GetParticleName();
+  G4ThreeVector TrkPos = track->GetPosition();
+
   if (VolName == "physDetector" && postStepPoint->GetStepStatus() == fGeomBoundary) {
     track->SetTrackStatus(fStopAndKill);
   }
 
-  G4ParticleDefinition* particleDef = track->GetDefinition();
-  G4String particleName = particleDef->GetParticleName();
-  if (particleName == "opticalphoton") fEventAction->nOptPho++;
+  G4String processName;
+  if (track->GetCreatorProcess()) {
+    processName = track->GetCreatorProcess()->GetProcessName();
+  }
+
+  
+  G4double OptPho_Energy;
+  //if (particleName == "opticalphoton" && processName == "Cerenkov") track->SetTrackStatus(fStopAndKill);
+  
+  if (particleName == "opticalphoton" && processName != "Cerenkov")
+    {      
+      fEventAction -> nOptPho++;
+      fEventAction -> OptPho_PosX.push_back(TrkPos[0]);
+      fEventAction -> OptPho_PosY.push_back(TrkPos[1]);
+      fEventAction -> OptPho_PosZ.push_back(TrkPos[2]);
+       
+      if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
+      //G4cout << "optical photon generated from: " << processName << G4endl;
+      OptPho_Energy = track->GetKineticEnergy();
+	fEventAction ->OptPho_Energy.push_back(OptPho_Energy);
+      
+      //G4cout << "Energy of the scintillation photon is: " << OptPhoEnergy << G4endl;
+
+      
+    }
+  
+      // if (TrkPos[2] < -100) G4cout << "Process followed: " << proc << G4endl;
+     
+  
   
   G4double edep = step->GetTotalEnergyDeposit();
   G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();

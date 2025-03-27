@@ -9,7 +9,6 @@
 #include "TFile.h"
 
 #include "G4Run.hh"
-//#include "detector.hh"
 
 class MyRunAction : public G4UserRunAction
 {
@@ -22,22 +21,13 @@ public:
 
   TFile *hfile;
   TTree *tree;
-  //int x=90;
   std::vector<double> X, Y, Z, E;
   G4double Total_E, Total_Compt_Edep, Photo_Edep, diff_edep_ComptPhoto;
-  G4int nOpticalPhotons;
-  //tree->Branch("positionX", &p);
+  G4int nOpticalPhotons, nOptPhoOnDetEnd;
+  std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy;
   
-  //void FillTree(std::vector<G4double> m)
-  //void FillTree()
-  //void FillTree(G4double p)
-  //{ //p = &m;
-  //tree->Fill();
-  //}
-
+ 
 private:
-  //int x=1;
-  //std::vector<G4double> *Xcoord;
   
   
 };

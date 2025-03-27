@@ -33,6 +33,11 @@ MyRunAction::MyRunAction()
   tree->Branch("Edep_Photo", &Photo_Edep);
   tree->Branch("diff_Edep_ComptPhoto", &diff_edep_ComptPhoto);
   tree->Branch("nOpticalPhotons", &nOpticalPhotons);
+  tree->Branch("OptPhoOnDet", &nOptPhoOnDetEnd);
+  tree->Branch("OptPho_PosX", &Opt_Photon_PosX);
+  tree->Branch("OptPho_PosY", &Opt_Photon_PosY);
+  tree->Branch("OptPho_PosZ", &Opt_Photon_PosZ);
+  tree->Branch("OptPho_Energy", &Opt_Photon_Energy);
 
 }
 

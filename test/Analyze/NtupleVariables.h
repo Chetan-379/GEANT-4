@@ -39,6 +39,10 @@ class NtupleVariables : public TSelector {
    Double_t        Edep_Photo;
    Double_t        diff_Edep_ComptPhoto;
    Int_t           nOpticalPhotons;
+   vector<double>  *OptPho_PosX;
+   vector<double>  *OptPho_PosY;
+   vector<double>  *OptPho_PosZ;
+   vector<double>  *OptPho_Energy;
 
    // List of branches
    TBranch        *b_positionX;   //!
@@ -50,7 +54,12 @@ class NtupleVariables : public TSelector {
    TBranch        *b_Edep_Photo;   //!
    TBranch        *b_diff_Edep_ComptPhoto;   //!
    TBranch        *b_nOpticalPhotons;
-   
+   TBranch        *b_OptPho_PosX;
+   TBranch        *b_OptPho_PosY;
+   TBranch        *b_OptPho_PosZ;
+   TBranch        *b_OptPho_Energy;
+
+  
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
    ~NtupleVariables() { }
    void    Init(TTree *tree, string);
@@ -89,6 +98,11 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    positionY = 0;
    positionZ = 0;
    Energy = 0;
+   OptPho_PosX =0;
+   OptPho_PosY =0;
+   OptPho_PosZ =0;
+   OptPho_Energy =0;
+   
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -104,6 +118,10 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Edep_Photo", &Edep_Photo, &b_Edep_Photo);
    fChain->SetBranchAddress("diff_Edep_ComptPhoto", &diff_Edep_ComptPhoto, &b_diff_Edep_ComptPhoto);
    fChain->SetBranchAddress("nOpticalPhotons", &nOpticalPhotons, &b_nOpticalPhotons);
+   fChain->SetBranchAddress("OptPho_PosX", &OptPho_PosX, &b_OptPho_PosX);
+   fChain->SetBranchAddress("OptPho_PosY", &OptPho_PosY, &b_OptPho_PosY);
+   fChain->SetBranchAddress("OptPho_PosZ", &OptPho_PosZ, &b_OptPho_PosZ);
+   fChain->SetBranchAddress("OptPho_Energy", &OptPho_Energy, &b_OptPho_Energy);
 
    Notify();
 }

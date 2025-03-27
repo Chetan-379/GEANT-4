@@ -11,31 +11,31 @@ TH1F* DrawOverflow(TH1F*);
 TH1F* DrawOverflow(TH1F* h,int xmin, int xrange){
   //function to paint the histogram h with an extra bin for overflows
   // This function paint the histogram h with an extra bin for overflows
-   UInt_t nx    = h->GetNbinsX()+1;
-   Double_t *xbins= new Double_t[nx+1];
-   for (UInt_t i=0;i<nx;i++)
-     xbins[i]=h->GetBinLowEdge(i+1);
-   xbins[nx]=xbins[nx-1]+h->GetBinWidth(nx);
-   char *tempName= new char[strlen(h->GetName())+10];
-   sprintf(tempName,"%swtOverFlow",h->GetName());
-   h->GetXaxis()->SetLimits(xmin,xrange);
-   // Book a temporary histogram having ab extra bin for overflows
-   TH1F *htmp = new TH1F(tempName, h->GetTitle(), nx, xbins);
-   htmp->GetXaxis()->SetRange(xmin,xrange);
-   // Reset the axis labels
-   htmp->SetXTitle(h->GetXaxis()->GetTitle());
-   htmp->SetYTitle(h->GetYaxis()->GetTitle());
-   // Fill the new hitogram including the extra bin for overflows
-   for (UInt_t i=1; i<=nx; i++)
-     htmp->Fill(htmp->GetBinCenter(i), h->GetBinContent(i));
-   // Fill the underflows
-   htmp->Fill(h->GetBinLowEdge(1)-1, h->GetBinContent(0));
-   // Restore the number of entries
-   htmp->SetEntries(h->GetEntries());
-   // FillStyle and color
-   // htmp->SetFillStyle(h->GetFillStyle());
-   // htmp->SetFillColor(h->GetFillColor());
-   return htmp;
+  UInt_t nx    = h->GetNbinsX()+1;
+  Double_t *xbins= new Double_t[nx+1];
+  for (UInt_t i=0;i<nx;i++)
+    xbins[i]=h->GetBinLowEdge(i+1);
+  xbins[nx]=xbins[nx-1]+h->GetBinWidth(nx);
+  char *tempName= new char[strlen(h->GetName())+10];
+  sprintf(tempName,"%swtOverFlow",h->GetName());
+  h->GetXaxis()->SetLimits(xmin,xrange);
+  // Book a temporary histogram having ab extra bin for overflows
+  TH1F *htmp = new TH1F(tempName, h->GetTitle(), nx, xbins);
+  htmp->GetXaxis()->SetRange(xmin,xrange);
+  // Reset the axis labels
+  htmp->SetXTitle(h->GetXaxis()->GetTitle());
+  htmp->SetYTitle(h->GetYaxis()->GetTitle());
+  // Fill the new hitogram including the extra bin for overflows
+  for (UInt_t i=1; i<=nx; i++)
+    htmp->Fill(htmp->GetBinCenter(i), h->GetBinContent(i));
+  // Fill the underflows
+  htmp->Fill(h->GetBinLowEdge(1)-1, h->GetBinContent(0));
+  // Restore the number of entries
+  htmp->SetEntries(h->GetEntries());
+  // FillStyle and color
+  // htmp->SetFillStyle(h->GetFillStyle());
+  // htmp->SetFillColor(h->GetFillColor());
+  return htmp;
 }
 TH1F* setLastBinAsOverFlow(TH1F* h_hist, int xrange){
   //     h_hist = setMyRange(h_hist,0,xrange);
@@ -92,8 +92,8 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
 //important function - change in this function if you want to change decoration of a plot
 //void generate_1Dplot(vector<TH1F*> hist, TH1* hist_ratio,char const *tag_name="", float energy=-1, int xmax=-1,int xmin=-1,char const *leg_head="",
 //		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
-  void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", int xmax=-1,int xmin=-1,char const *leg_head="",
-		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
+void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int xmin=-1,char const *leg_head="",
+		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", const char* ytitile="", int rebin=-1){  
 
   TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
   canvas_n1->Range(-60.25,-0.625,562.25,0.625);
@@ -101,8 +101,9 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
   canvas_n1->SetBorderMode(0);
   canvas_n1->SetBorderSize(2);
   gStyle->SetOptStat(0);
+  
 
-  auto *p1 = new TPad("p1","p1",0.,0.1,1.,1.);  p1->Draw();
+  auto *p1 = new TPad("p1","p1",0.,0.01,1.,1.);  p1->Draw();
   p1->SetBottomMargin(0.12);  
   p1->SetRightMargin(0.035);
   p1->SetLeftMargin(0.13);
@@ -149,22 +150,23 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
     sprintf(final_label,"%s (%0.2f)",legend_text[i].Data(), Integral); 
 
     if(normalize) {
-      	hist.at(i)->Scale(1.0/hist.at(i)->Integral());
-      	hist.at(i)->GetYaxis()->SetTitle("Normalized");
+      hist.at(i)->Scale(1.0/hist.at(i)->Integral());
+      hist.at(i)->GetYaxis()->SetTitle("Normalized");
     }
     else {
-      hist.at(i)->GetYaxis()->SetTitle("Entries");
-       }
+      hist.at(i)->GetYaxis()->SetTitle(ytitile);
+    }
+
     hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
     hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
     hist.at(i)->SetLineStyle(line_style[i]);
     hist.at(i)->SetLineColor(line_color[i]);
-    hist.at(i)->SetTitle(" "); //you can change it if you want
+    hist.at(i)->SetTitle(xtitile); //you can change it if you want
     //setLastBinAsOverFlow(hist.at(i),0);
     //
     hist.at(i)->GetXaxis()->SetTitleSize(0.05);
     hist.at(i)->GetXaxis()->SetLabelSize(x_label_size);
-    hist.at(i)->GetXaxis()->SetLabelSize(0.0450);
+    hist.at(i)->GetXaxis()->SetLabelSize(0.00450);
     //    hist.at(i)->GetXaxis()->SetRange(0,1500);
     hist.at(i)->GetYaxis()->SetTitleSize(0.05);
     hist.at(i)->GetYaxis()->SetLabelSize(0.05);
@@ -179,19 +181,21 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
     hist.at(i)->GetYaxis()->SetTitleOffset(1.1);
     hist.at(i)->GetXaxis()->SetTitleOffset(1.1);
 
+    //gStyle->SetTitleFontSize(0.0);
+    
     TLatex* textOnTop = new TLatex();
-  textOnTop->SetTextSize(0.04);
+    textOnTop->SetTextSize(0.04);
 
-  //textOnTop->DrawLatexNDC(0.13,0.96,"CMS it{#bf{Simulation Preliminary}}");
-  textOnTop->DrawLatexNDC(0.13,0.96,"it{#bf{GEANT4 Simulation}}");
+    //textOnTop->DrawLatexNDC(0.13,0.96,"CMS it{#bf{Simulation Preliminary}}");
+    //textOnTop->DrawLatexNDC(0.13,0.96,"it{#bf{GEANT4 Simulation}}");
   
-  sprintf(lhead,"%s ",title);
-  //textOnTop->DrawLatexNDC(0.79,0.96,lhead);
-  textOnTop->DrawLatexNDC(0.79,0.4,lhead);
-  char* en_lat = new char[500];
-  textOnTop->SetTextSize(0.035);
+    sprintf(lhead,"%s ",title);
+    //textOnTop->DrawLatexNDC(0.79,0.96,lhead);
+    textOnTop->DrawLatexNDC(0.79,0.4,lhead);
+    char* en_lat = new char[500];
+    textOnTop->SetTextSize(0.035);
     if(DoRebin) { //if rebin flag is on - this will reduce the bin size by half
-     hist.at(i)->Rebin(rebin);
+      hist.at(i)->Rebin(rebin);
     }
     //setting up the legend style and all
 
@@ -215,14 +219,14 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
   if(ymin<0.0) ymin = 1e-4;
   //  if(ymax<=10) ymax=10;
   for(int i = 0; i < (int)hist.size(); i++) {
-    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(ymin*100,ymax*5);
+    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(ymin*100,ymax+(ymax/7));
     else
       //hist.at(i)->GetYaxis()->SetRangeUser(ymin/10,ymax*5.0);
       hist.at(i)->GetYaxis()->SetRangeUser(ymin/10,ymax*5);
     //    p1->SetGrid();
     
-    if(!i) hist.at(i)->Draw("hist");
-    else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
+    if(!i) hist.at(i)->Draw("hist colz");
+    else   hist.at(i)->Draw("hist sames colz"); //overlaying the histograms
 	
   }
   
@@ -241,7 +245,7 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
  
   TLatex* textOnTop = new TLatex();
   textOnTop->SetTextSize(0.04);
-  textOnTop->DrawLatexNDC(0.12,0.91," #it{#bf{GEANT4 Simulation}}");
+  //textOnTop->DrawLatexNDC(0.12,0.91," #it{#bf{GEANT4 Simulation}}");
   
   // char* en_lat = new char[500];
   // textOnTop->SetTextSize(0.04);
@@ -262,11 +266,11 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
     // canvas_n1->SaveAs(canvas_name);
     
   }  
-  }
+}
 
 const int nfiles=100,nBG=6;                                                                                                                                                              
 
-void plot(string pathname)
+void plot_all_hists(string pathname, string root_file_name, string material)
 {
   char *hist_name = new char[100];
   char *full_path = new char[1000];
@@ -275,79 +279,58 @@ void plot(string pathname)
   vector<string> filetag;
   vector<string> folder;
 
-  
-  // f = {"out_root_files/Si_FluON_10000evts_out.root"};
-  // filetag = {"Si"};
-  // folder = {"plots/Si"};
+  // f = {"out_root_files/Si_FluON_10000evts_out.root", "out_root_files/PbWO4_FluON_10000evts_out.root", "out_root_files/BGO_FluON_10000evts_out.root"};
+  // filetag={"Si", "PbWO4", "BGO"};
+  // folder = {"plots/Si", "plots/PbWO4", "plots/BGO"};
 
-  // f = {"out_root_files/PbWO4_FluON_10000evts_out.root"};
-  // filetag={"PbWO4"};
-  // folder = {"plots/PbWO4"};
+  f = {"out_root_files/"+root_file_name}; 
+  filetag={material};
+  folder = {"test"};
 
-  f = {"out_root_files/Si_FluON_10000evts_out.root", "out_root_files/PbWO4_FluON_10000evts_out.root", "out_root_files/BGO_FluON_10000evts_out.root"};
-  filetag={"Si", "PbWO4", "BGO"};
-  folder = {"plots/Si", "plots/PbWO4", "plots/BGO"};
- 
- 
-  
-  vector<string> histnames1, histnames2; 
-  histnames1 = {"Total_Edep"};       //array of the histograms to be overlayed 
-  histnames2 = {"Edep_fine"};
-  
-  vector<vector<string>> bigbaseline;     //array of different variable to be plotted
-  vector<string> baseline1, baseline2; //baseline2, baseline3, baseline4;
-
-  for (int i=0; i<histnames1.size();i++){
-    baseline1.push_back(histnames1[i]);    
-  }
-
-  for (int i=0; i<histnames2.size();i++){
-    baseline2.push_back(histnames2[i]);    
-  }
-  
-  //bigbaseline = {baseline1, baseline2, baseline3, baseline4};
-  bigbaseline = {baseline1, baseline2};
-  
-  for (int bigi=0; bigi<bigbaseline.size(); bigi++)
-    {      
-      //rebin values
-      vector<int >rebin = {2,2,2,2,2,2,2,2,2}; //keep it 1 if you don't want to change hist bins
+  vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
-      //x axis range
-      vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
-      vector<int>xmin = {0,0,0,0,0,0,0,0};
+  //x axis range
+  vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
+  vector<int>xmin = {0,0,0,0,0,0,0,0};
 
-      //looping over each files///
-      vector<vector<TH1F*>> hist_add;
-      for(int ibkg=0; ibkg < f.size(); ibkg++){ //looping over each file	
-	TFile *root_file = new TFile(f[ibkg].c_str()); 
-	vector<TH1F*> hist_list_Njets;
-	for(int i_cut=0; i_cut<bigbaseline[bigi].size();i_cut++) //looping over different histograms which should be overlayed on the same canvas and these histograms are saved in the same file
-	  {
-	    sprintf(hist_name,"%s",bigbaseline[bigi][i_cut].c_str());
-	    cout<<"i_file "<<ibkg<<"\t"<<i_cut<<"\t"<<root_file->GetName()<< "\t" << hist_name<<endl;
-	    TH1F* resp = (TH1F*)root_file->Get(hist_name); //reading hist from the TFile
-	    hist_list_Njets.push_back(resp);
-	  }
+      
+  for(int iFile=0; iFile < f.size(); iFile++){ //looping over each file	
+    TFile *root_file = new TFile(f[iFile].c_str());
 
-	int xrange=0.0;	  
+    // Loop over all objects in the file
+    vector<TH1F> HistList;
+    TIter keyList(root_file ->GetListOfKeys());
+    TKey* key;
+
+    while ((key = (TKey*)keyList())) {      
+      TClass *cl = gROOT->GetClass(key->GetClassName());
+      if (!cl->InheritsFrom("TH1")) continue;
+      TH1 *hist = (TH1*)key->ReadObj();
+
+      string histType = key->GetClassName();
+      vector<TH1*> hist_list;
+
+      hist_list.push_back(hist);
+	  
+      int xrange=0.0;	  
 	
-	//x axis title for all plots///
-	vector<string>diff_title;
-	
-	diff_title = {"Edep", "Edep_fine"};    //put the name of different variables here
-	vector<string>xtitle;
+      //setting up the axis titles
+      string xtitle, ytitle;
+      if ( histType == "TH2I" || histType == "TH2F" || histType == "TH2D") {
+	xtitle = hist->GetXaxis()->GetTitle();
+	ytitle = hist->GetYaxis()->GetTitle();}
 
-	xtitle = {diff_title[0], diff_title[1]};
+      else {
+	xtitle = hist->GetName();
+	ytitle = "Entries";}
 
-	//path to save the files a jpg or pdf
-	sprintf(full_path,"%s/%s/%s_%s_FluON",pathname.c_str(),folder[ibkg].c_str(), diff_title[bigi].c_str(),filetag[ibkg].c_str());
+      //path to save the files a jpg or pdf
+      sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder[0].c_str(), xtitle.c_str(),filetag[0].c_str());
 
-	//calling generate_1Dplot which will take this vector of histograms 
-	generate_1Dplot(hist_list_Njets,full_path,xmax[bigi],xmin[bigi],leg_head,false,true,false,true,filetag[ibkg].c_str(),xtitle[bigi].c_str(),rebin[bigi]);
-
-      }
+      //calling generate_1Dplot which will take this vector of histograms 
+      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag[0].c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
     }
+  }
 }
 
 

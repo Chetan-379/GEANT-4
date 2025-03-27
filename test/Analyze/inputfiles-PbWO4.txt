@@ -1,1 +1,1 @@
-src_root_files/OptPho.root
+src_root_files/OptPhotons.root
