@@ -10,7 +10,7 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
-  //-----------------Defining the and Adding the Material Properties----------
+  //-----------------Defining and Adding the Material Properties----------
   //
   
   G4double energy[2] = {1.2398419*eV/0.9, 1.2398419*eV/0.2};
@@ -33,8 +33,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   worldMat->SetMaterialPropertiesTable(mptWorld);
 
   //Detector Tile
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
   
 
     std::vector<G4double> refractiveIndex1 = {
@@ -90,7 +90,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // Arguments spline and createNewKey both take default value false.
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", energyArray, scintilFastArray, lenArray);
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, scintilSlow, false, true);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 50. / MeV);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 2000. / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
   myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 1. * ns);
   myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 10. * ns);
