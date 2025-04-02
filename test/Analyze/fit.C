@@ -1,6 +1,8 @@
 
 double fitf(double *x,double *par) {
   double fitval = (par[0]*TMath::Exp(par[2]*x[0])) + (par[1]*TMath::Exp(par[3]*x[0]));
+  //  double fitval = (par[0]*TMath::Exp(par[2]*x[0])) + (par[1]*TMath::Exp(par[3]*x[0])) + (par[4]*TMath::Exp(par[5]*x[0]));
+  //double fitval = (par[0]*TMath::Exp(par[2]*x[0])) + (par[1]*TMath::Exp(par[3]*x[0])) + (par[4]*TMath::Exp(par[5]*x[0])) + (par[6]*TMath::Exp(par[7]*x[0]));
   return fitval;
 }
 
@@ -24,7 +26,7 @@ void fit(){
   cout << hist->GetName() << endl;
   
   //func->SetParameters(500,hpx->GetMean(),hpx->GetRMS());
-  func->SetParameters(0.8, 0.2, -1, -10);//, 0.1, -20);
+  func->SetParameters(0.2, 0.8, -10, -1); //, 0.1, -20, 0.8,-40);
   //func->SetParameters(1, -50); //, -10, -1);
   //cout << "working" << endl;
   // Give the parameters names.
@@ -33,7 +35,7 @@ void fit(){
   //func->SetParNames("A","decay Const1");
   
   // Call TH1::Fit with the name of the TF1 object.
-  hist->Fit("fit");
+  hist->Fit("fit","R");
   canvas_n1->Draw();
   hist->Draw("hist");
   func->Draw("SAME");
