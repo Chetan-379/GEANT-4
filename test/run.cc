@@ -38,6 +38,7 @@ MyRunAction::MyRunAction()
   tree->Branch("OptPho_PosY", &Opt_Photon_PosY);
   tree->Branch("OptPho_PosZ", &Opt_Photon_PosZ);
   tree->Branch("OptPho_Energy", &Opt_Photon_Energy);
+  tree->Branch("OptPho_Time", &Opt_Photon_Time);
 
 }
 

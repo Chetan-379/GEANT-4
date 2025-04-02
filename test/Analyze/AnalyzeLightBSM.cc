@@ -84,7 +84,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	}
 
 	for (int i =0; i< OptPho_Energy->size(); i++){
-	  h_OptPho_lmbda-> Fill((1240e-6)/(*OptPho_Energy)[i]);  
+	  h_OptPho_lmbda-> Fill((1240e-6)/(*OptPho_Energy)[i]);
+	  h_OptPho_time-> Fill((*OptPho_Time)[i]);
 	}
 
 	h_OptPhoOnDet -> Fill(nOptPhotOnDet);

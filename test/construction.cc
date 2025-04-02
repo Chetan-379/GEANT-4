@@ -88,9 +88,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // Adding a property using a C-style array.
   // Spline interpolation isn't used for scintillation.
   // Arguments spline and createNewKey both take default value false.
+
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", energyArray, scintilFastArray, lenArray);
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", photonEnergy, scintilSlow, false, true);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 2000. / MeV);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 200. / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
   myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 1. * ns);
   myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 10. * ns);

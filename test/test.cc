@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   if(ui)
     {    
       UImanager->ApplyCommand("/control/execute vis.mac");
-      UImanager->ApplyCommand("/tracking/verbose 1");
+      //UImanager->ApplyCommand("/tracking/verbose 4");
       ui->SessionStart();
     }
 

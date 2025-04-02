@@ -100,7 +100,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   canvas_n1->SetFillColor(0);
   canvas_n1->SetBorderMode(0);
   canvas_n1->SetBorderSize(2);
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(1);
   
 
   auto *p1 = new TPad("p1","p1",0.,0.01,1.,1.);  p1->Draw();
@@ -130,6 +130,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   sprintf(lhead,"#bf{%s} ",title); // legend header -- for example you are plotting this for WGJets then title string can be "WGJets"
   legend->SetHeader(lhead);
   legend->SetLineColor(kWhite);
+
 
   //legend1->SetHeader(lhead);
   //legend1->SetLineColor(kWhite);
@@ -172,6 +173,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
     hist.at(i)->GetYaxis()->SetLabelSize(0.05);
     hist.at(i)->GetYaxis()->SetTitleOffset(1.0);
     hist.at(i)->GetYaxis()->SetLabelSize(x_label_size);
+    //hist.at(i)->GetYaxis()->SetLabelFormat("6.3E");
     hist.at(i)->GetXaxis()->SetTitle(xtitile); //setting the title of X axis
 
     hist.at(i)->GetXaxis()->SetTitleSize(0.05);
@@ -204,6 +206,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
 
     legName.push_back(hist.at(i)->GetName());
     leg_entry[i] = legend->AddEntry(hist.at(i), final_label, "l");
+    
     //leg_entry1[i] = legend1->AddEntry(hist.at(i),final_label,"l");
     //leg_entry[i] = legend->AddEntry(hist.at(i),(hist.at(i)->Integral().c_str()),"xsl");
     leg_entry[i]->SetTextColor(hist.at(i)->GetLineColor());
@@ -227,10 +230,26 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
     
     if(!i) hist.at(i)->Draw("hist colz");
     else   hist.at(i)->Draw("hist sames colz"); //overlaying the histograms
-	
+
+    TPaveStats *ptstats1 = new TPaveStats(0.80,0.75,0.965,0.9,"brNDC");
+    ptstats1->SetBorderSize(1);
+    ptstats1->SetFillColor(0);
+    ptstats1->SetLineColor(hist.at(i)->GetLineColor());
+    ptstats1->SetTextAlign(12);
+    ptstats1->SetTextColor(hist.at(i)->GetLineColor());
+    ptstats1->SetTextFont(42);
+    ptstats1->SetOptStat(110011);
+    ptstats1->SetOptFit(1);
+    hist.at(i)->GetListOfFunctions()->Add(ptstats1);
+    ptstats1->SetParent(hist.at(i));
+    //ptstats1->SetTitle("fsdfa");
+    //resp1->Scale(1./resp1->Integral());
+
+    //TGaxis::SetMaxDigits(0);
+    
   }
   
-  legend->Draw();
+  //legend->Draw();
   //legend1->Draw();
 
 
@@ -246,7 +265,11 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   TLatex* textOnTop = new TLatex();
   textOnTop->SetTextSize(0.04);
   //textOnTop->DrawLatexNDC(0.12,0.91," #it{#bf{GEANT4 Simulation}}");
-  
+
+  TLatex* MatName = new TLatex();
+  MatName->SetTextSize(0.035);
+  MatName->DrawLatexNDC(0.65,0.83, title);
+ 
   // char* en_lat = new char[500];
   // textOnTop->SetTextSize(0.04);
   // float inlumi=energy;
@@ -265,7 +288,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
     // sprintf(canvas_name,"%s.pdf",tag_name);
     // canvas_n1->SaveAs(canvas_name);
     
-  }  
+  }
 }
 
 const int nfiles=100,nBG=6;                                                                                                                                                              
@@ -322,7 +345,7 @@ void plot_all_hists(string pathname, string root_file_name, string material)
 
       else {
 	xtitle = hist->GetName();
-	ytitle = "Entries";}
+	ytitle = " ";}
 
       //path to save the files a jpg or pdf
       sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder[0].c_str(), xtitle.c_str(),filetag[0].c_str());

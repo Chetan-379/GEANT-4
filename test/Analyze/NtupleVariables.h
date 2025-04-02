@@ -43,6 +43,7 @@ class NtupleVariables : public TSelector {
    vector<double>  *OptPho_PosY;
    vector<double>  *OptPho_PosZ;
    vector<double>  *OptPho_Energy;
+   vector<double>  *OptPho_Time;
 
    // List of branches
    TBranch        *b_positionX;   //!
@@ -58,6 +59,7 @@ class NtupleVariables : public TSelector {
    TBranch        *b_OptPho_PosY;
    TBranch        *b_OptPho_PosZ;
    TBranch        *b_OptPho_Energy;
+   TBranch        *b_OptPho_Time;
 
   
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
@@ -102,6 +104,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    OptPho_PosY =0;
    OptPho_PosZ =0;
    OptPho_Energy =0;
+   OptPho_Time =0;
    
    // Set branch addresses and branch pointers
    if (!tree) return;
@@ -122,6 +125,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("OptPho_PosY", &OptPho_PosY, &b_OptPho_PosY);
    fChain->SetBranchAddress("OptPho_PosZ", &OptPho_PosZ, &b_OptPho_PosZ);
    fChain->SetBranchAddress("OptPho_Energy", &OptPho_Energy, &b_OptPho_Energy);
+   fChain->SetBranchAddress("OptPho_Time", &OptPho_Time, &b_OptPho_Time);
 
    Notify();
 }

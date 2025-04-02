@@ -39,6 +39,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   }
   
   G4double OptPho_Energy;
+  G4double OptPhot_time;
   
   if (particleName == "opticalphoton" && processName != "Cerenkov")
     {      
@@ -48,8 +49,14 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       fEventAction -> OptPho_PosZ.push_back(TrkPos[2]);
        
       if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
+
       OptPho_Energy = track->GetKineticEnergy();
       fEventAction ->OptPho_Energy.push_back(OptPho_Energy);
+
+      OptPhot_time = track->GetGlobalTime();
+      fEventAction ->OptPho_time.push_back(OptPhot_time);
+
+      //G4cout << "emission time of photon: " << OptPhot_time << G4endl;
     }
   
 

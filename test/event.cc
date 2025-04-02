@@ -28,6 +28,8 @@ MyEventAction::~MyEventAction()
   OptPho_PosY.clear();
   OptPho_PosZ.clear();
   OptPho_Energy.clear();
+  OptPho_time.clear();
+  
   TrkOnDet = 0;
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
@@ -86,6 +88,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   runObject->Opt_Photon_PosY = OptPho_PosY;
   runObject->Opt_Photon_PosZ = OptPho_PosZ;
   runObject->Opt_Photon_Energy = OptPho_Energy;
+  runObject->Opt_Photon_Time = OptPho_time;
   runObject->tree->Fill();
   
   // auto EvtMan = G4EventManager::GetEventManager();
@@ -105,6 +108,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 
   G4cout << "Total Optical photon generated = " << nOptPho << G4endl;
   G4cout << "Total Optical photons on Det = " << TrkOnDet << G4endl;
+
 
 
 ievent++;

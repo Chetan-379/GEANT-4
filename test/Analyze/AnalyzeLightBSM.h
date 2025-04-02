@@ -13,6 +13,7 @@
 #include "TDirectory.h"
 #include"TGraphErrors.h"
 #include"TGraphAsymmErrors.h"
+#include "TGaxis.h"
 
 #pragma link C++ class std::vector< std::vector >+; 
 #pragma link C++ class std::vector< TLorentzVector >+;
@@ -37,6 +38,7 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH2D *h_nOptPho_Edep;
   TH2I *h_nOptPhoOnDet_genOptPho;
   TH1D *h_OptPho_lmbda;
+  TH1D *h_OptPho_time;
 
   TFile *oFile;
   /* TH1F *h_events; */
@@ -48,6 +50,7 @@ class AnalyzeLightBSM : public NtupleVariables{
 void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   oFile = new TFile(outFileName, "recreate");
   TH1::SetDefaultSumw2(1);
+  //TGaxis::SetMaxDigits(2);
   //Initialize histogram here
   //h_selectBaselineYields_ = new TH1F("cutflows","cutflows",60,-0.5,60.5);
   h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",70,0,0.7);
@@ -60,7 +63,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_Total_Edep = new TH1D("Total_Edep","Total_Edep",70,0,0.7);
   h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
-  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 60, 0, 60);
+  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 150, 0, 150);
 
   h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
   h_nOptPho_Edep->SetXTitle("Total Edep");
@@ -73,6 +76,8 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
 
   h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",500,0,1000);
+
+  h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",200,0,40);
 
 }
 
