@@ -22,8 +22,9 @@ void fit(){
   
   string hist_name = "OptPho_time"; 
   TH1F *hist = (TH1F*)f->Get(hist_name.c_str());
-
+  hist->GetXaxis()->SetTitle("time (ns)");
   cout << hist->GetName() << endl;
+  
   
   //func->SetParameters(500,hpx->GetMean(),hpx->GetRMS());
   func->SetParameters(0.2, 0.8, -10, -1); //, 0.1, -20, 0.8,-40);
