@@ -306,7 +306,7 @@ void plot_all_hists(string pathname, string root_file_name, string material)
   // filetag={"Si", "PbWO4", "BGO"};
   // folder = {"plots/Si", "plots/PbWO4", "plots/BGO"};
 
-  f = {"out_root_files/"+root_file_name}; 
+  f = {root_file_name}; 
   filetag={material};
   folder = {"test"};
 
