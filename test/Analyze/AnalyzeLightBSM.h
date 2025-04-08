@@ -53,31 +53,31 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   //TGaxis::SetMaxDigits(2);
   //Initialize histogram here
   //h_selectBaselineYields_ = new TH1F("cutflows","cutflows",60,-0.5,60.5);
-  h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",70,0,0.7);
-  h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",70,0,0.7);
+  h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",100,0,0.7);
+  h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",100,0,0.7);
 
-  h_ComptVsPhoto_Edep = new TH2D("ComptVsPho","Compt_vs_Photo_Edep",70,0.,0.7, 70,0.,0.7);
-  h_ComptVsPhoto_Edep->SetXTitle("Compton_Edep");
+  h_ComptVsPhoto_Edep = new TH2D("ComptVsPho","Compt_vs_Photo_Edep",100,0.,0.7, 100,0.,0.7);
+  h_ComptVsPhoto_Edep->SetXTitle("Comp_Edep");
   h_ComptVsPhoto_Edep->SetYTitle("PhotoElectric_Edep");
 
-  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",70,0,0.7);
+  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,0.7);
   h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
-  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 150, 0, 150);
+  // h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 150, 0, 150);
 
-  h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
-  h_nOptPho_Edep->SetXTitle("Total Edep");
-  h_nOptPho_Edep->SetYTitle("nOptical Photons");
+  // h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
+  // h_nOptPho_Edep->SetXTitle("Total Edep");
+  // h_nOptPho_Edep->SetYTitle("nOptical Photons");
 
-  h_OptPhoOnDet = new TH1I("nOptPhoton_OnDet", "nOptPhoton_OnDet", 50, 0, 50);
+  // h_OptPhoOnDet = new TH1I("nOptPhoton_OnDet", "nOptPhoton_OnDet", 50, 0, 50);
 
-  h_nOptPhoOnDet_genOptPho = new TH2I("OptPhotOnDet_vs_genOptPhot", "OptPhotOnDet_vs_genOptPhot", 50, 0,50, 50, 0, 50);
-  h_nOptPhoOnDet_genOptPho -> SetXTitle("nOptPhotOnDet");
-  h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
+  // h_nOptPhoOnDet_genOptPho = new TH2I("OptPhotOnDet_vs_genOptPhot", "OptPhotOnDet_vs_genOptPhot", 50, 0,50, 50, 0, 50);
+  // h_nOptPhoOnDet_genOptPho -> SetXTitle("nOptPhotOnDet");
+  // h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
 
-  h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",500,0,1000);
+  // h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",500,0,1000);
 
-  h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",200,0,40);
+  // h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",500,0,100);
 
 }
 

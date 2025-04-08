@@ -222,7 +222,8 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   if(ymin<0.0) ymin = 1e-4;
   //  if(ymax<=10) ymax=10;
   for(int i = 0; i < (int)hist.size(); i++) {
-    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(ymin*100,ymax+(ymax/7));
+    if(!normalize && !log_flag) hist.at(i)->GetYaxis()->SetRangeUser(ymin*100,ymax+(ymax/7));
+    if(!normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(1,ymax*10);
     else
       //hist.at(i)->GetYaxis()->SetRangeUser(ymin/10,ymax*5.0);
       hist.at(i)->GetYaxis()->SetRangeUser(ymin/10,ymax*5);
@@ -246,6 +247,17 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
     //resp1->Scale(1./resp1->Integral());
 
     //TGaxis::SetMaxDigits(0);
+    // TPaletteAxis *palette = (TPaletteAxis*)hist.at(i)->GetListOfFunctions()->FindObject("palette");
+  //   if (palette) {
+  //       // Set new position in NDC (normalized device coordinates: 0 to 1)
+  //       palette->SetX1NDC(0.55); // left side
+  //       palette->SetX2NDC(0.58); // right side
+  //       palette->SetY1NDC(0.2);  // bottom
+  //       palette->SetY2NDC(0.5);  // top
+  //   }
+
+  //   canvas_n1->Modified(); // Mark canvas as modified
+  //   canvas_n1->Update();   // Redraw with new palette position
     
   }
   
@@ -260,7 +272,9 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
     gPad->SetLogx();
 
   gPad->Update();
-  
+  canvas_n1->Update();
+
+   
  
   TLatex* textOnTop = new TLatex();
   textOnTop->SetTextSize(0.04);
@@ -308,7 +322,7 @@ void plot_all_hists(string pathname, string root_file_name, string material)
 
   f = {root_file_name}; 
   filetag={material};
-  folder = {"test"};
+  folder = {"plots/PPT"};
 
   vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
@@ -345,13 +359,13 @@ void plot_all_hists(string pathname, string root_file_name, string material)
 
       else {
 	xtitle = hist->GetName();
-	ytitle = " ";}
+	ytitle = "Entries";}
 
       //path to save the files a jpg or pdf
       sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder[0].c_str(), xtitle.c_str(),filetag[0].c_str());
 
       //calling generate_1Dplot which will take this vector of histograms 
-      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag[0].c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,true,false,true,filetag[0].c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
     }
   }
 }

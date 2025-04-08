@@ -30,7 +30,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4String particleName = particleDef->GetParticleName();
   
   if (VolName == "physDetector" && postStepPoint->GetStepStatus() == fGeomBoundary) {
-    track->SetTrackStatus(fStopAndKill);
+    //track->SetTrackStatus(fStopAndKill);
   }
 
   G4String processName;

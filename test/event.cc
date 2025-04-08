@@ -32,7 +32,7 @@ MyEventAction::~MyEventAction()
   
   TrkOnDet = 0;
   
-  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+  //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
 }
 
@@ -102,17 +102,17 @@ void MyEventAction::EndOfEventAction(const G4Event*)
 
   for (G4int i =0; i < OptPho_PosZ.size(); i++){
     if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-      G4cout << "\n\nOptPhoton_z: " << OptPho_PosZ[i] << G4endl;
-      G4cout << "Event no. is: " << ievent << G4endl;}
+      //G4cout << "\n\nOptPhoton_z: " << OptPho_PosZ[i] << G4endl;
+      //G4cout << "Event no. is: " << ievent << G4endl;}
   }
 
-  G4cout << "Total Optical photon generated = " << nOptPho << G4endl;
-  G4cout << "Total Optical photons on Det = " << TrkOnDet << G4endl;
-
+  //G4cout << "Total Optical photon generated = " << nOptPho << G4endl;
+  //G4cout << "Total Optical photons on Det = " << TrkOnDet << G4endl;
+  }
 
 
 ievent++;
- G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
+//G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
  
  
 }

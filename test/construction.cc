@@ -32,6 +32,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
   worldMat->SetMaterialPropertiesTable(mptWorld);
 
+  //enclosure
+  //G4Material *EncMat = nist->FindOrBuildMaterial("G4_PB")
+
   //Detector Tile
   G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
   //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
@@ -133,8 +136,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // myMPT1->AddConstProperty("MIEHG_BACKWARD", mie_water_const[1]);
   // myMPT1->AddConstProperty("MIEHG_FORWARD_RATIO", mie_water_const[2]);
 
-  G4cout << "Water G4MaterialPropertiesTable:" << G4endl;
-  myMPT1->DumpTable();
+  //G4cout << "Water G4MaterialPropertiesTable:" << G4endl;
+  //myMPT1->DumpTable();
   
   DetectorMat->SetMaterialPropertiesTable(myMPT1);
   
@@ -161,73 +164,115 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   // The world
   G4Box *solidEncVol = new G4Box("EncVol", 10*cm, 10*cm, 10*cm);
-  G4LogicalVolume *logicEncVol = new G4LogicalVolume(solidEncVol, worldMat, "logicalEncVol");
+  //G4LogicalVolume *logicEncVol = new G4LogicalVolume(solidEncVol, worldMat, "logicalEncVol");
+  G4LogicalVolume *logicEncVol = new G4LogicalVolume(solidEncVol, DetectorMat, "logicalEncVol");
   G4VPhysicalVolume *physEncVol = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicEncVol, "physEncVol", logicWorld, false, 0, true);
 
   
-  //Trapezoidal enclosure tiles                                                          
-  G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
-  G4double rad_dz = 5.0 * cm;
-  G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
+  // //Trapezoidal enclosure tiles                                                          
+  // G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
+  // G4double rad_dz = 5.0 * cm;
+  // G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
 
-  G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
-  G4int Pos[2] = {-1,1};
-  new_rotmX.rotateX(90 * deg);
-  new_rotmY.rotateY(90 * deg);  
-  new_rotmZ.rotateZ(90 * deg);
+  // G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
+  // G4int Pos[2] = {-1,1};
+  // new_rotmX.rotateX(90 * deg);
+  // new_rotmY.rotateY(90 * deg);  
+  // new_rotmZ.rotateZ(90 * deg);
   
-  G4ThreeVector position;
+  // G4ThreeVector position;
   
-  G4Trd *solidDetector = new G4Trd("solidDetector",  // its name
-				   0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
-				   0.5 * rad_dz);  // its size	      
+  // G4Trd *solidDetector = new G4Trd("solidDetector",  // its name
+  // 				   0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
+  // 				   0.5 * rad_dz);  // its size	      
 
-  logicDetector = new G4LogicalVolume(solidDetector,  // its solid
-				      DetectorMat, // its material
-				      "logicalDetector");  // its name
+  // logicDetector = new G4LogicalVolume(solidDetector,  // its solid
+  // 				      DetectorMat, // its material
+  // 				      "logicalDetector");  // its name
 
-  //Loops to place the tiles
-  for (G4int i=0; i<3; i++){     
-    for (G4int j=0; j<2; j++){
-      std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
+  // //Loops to place the tiles
+  // for (G4int i=0; i<3; i++){     
+  //   for (G4int j=0; j<2; j++){
+  //     std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
 
-      if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
-      if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
-      if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
+  //     if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
+  //     if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
+  //     if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
       
-      G4Transform3D transform = G4Transform3D(new_rotm[i], position);
-      if (i==0) new_rotmX.rotateX(180 * deg);
-      if (i==1) new_rotmY.rotateY(180 * deg);    
-      if (i==2) new_rotmZ.rotateX(180 * deg);
+  //     G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+  //     if (i==0) new_rotmX.rotateX(180 * deg);
+  //     if (i==1) new_rotmY.rotateY(180 * deg);    
+  //     if (i==2) new_rotmZ.rotateX(180 * deg);
       
-      G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
+  //     G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
 
-      // //----------------Defining Surface---------------
-  //     // Detectors
-  //     auto opDetSurface = new G4OpticalSurface("DetSurface");
-  //     opDetSurface->SetType(dielectric_LUTDAVIS);
-  //     opDetSurface->SetFinish(Rough_LUT);
-  //     opDetSurface->SetModel(DAVIS);
+      //----------------Defining Surface---------------
+
+      G4VPhysicalVolume* volume1;
+      G4VPhysicalVolume* volume2;
+
+      volume1 = physEncVol;
+      volume2 = physWorld;
+            
+      G4OpticalSurface* OpSurface = new G4OpticalSurface("Sur_tile_enc");            
+      
+      OpSurface->SetType(dielectric_dielectric);
+      OpSurface->SetModel(unified);
+      OpSurface->SetFinish(groundbackpainted);
+      OpSurface->SetSigmaAlpha(0.1);
+      
+      std::vector<G4double> pp = {2.034 * eV, 4.136 * eV};
+      //std::vector<G4double> specularlobe = {0.3, 0.3};
+      //std::vector<G4double> specularspike = {0.2, 0.2};
+      //std::vector<G4double> backscatter = {0.1, 0.1};
+      std::vector<G4double> rindex = {1.35, 1.40};
+      // std::vector<G4double> reflectivity = {0.3, 0.5};
+      // std::vector<G4double> efficiency = {0.8, 1.0};
+
+      std::vector<G4double> reflectivity = {1.0, 1.0};
+      std::vector<G4double> efficiency = {1.0, 1.0};
+
+
+      G4MaterialPropertiesTable* SMPT = new G4MaterialPropertiesTable();
+
+      //SMPT->AddProperty("RINDEX", pp, rindex);
+      //SMPT->AddProperty("SPECULARLOBECONSTANT", pp, specularlobe);
+      //SMPT->AddProperty("SPECULARSPIKECONSTANT", pp, specularspike);
+      //SMPT->AddProperty("BACKSCATTERCONSTANT", pp, backscatter);
+      SMPT->AddProperty("REFLECTIVITY", pp, reflectivity);
+      SMPT->AddProperty("EFFICIENCY", pp, efficiency);
+
+      OpSurface->SetMaterialPropertiesTable(SMPT);
+
+      G4LogicalBorderSurface* Surface = new G4LogicalBorderSurface("log_Sur_tile_enc",volume2,volume1,OpSurface);
+
 
       
-  //     auto DetSurface =
-  //     	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
+      //     // Detectors
+      //     auto opDetSurface = new G4OpticalSurface("DetSurface");
+      //     opDetSurface->SetType(dielectric_LUTDAVIS);
+      //     opDetSurface->SetFinish(Rough_LUT);
+      //     opDetSurface->SetModel(DAVIS);
+
       
-  //     auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
-  //     DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
-  //     //if (opticalSurface) opticalSurface->DumpInfo();  
-    }
-  }
+      //     auto DetSurface =
+      //     	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
+      
+      //     auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
+      //     DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
+      //     //if (opticalSurface) opticalSurface->DumpInfo();  
+  //   }
+  // }
   
-  fScoringVolume = logicDetector;
+  //fScoringVolume = logicDetector;
   return physWorld;
   
 }
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-  sensDet = new MySensitiveDetector("SensitiveDetector");
-  logicDetector->SetSensitiveDetector(sensDet);  
+  //sensDet = new MySensitiveDetector("SensitiveDetector");
+  //logicDetector->SetSensitiveDetector(sensDet);  
 }
 
 
