@@ -23,6 +23,36 @@ MyRunAction::MyRunAction()
   man->CreateNtupleDColumn("fEdep");
   man->FinishNtuple(3);
 
+  // tree = new TTree("tree","HitInfo");
+  // tree->Branch("positionX", &X);
+  // tree->Branch("positionY", &Y);
+  // tree->Branch("positionZ", &Z);
+  // tree->Branch("Energy", &E);
+  // tree->Branch("Total_Edep", &Total_E);
+  // tree->Branch("Edep_Compt", &Total_Compt_Edep);
+  // tree->Branch("Edep_Photo", &Photo_Edep);
+  // tree->Branch("diff_Edep_ComptPhoto", &diff_edep_ComptPhoto);
+  // tree->Branch("nOpticalPhotons", &nOpticalPhotons);
+  // tree->Branch("OptPhoOnDet", &nOptPhoOnDetEnd);
+  // tree->Branch("OptPho_PosX", &Opt_Photon_PosX);
+  // tree->Branch("OptPho_PosY", &Opt_Photon_PosY);
+  // tree->Branch("OptPho_PosZ", &Opt_Photon_PosZ);
+  // tree->Branch("OptPho_Energy", &Opt_Photon_Energy);
+  // tree->Branch("OptPho_Time", &Opt_Photon_Time);
+  // tree->Branch("nRefraction", &nRefraction);
+  // tree->Branch("nReflection", &nReflection);
+  // tree->Branch("nTIR", &nTIR);
+
+}
+
+MyRunAction::~MyRunAction()
+{}
+
+void MyRunAction::BeginOfRunAction(const G4Run* run)
+{
+  
+  G4AnalysisManager *man = G4AnalysisManager::Instance();
+
   tree = new TTree("tree","HitInfo");
   tree->Branch("positionX", &X);
   tree->Branch("positionY", &Y);
@@ -39,15 +69,10 @@ MyRunAction::MyRunAction()
   tree->Branch("OptPho_PosZ", &Opt_Photon_PosZ);
   tree->Branch("OptPho_Energy", &Opt_Photon_Energy);
   tree->Branch("OptPho_Time", &Opt_Photon_Time);
+  tree->Branch("nRefraction", &nRefraction);
+  tree->Branch("nReflection", &nReflection);
+  tree->Branch("nTIR", &nTIR);
 
-}
-
-MyRunAction::~MyRunAction()
-{}
-
-void MyRunAction::BeginOfRunAction(const G4Run* run)
-{
-  G4AnalysisManager *man = G4AnalysisManager::Instance();
 
   G4int runID = run->GetRunID();
 
@@ -59,6 +84,9 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   //hfile = hfile = TFile::Open("testing_BGO.root","RECREATE");
   //hfile = hfile = TFile::Open("test.root","RECREATE");
   hfile = hfile = TFile::Open("test.root","RECREATE");
+
+  G4cout << "\n\n\t\t============RUN Started=============" << G4endl;
+  
 }
 
 
@@ -71,8 +99,10 @@ void MyRunAction::EndOfRunAction(const G4Run*)
   man->CloseFile();
 
   tree->Write();
-  tree->Print();
+  //tree->Print();
     
   hfile->Close();
+
+  G4cout << "\n\n\t\t============RUN Ended=============" << G4endl;
 }
 

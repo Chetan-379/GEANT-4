@@ -34,6 +34,7 @@ public:
   std::vector<G4double> Xarray, Yarray, Zarray, Earray;
   std::vector<G4double> OptPho_PosX, OptPho_PosY, OptPho_PosZ, OptPho_Energy, OptPho_time;
   G4int nOptPho, TrkOnDet;
+  G4int n_Refraction, n_Reflection, n_TIR;
   
 private:
   G4double fX;

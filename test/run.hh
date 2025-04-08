@@ -25,6 +25,7 @@ public:
   G4double Total_E, Total_Compt_Edep, Photo_Edep, diff_edep_ComptPhoto;
   G4int nOpticalPhotons, nOptPhoOnDetEnd;
   std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy, Opt_Photon_Time;
+  G4int nRefraction, nReflection, nTIR;
   
  
 private:
