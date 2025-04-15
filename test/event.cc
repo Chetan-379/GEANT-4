@@ -12,7 +12,6 @@ MyEventAction::~MyEventAction()
 
  void MyEventAction::BeginOfEventAction(const G4Event*)
 {
-  G4cout << "\n\n\t\t============Event Started=============" << G4endl;
   fX = 0.;
   fEdep = 0.;
   Xarray.clear();
@@ -30,27 +29,29 @@ MyEventAction::~MyEventAction()
   OptPho_PosZ.clear();
   OptPho_Energy.clear();
   OptPho_time.clear();
+  n_BoundProc = 0;
   n_Refraction = 0;
+  nOpPhoLeft = 0;
   n_Reflection = 0;
   n_TIR = 0;  
   TrkOnDet = 0;
-  
-  //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
+  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 }
+
 
 void MyEventAction::EndOfEventAction(const G4Event*)
 {
   if (Photo_edep.size() < 1) Photo_edep.push_back(0);
   
   
-  G4AnalysisManager *man = G4AnalysisManager::Instance(); 
+  // G4AnalysisManager *man = G4AnalysisManager::Instance(); 
   
-  man->FillNtupleDColumn(1, 0, fX);
-  man->AddNtupleRow(1);
+  // man->FillNtupleDColumn(1, 0, fX);
+  // man->AddNtupleRow(1);
 
-  man->FillNtupleDColumn(3, 0, fEdep);
-  man->AddNtupleRow(3);
+  // man->FillNtupleDColumn(3, 0, fEdep);
+  // man->AddNtupleRow(3);
 
   for (G4int i=0; i< Compt_edep.size(); i++){
     compt_total_edep += Compt_edep[i];
@@ -68,7 +69,7 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   runObject->Total_E = fEdep;
   runObject->Total_Compt_Edep = compt_total_edep;
   runObject->Photo_Edep = Photo_edep[0];
-  runObject->diff_edep_ComptPhoto = edep_ComptPhot;
+  //runObject->diff_edep_ComptPhoto = edep_ComptPhot;
   runObject->nOpticalPhotons = nOptPho;
   runObject->nOptPhoOnDetEnd = TrkOnDet;
   runObject->Opt_Photon_PosX = OptPho_PosX;
@@ -79,26 +80,31 @@ void MyEventAction::EndOfEventAction(const G4Event*)
   runObject->nRefraction = n_Refraction;
   runObject->nReflection = n_Reflection;
   runObject->nTIR = n_TIR;
+  runObject->tree->Fill();
+
   // auto EvtMan = G4EventManager::GetEventManager();
-  // if (ievent == 9) {
+  // if (ievent == 9920) {
   //   EvtMan->KeepTheCurrentEvent();
   // }
 
- //  if (ievent == 10) {
+//   if (ievent == 9920) {
 //   G4EventManager::GetEventManager()->KeepTheCurrentEvent();
 // }
 
-  for (G4int i =0; i < OptPho_PosZ.size(); i++){
-    if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+    if (ievent == 9920)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
       //G4cout << "\n\nOptPhoton_z: " << OptPho_PosZ[i] << G4endl;
       //G4cout << "Event no. is: " << ievent << G4endl;}
+      //} 
   }
 
-  }
-
+    //if (n_BoundProc >2){
+  G4cout << "no. of boundary process: " << n_BoundProc << G4endl;    
+  G4cout << "no. of refraction: " << n_Refraction << G4endl;
+  G4cout << "no. of reflection: " << n_Reflection << G4endl;
+  G4cout << "no. of TIR: " << n_TIR << G4endl;
+  G4cout << "no. of optical photons left: " << nOpPhoLeft << G4endl;
+  //}
       
-
-
 ievent++;
  
 //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;

@@ -2,26 +2,26 @@
 
 MyRunAction::MyRunAction()
 {
-  G4AnalysisManager *man = G4AnalysisManager::Instance();
+  // G4AnalysisManager *man = G4AnalysisManager::Instance();
   
-  man->CreateNtuple("Hits", "Hits");
-  man->CreateNtupleIColumn("fEvent");
-  man->CreateNtupleDColumn("fX");
-  man->CreateNtupleDColumn("fY");
-  man->CreateNtupleDColumn("fZ");
-  man->FinishNtuple(0);
+  // man->CreateNtuple("Hits", "Hits");
+  // man->CreateNtupleIColumn("fEvent");
+  // man->CreateNtupleDColumn("fX");
+  // man->CreateNtupleDColumn("fY");
+  // man->CreateNtupleDColumn("fZ");
+  // man->FinishNtuple(0);
 
-  man->CreateNtuple("sumX", "sumX");
-  man->CreateNtupleDColumn("sumX");
-  man->FinishNtuple(1);
+  // man->CreateNtuple("sumX", "sumX");
+  // man->CreateNtupleDColumn("sumX");
+  // man->FinishNtuple(1);
 
-  man->CreateNtuple("position", "position");
-  man->CreateNtupleDColumn("XCoord");
-  man->FinishNtuple(2);
+  // man->CreateNtuple("position", "position");
+  // man->CreateNtupleDColumn("XCoord");
+  // man->FinishNtuple(2);
 
-  man->CreateNtuple("Scoring", "Scoring");
-  man->CreateNtupleDColumn("fEdep");
-  man->FinishNtuple(3);
+  // man->CreateNtuple("Scoring", "Scoring");
+  // man->CreateNtupleDColumn("fEdep");
+  // man->FinishNtuple(3);
 
   // tree = new TTree("tree","HitInfo");
   // tree->Branch("positionX", &X);
@@ -79,13 +79,10 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   std::stringstream strRunID;
   strRunID << runID;
 
-  man->OpenFile("output"+strRunID.str()+".root");
+  //man->OpenFile("output"+strRunID.str()+".root");
 
-  //hfile = hfile = TFile::Open("testing_BGO.root","RECREATE");
-  //hfile = hfile = TFile::Open("test.root","RECREATE");
   hfile = hfile = TFile::Open("test.root","RECREATE");
 
-  G4cout << "\n\n\t\t============RUN Started=============" << G4endl;
   
 }
 
@@ -93,16 +90,15 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 
 void MyRunAction::EndOfRunAction(const G4Run*)
 {
-  G4AnalysisManager *man = G4AnalysisManager::Instance();
+  // G4AnalysisManager *man = G4AnalysisManager::Instance();
   
-  man->Write();
-  man->CloseFile();
+  // man->Write();
+  // man->CloseFile();
 
   tree->Write();
   //tree->Print();
     
   hfile->Close();
 
-  G4cout << "\n\n\t\t============RUN Ended=============" << G4endl;
 }
 
