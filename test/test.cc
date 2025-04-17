@@ -37,14 +37,17 @@ int main(int argc, char** argv)
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
   UImanager->ApplyCommand("/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year"); // very high time threshold to allow all decays to happen
-  // UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");
+  
+  // UImanager->ApplyCommand("/run/setCutForAGivenParticle e- 0.01 mm");  
   // UImanager->ApplyCommand("/run/setCutForAGivenParticle e+ 0.01 mm");
   // UImanager->ApplyCommand("/run/setCutForAGivenParticle gamma 0.01 mm");
-  UImanager->ApplyCommand("/run/initialize");          
+  //UImanager->ApplyCommand("/process/optical/boundary/verbose 2");
+  //UImanager->ApplyCommand("/run/initialize");          
 
   
   if(ui)
-    {    
+    {
+      
       UImanager->ApplyCommand("/control/execute vis.mac");
       //UImanager->ApplyCommand("/tracking/verbose 1");
       ui->SessionStart();

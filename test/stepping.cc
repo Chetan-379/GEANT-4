@@ -92,7 +92,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       	  switch (theStatus) {
 	      
       	  case FresnelReflection:
-      	    G4cout << "Fresnel Reflection" << G4endl;
+      	    //G4cout << "Fresnel Reflection" << G4endl;
       	    fEventAction ->n_Reflection++;
       	    fEventAction ->n_BoundProc++;
       	    break;
@@ -105,13 +105,13 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       	    break;
 
       	  case TotalInternalReflection:
-      	    G4cout << "Total Internal Reflection" << G4endl;
+      	    //G4cout << "Total Internal Reflection" << G4endl;
       	    fEventAction ->n_TIR++;
       	    fEventAction ->n_BoundProc++; 
       	    break;
 
       	  case LobeReflection:
-      	    G4cout << "Lobe Reflection" << G4endl;
+      	    //G4cout << "Lobe Reflection" << G4endl;
       	    break;
 
       	  case BackScattering:
@@ -129,6 +129,9 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       	  case Transmission:
       	    //G4cout << "Transmission" << G4endl;
       	    break;
+
+	  case SpikeReflection:
+	    //G4cout << "spike reflection" << G4endl;
 
       	  default:
       	    //G4cout << "Other Optical Boundary Status" << G4endl;

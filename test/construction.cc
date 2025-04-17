@@ -26,31 +26,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
   worldMat->SetMaterialPropertiesTable(mptWorld);
 
-  //enclosure
-  //G4Material *EncMat = nist->FindOrBuildMaterial("G4_PB")
 
   //Detector Tile
   G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
-
-   //  std::vector<G4double> photonEnergy = {
-   // 2.034 * eV, 2.068 * eV, 2.103 * eV, 2.139 * eV, 2.177 * eV, 2.216 * eV, 2.256 * eV, 2.298 * eV,
-   // 2.341 * eV, 2.386 * eV, 2.433 * eV, 2.481 * eV, 2.532 * eV, 2.585 * eV, 2.640 * eV, 2.697 * eV,
-   // 2.757 * eV, 2.820 * eV, 2.885 * eV, 2.954 * eV, 3.026 * eV, 3.102 * eV, 3.181 * eV, 3.265 * eV,
-   // 3.353 * eV, 3.446 * eV, 3.545 * eV, 3.649 * eV, 3.760 * eV, 3.877 * eV, 4.002 * eV, 4.136 * eV};
-
-
-   //  std::vector<G4double> refractiveIndex1 = {
-   //  1.3435, 1.344, 1.3445, 1.345,  1.3455, 1.346,  1.3465, 1.347,  1.3475, 1.348,  1.3485,
-   //  1.3492, 1.35,  1.3505, 1.351,  1.3518, 1.3522, 1.3530, 1.3535, 1.354,  1.3545, 1.355,
-   //  1.3555, 1.356, 1.3568, 1.3572, 1.358,  1.3585, 1.359,  1.3595, 1.36,   1.3608};
-
-    // std::vector<G4double> absorption = {
-    // 3.448 * m,  4.082 * m,  6.329 * m,  9.174 * m,  12.346 * m, 13.889 * m, 15.152 * m, 17.241 * m,
-    // 18.868 * m, 20.000 * m, 26.316 * m, 35.714 * m, 45.455 * m, 47.619 * m, 52.632 * m, 52.632 * m,
-    // 55.556 * m, 52.632 * m, 52.632 * m, 47.619 * m, 45.455 * m, 41.667 * m, 37.037 * m, 33.333 * m,
-    // 30.000 * m, 28.500 * m, 27.000 * m, 24.500 * m, 22.000 * m, 19.500 * m, 17.500 * m, 14.500 * m};
-
 
   std::vector<G4double> photonEnergy = {1239.8/632.8 * eV, 1239.8/514.5 * eV, 1239.8/496.5 * eV,
   					1239.8/488.0 * eV, 1239.8/476.5 * eV, 1239.8/457.9 * eV};
@@ -209,30 +187,30 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   				      "logicalDetector");  // its name
 
   //Loops to place the tiles
-  // for (G4int i=0; i<3; i++){     
-  //   for (G4int j=0; j<2; j++){
+  for (G4int i=0; i<3; i++){     
+    for (G4int j=0; j<2; j++){
       std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
 
-      // if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
-      // if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
-      // if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
+      if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
+      if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
+      if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
 
-      position = G4ThreeVector(0.0, Pos[0]*((rad_dxa+rad_dz)/2), 0.0);
+      //      position = G4ThreeVector(0.0, Pos[0]*((rad_dxa+rad_dz)/2), 0.0);
       
-      //      G4Transform3D transform = G4Transform3D(new_rotm[i], position);
-      G4Transform3D transform = G4Transform3D(new_rotm[0], position);
-      // if (i==0) new_rotmX.rotateX(180 * deg);
-      // if (i==1) new_rotmY.rotateY(180 * deg);    
-      // if (i==2) new_rotmZ.rotateX(180 * deg);
+      G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+      // G4Transform3D transform = G4Transform3D(new_rotm[0], position);
 
-      new_rotmX.rotateX(180 * deg);
+      if (i==0) new_rotmX.rotateX(180 * deg);
+      if (i==1) new_rotmY.rotateY(180 * deg);    
+      if (i==2) new_rotmZ.rotateX(180 * deg);
+
+      //new_rotmX.rotateX(180 * deg);
       
-      //G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
+      G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
 
-      G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (1)*(1), true);
+      // G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (1)*(1), true);
 
       //----------------Defining Surface---------------
-
       // G4VPhysicalVolume *volume1, *volume2, *volume3;
       
       // volume1 = physEncVol;
@@ -241,32 +219,29 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
             
       G4OpticalSurface* OpSurface = new G4OpticalSurface("Sur_tile_enc");            
       
-      OpSurface->SetType(dielectric_dielectric);
+    
+      OpSurface->SetType(dielectric_metal);
       OpSurface->SetModel(unified);
-      //OpSurface->SetFinish(groundbackpainted);
-      //OpSurface->SetFinish(groundfrontpainted);
-      //OpSurface->SetFinish(ground);
-      //OpSurface->SetFinish(polishedfrontpainted);
-      //OpSurface->SetFinish(polishedbackpainted);
       OpSurface->SetFinish(polished);
-      OpSurface->SetSigmaAlpha(0.1);
       
-      std::vector<G4double> pp = {2.034 * eV, 4.136 * eV};
-      std::vector<G4double> specularlobe = {0.3, 0.3};
-      std::vector<G4double> specularspike = {0.2, 0.2};
-      std::vector<G4double> backscatter = {0.1, 0.1};
+      //OpSurface->SetSigmaAlpha(0.1);
+      
+      std::vector<G4double> pp = {2.0 * eV, 3.5 * eV};
+      // std::vector<G4double> specularlobe = {0.3, 0.3};
+      // std::vector<G4double> specularspike = {0.2, 0.2};
+      // std::vector<G4double> backscatter = {0.1, 0.1};
       std::vector<G4double> rindex = {1.35, 1.40};
       // std::vector<G4double> reflectivity = {0.3, 0.5};
       // std::vector<G4double> efficiency = {0.8, 1.0};
 
-      std::vector<G4double> reflectivity = {0.7, 0.8};
+      std::vector<G4double> reflectivity = {0.8, 0.8};
       //std::vector<G4double> reflectivity = {1, 1, 1, 1, 1, 1};
-      std::vector<G4double> efficiency = {0.8, 1.};
+      std::vector<G4double> efficiency = {0., 0.};
 
 
       G4MaterialPropertiesTable* SMPT = new G4MaterialPropertiesTable();
 
-      SMPT->AddProperty("RINDEX", pp, rindex);
+      //SMPT->AddProperty("RINDEX", pp, rindex);
       // SMPT->AddProperty("SPECULARLOBECONSTANT", pp, specularlobe);
       // SMPT->AddProperty("SPECULARSPIKECONSTANT", pp, specularspike);
       // SMPT->AddProperty("BACKSCATTERCONSTANT", pp, backscatter);
@@ -279,25 +254,24 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
       // G4LogicalBorderSurface* Surface1 = new G4LogicalBorderSurface("log_Sur_enc_tile",volume2,volume1,OpSurface);
       // G4LogicalBorderSurface* Surface2 = new G4LogicalBorderSurface("log_Sur_tile_world",volume2,volume3,OpSurface);
 
-      G4LogicalSkinSurface * ScintSurface = new G4LogicalSkinSurface("ScintSurface",logicDetector,OpSurface);
+      G4LogicalSkinSurface * ScintSurface = new G4LogicalSkinSurface("ScintSurface",logicDetector,OpSurface);      
+
+      // Detectors
+      // auto opDetSurface = new G4OpticalSurface("DetSurface");
+      // opDetSurface->SetType(dielectric_LUTDAVIS);
+      // opDetSurface->SetFinish(Rough_LUT);
+      // opDetSurface->SetModel(DAVIS);
 
       
-          // Detectors
-          // auto opDetSurface = new G4OpticalSurface("DetSurface");
-          // opDetSurface->SetType(dielectric_LUTDAVIS);
-          // opDetSurface->SetFinish(Rough_LUT);
-          // opDetSurface->SetModel(DAVIS);
-
+      // auto DetSurface =
+      // 	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
       
-          // auto DetSurface =
-          // 	 new G4LogicalBorderSurface("DetSurface", physDetector, physWorld, opDetSurface);
-      
-          // auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
-          // DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
+      // auto opticalSurface = dynamic_cast<G4OpticalSurface*>(
+      // DetSurface->GetSurface(physDetector, physWorld)->GetSurfaceProperty());
       // if (opticalSurface)
       // OpSurface->DumpInfo();  
-	    //  }
-	    // }
+    }
+  }
   
   //fScoringVolume = logicDetector;
   return physWorld;
@@ -309,6 +283,43 @@ void MyDetectorConstruction::ConstructSDandField()
   //sensDet = new MySensitiveDetector("SensitiveDetector");
   //logicDetector->SetSensitiveDetector(sensDet);  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
