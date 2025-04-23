@@ -94,9 +94,10 @@ double Gauss(double *x, double *par) {
   double A = par[0];   // Amplitude
   double mu = par[1];  // Mean
   double sigma = par[2]; // Std. deviation
-  double arg = (x[0] - mu) / sigma;
+  double arg = ((x[0] - mu) * (x[0] - mu)) / (sigma*sigma);
 
-  return A * TMath::Exp(-0.5 * arg * arg);
+  // return (A/(sqrt(2*3.14)*par[2])) * TMath::Exp(-0.5 * arg * arg);
+   return A * TMath::Exp(-0.5 * arg);
 
     
     // if (dx < 0)
@@ -155,7 +156,7 @@ vector<TF1*> Fit_func(hist.size());
 	   double center = hist.at(i)->GetBinCenter(j);
 	   double content = hist.at(i)->GetBinContent(j);
 	   
-	   // Skip the central peak region
+	   // Skip the peak at 0
 	   if (center >= -0.5 && center <= +0.5) continue;
 	   
 	   if (content > maxContent) {
@@ -207,8 +208,12 @@ vector<TF1*> Fit_func(hist.size());
 	for (int iter = 0; iter < 400; ++iter) {
 	  //hist.at(i)->Fit(Fit_func[i], "RE");
 	  Fit_func[i] = new TF1("GaussFit", Gauss, fitMin, fitMax, 3);
-	  Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma); 
+	  //Fit_func[i]->SetParameters(peakValue/(sqrt(2*3.14)*old_sigma), old_mean, old_sigma);
+	  Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
+	  //Fit_func[i]->SetParLimits(2, 0.0000, 100000);
+	  
 	  hist.at(i)->Fit(Fit_func[i], "R");
+	  
 	  
 	  // double mean = Fit_func[i]->GetParameter(0);
 	  // double sigmaL = Fit_func[i]->GetParameter(1);
@@ -221,12 +226,34 @@ vector<TF1*> Fit_func(hist.size());
 
 	  double mu = Fit_func[i]->GetParameter(1);
 	  double sigma = Fit_func[i]->GetParameter(2);
+	  double chi2byNDF = Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF();
+
+	  // hist.at(i)->Fit("gaus", "R");
+
+	  // TF1 *fitFunc = hist.at(i)->GetFunction("gaus");
+	  // double mu    = fitFunc->GetParameter(1); // mean
+	  // double sigma = fitFunc->GetParameter(2); // standard deviation
+	  // double chi2byNDF = fitFunc->GetChisquare()/fitFunc->GetNDF();
+	  
+	  cout << "mu: " << mu << endl;
+	  cout << "sigma: " << sigma << endl;
+	  cout << "chi2/NDF: " << chi2byNDF << "\n\n";
+
+
+	  //if (sigma == 0) sigma = 10e-10;
+	  if (sigma < 0) sigma = abs(sigma);
 
 	  // double rangeMin = mu - 2.0 * sigma;
 	  // double rangeMax = mu + 2.0 * sigma;
 
-	  double rangeMin = peakValue - 2.0 * sigma;
-	  double rangeMax = peakValue + 2.0 * sigma;
+	  double rangeMin = peakValue - 2.0 * abs(sigma);
+	  double rangeMax = peakValue + 2.0 * abs(sigma);
+
+	  // if (chi2byNDF > 25.)  {
+	  //    rangeMin = peakValue - 1.0 * sigma;
+	  //    rangeMax = peakValue + 1.0 * sigma;
+
+	  //}
 
 	  if (fabs(fitMin-rangeMin)/rangeMin <= 0.0002) break;
 
@@ -236,8 +263,12 @@ vector<TF1*> Fit_func(hist.size());
 	  //Fit_func[i]->SetRange(rangeMin, rangeMax);
 	  Fit_func[i]->SetRange(fitMin, fitMax);
 	  
-	  cout << "mu: " << mu << endl;
-	  cout << "sigma: " << sigma << "\n\n";
+	
+	  old_mean = mu;
+	  old_sigma = sigma;
+
+	  
+	  
 	}
 
         //hist.at(i)->GetXaxis()->SetRangeUser(fitMin, fitMax);
@@ -274,6 +305,11 @@ vector<TF1*> Fit_func(hist.size());
 	latex->DrawLatexNDC(0.70,0.75, param2);
 	latex->DrawLatexNDC(0.70,0.70, param3);
 	latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
+
+	// latex->DrawLatexNDC(0.30,0.80, param1);
+	// latex->DrawLatexNDC(0.30,0.75, param2);
+	// latex->DrawLatexNDC(0.30,0.70, param3);
+	// latex->DrawLatexNDC(0.30,0.65, chisqrNDF);
 	
         //fitFunc->Draw("SAME");
         
