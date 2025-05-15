@@ -1,0 +1,9 @@
+*/build
+*#*
+test/*#*
+References
+*geant*
+*.root
+*~
+*plots
+*txt
