@@ -325,7 +325,7 @@ void plot_all_hists(string pathname, string root_file_name, string material)
 
   f = {root_file_name}; 
   filetag={material};
-  folder = {"plots/PPT"};
+  folder = {"plots/BGO/PhoInteract"};
 
   vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       

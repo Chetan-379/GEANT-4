@@ -33,6 +33,31 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
     track->SetTrackStatus(fStopAndKill);
   }
 
+  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+    
+  //=================Studying photon interaction with material===========
+  G4double edep = step->GetTotalEnergyDeposit();
+  fEventAction->AddEdep(edep);
+      
+  G4double KE_i = preStepPoint->GetKineticEnergy();
+  G4double KE_f = postStepPoint->GetKineticEnergy();
+ 
+  if (step->GetTrack()->GetParentID() == 0){
+    if (proc == "compt" || proc == "Rayl") {
+      fEventAction-> Compt_edep.push_back(KE_i - KE_f);
+    }
+    
+    if (proc == "phot") {      
+      fEventAction-> Photo_edep.push_back(KE_i - KE_f);
+    }
+    
+    fEventAction->Xarray.push_back(phopos_post[0]);
+    fEventAction->Yarray.push_back(phopos_post[1]);
+    fEventAction->Zarray.push_back(phopos_post[2]);
+  }
+
+
+  //=================Analysing Scintillation photon======================
   G4String processName;
   if (track->GetCreatorProcess()) {
     processName = track->GetCreatorProcess()->GetProcessName();
@@ -40,8 +65,6 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   
   G4double OptPho_Energy;
   G4double OptPhot_time;
-
-  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
   
   if (particleName == "opticalphoton" && processName != "Cerenkov")
     {
@@ -57,42 +80,15 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       fEventAction ->OptPho_time.push_back(OptPhot_time);
       if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
     }
-  
+}  
+   
 
-  G4double edep = step->GetTotalEnergyDeposit();
-  
-    
-  G4double KE_i = preStepPoint->GetKineticEnergy();
-  G4double KE_f = postStepPoint->GetKineticEnergy();
 
-  G4ThreeVector compt_scatter_point;
 
- 
-  if (step->GetTrack()->GetParentID() == 0){
-    if (proc == "compt" || proc == "Rayl") {
-      fEventAction-> Compt_edep.push_back(KE_i - KE_f);
-    }
-    
-    if (proc == "phot") {
-      
-      fEventAction-> Photo_edep.push_back(KE_i - KE_f);
-    }
-    fEventAction->Xarray.push_back(phopos_post[0]);
-    fEventAction->Yarray.push_back(phopos_post[1]);
-    fEventAction->Zarray.push_back(phopos_post[2]);
-  }
-          
-  G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+
+  // G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
   
-  const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-  G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
-  G4ThreeVector position = phopos_post;
- 
-  G4double Xcord = position[0];
-  G4double Ycord = position[1];
-  G4double Zcord = position[2];
-  
-  fEventAction->AddEdep(edep);
-  fEventAction->AddX(Xcord); 
-}
+  // const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+  // G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
+
 

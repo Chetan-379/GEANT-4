@@ -1,3 +1,5 @@
+                //=================================construction file for plastic scintillator============================ 
+
 #include "construction.hh"
 #include "G4RotationMatrix.hh"
 #include <bits/stdc++.h>
@@ -26,15 +28,23 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   //Detector Tile
   //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
   //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+
+  //Defining plastic Scintillator Material EJ230 which is PolyVinylToluene (C9H10)
+  G4Material *DetectorMat = new G4Material("C9H10", 1.032*g/cm3, 2);
+  G4Element *C = nist->FindOrBuildElement("C");
+  G4Element *H = nist->FindOrBuildElement("H");
+
+  DetectorMat->AddElement(C, 91.5*perCent);
+  DetectorMat->AddElement(H, 8.5*perCent);
   
-  
-  // Material properties can be added as arrays. However, in this case it is
-  // up to the user to make sure both arrays have the same number of elements.
+  // std::vector<G4double> RIPhoEnergy = {2.58 * eV, 2.95 * eV, 4.00 * eV};
+  // std::vector<G4double> RefractiveIdxDet = {2.15, 2.2, 2.39};
 
   std::vector<G4double> RIPhoEnergy = {2.58 * eV, 2.95 * eV, 4.00 * eV};
-  std::vector<G4double> RefractiveIdxDet = {2.15, 2.2, 2.39};
+  std::vector<G4double> RefractiveIdxDet = {1.58, 1.58, 1.58};
+
 
   std::vector<G4double> AbsPhoEnergy = {511 * keV};
   std::vector<G4double> AbsLength = {10.4 * mm};
@@ -44,26 +54,23 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // std::vector<G4double> ScintSlowArray={0.19, 0.34, 0.47, 0.65, 0.88, 0.82, 0.70, 0.45, 0.30, 0.18};
 
 
-  std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 1.95 * eV, 1.95 * eV, 1.96 * eV, 1.97 * eV, 1.98 * eV, 2.00 * eV, 2.01 * eV, 2.03 * eV, 2.04 * eV,
-  					  2.06 * eV, 2.08 * eV, 2.10 * eV, 2.13 * eV, 2.16 * eV, 2.18 * eV, 2.21 * eV, 2.24 * eV, 2.26 * eV, 2.30 * eV,
-  					  2.32 * eV, 2.36 * eV, 2.39 * eV, 2.42 * eV, 2.46 * eV, 2.51 * eV, 2.52 * eV, 2.56 * eV, 2.59 * eV, 2.63 * eV,
-  					  2.65 * eV, 2.69 * eV, 2.73 * eV, 2.77 * eV, 2.81 * eV, 2.86 * eV, 2.91 * eV, 2.97 * eV, 3.04 * eV, 3.09 * eV,
-  					  3.15 * eV, 3.21 * eV, 3.27 * eV, 3.33 * eV, 3.40 * eV, 3.46 * eV, 3.52 * eV, 3.57 * eV, 3.62 * eV, 3.66 * eV};
+  std::vector<G4double> ScintPhoEnergy = {2.51 * eV, 2.52 * eV, 2.53 * eV, 2.55 * eV, 2.56 * eV, 2.57 * eV, 2.59 * eV, 2.60 * eV, 2.62 * eV, 2.63 * eV,
+					  2.65 * eV, 2.66 * eV, 2.68 * eV, 2.69 * eV, 2.71 * eV, 2.72 * eV, 2.74 * eV, 2.76 * eV, 2.77 * eV, 2.79 * eV,
+					  2.80 * eV, 2.82 * eV, 2.84 * eV, 2.86 * eV, 2.87 * eV, 2.89 * eV, 2.91 * eV, 2.93 * eV, 2.94 * eV, 2.96 * eV,
+					  2.98 * eV, 3.00 * eV, 3.02 * eV, 3.04 * eV, 3.06 * eV, 3.08 * eV, 3.10 * eV, 3.12 * eV, 3.14 * eV, 3.16 * eV,
+					  3.18 * eV, 3.20 * eV, 3.23 * eV, 3.25 * eV, 3.27 * eV, 3.29 * eV, 3.32 * eV, 3.34 * eV, 3.37 * eV, 3.39 * eV,
+					  3.41 * eV, 3.44 * eV, 3.46 * eV, 3.49 * eV, 3.52 * eV};
+    
+
+  std::vector<G4double> ScintFastArray = {0.008, 0.015, 0.015, 0.015, 0.023, 0.023, 0.031, 0.031, 0.038, 0.046,
+					  0.046, 0.054, 0.062, 0.069, 0.077, 0.085, 0.100, 0.108, 0.123, 0.138,
+					  0.162, 0.185, 0.208, 0.238, 0.269, 0.300, 0.331, 0.369, 0.415, 0.462,
+					  0.515, 0.577, 0.646, 0.708, 0.785, 0.862, 0.915, 0.962, 0.985, 1.000,
+					  1.000, 0.992, 0.962, 0.908, 0.785, 0.638, 0.477, 0.308, 0.200, 0.131,
+					  0.077, 0.046, 0.031, 0.015, 0.008};
+
+
   
-
-  std::vector<G4double> ScintFastArray = {0.019, 0.024, 0.021, 0.027, 0.029, 0.032, 0.035, 0.038, 0.042, 0.045,
-  					  0.048, 0.052, 0.056, 0.060, 0.063, 0.066, 0.069, 0.073, 0.076, 0.080,
-  					  0.082, 0.088, 0.090, 0.093, 0.096, 0.097, 0.096, 0.094, 0.091, 0.086,
-  					  0.084, 0.078, 0.074, 0.071, 0.067, 0.064, 0.061, 0.057, 0.054, 0.050,
-  					  0.046, 0.043, 0.040, 0.037, 0.033, 0.031, 0.028, 0.025, 0.023, 0.020};
-  
-
-  std::vector<G4double> ScintSlowArray = {0.171, 0.216, 0.192, 0.240, 0.264, 0.288, 0.315, 0.342, 0.375, 0.405,
-  					    0.429, 0.465, 0.501, 0.537, 0.564, 0.594, 0.621, 0.654, 0.681, 0.720,
-  					    0.741, 0.792, 0.807, 0.837, 0.861, 0.876, 0.867, 0.849, 0.822, 0.774,
-  					    0.756, 0.702, 0.669, 0.639, 0.603, 0.573, 0.552, 0.516, 0.483, 0.450,
-  					    0.417, 0.387, 0.360, 0.330, 0.300, 0.276, 0.252, 0.228, 0.204, 0.183};
-
 
   // std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 2.51 * eV, 3.66 * eV};
   // std::vector<G4double> ScintFastArray = {0.019, 0.097, 0.020};
@@ -75,18 +82,6 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4int lenArray = 10;
   auto myMPT1 = new G4MaterialPropertiesTable();
   
-  // Values can be added to the material property table individually.
-  // With this method, spline interpolation cannot be set. Arguments
-  // createNewKey and spline both take their default values of false.
-  // Need to specify the number of entries (1) in the arrays, as an argument
-  // to AddProperty.
-  // G4int numEntries = 1;
-  // myMPT1->AddProperty("RINDEX", &photonEnergy[0], &refractiveIndex1[0], numEntries);
-
-  // for (size_t i = 1; i < photonEnergy.size(); ++i) {
-  //   myMPT1->AddEntry("RINDEX", photonEnergy[i], refractiveIndex1[i]);
-  // }
-
   myMPT1->AddProperty("RINDEX", RIPhoEnergy, RefractiveIdxDet);
 
   // Check that group velocity is calculated from RINDEX
@@ -105,34 +100,25 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     
   //myMPT1->AddProperty("ABSLENGTH", AbsPhoEnergy, AbsLength, false, true);
 
-  // Adding a property using a C-style array.
-  // Spline interpolation isn't used for scintillation.
-  // Arguments spline and createNewKey both take default value false.
 
   //G4cout << "\n\ndatatype is: " <<typeid( myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true)).name() << G4endl;
 
-  myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, false);
-  myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, false);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 8200. / MeV);
+  myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
+  //myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 9700. / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 60. * ns);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 300. * ns); 
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.1);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.9);
-  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 30 * ps);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 1.5 * ns);
+  // myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 300. * ns); 
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 1);
+  //myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.9);
+  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 0.5 * ns);
 
-  G4MaterialPropertyVector *MPTVec = myMPT1->GetProperty("SCINTILLATIONCOMPONENT1");
-
-  G4cout << "\n\nMaterial Property vector is: " << *MPTVec << G4endl;
-
-    // Set the Birks Constant for scintillator
-  //DetectorMat->GetIonisation()->SetBirksConstant(0.126 * mm / MeV);
-  //DetectorMat->GetIonisation()->SetBirksConstant(0 * mm / MeV);
-
-  //myMPT1->DumpTable();
-
+  // Set the Birks Constant for scintillator
+  DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
   
+  //==============================================
   DetectorMat->SetMaterialPropertiesTable(myMPT1);
+  //==============================================
     
 
   //----------Volumes-------------
@@ -150,7 +136,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   //Trapezoidal enclosure tiles                                                          
   G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
-  G4double rad_dz = 5.0 * cm;
+  G4double rad_dz = 20 * cm;
   G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
 
   G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
