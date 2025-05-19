@@ -21,7 +21,8 @@
 class AnalyzeLightBSM : public NtupleVariables{
 
  public:
-  AnalyzeLightBSM(const TString &inputFileList="foo.txt", const char *outFileName="histo.root",const char *detType="PbWO4");
+  //AnalyzeLightBSM(const TString &inputFileList="foo.txt", const char *outFileName="histo.root",const char *detType="PbWO4");
+  AnalyzeLightBSM(const TString &inputFileList="foo.txt", TString *outFileName="histo.root",const char *detType="PbWO4");
   //  std::cout<<"alpana"<<std::endl;
   ~AnalyzeLightBSM();
   Bool_t   FillChain(TChain *chain, const TString &inputFileList);
@@ -40,7 +41,7 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH1D *h_OptPho_lmbda;
   TH1D *h_OptPho_time;
   TH1D *h_OptPho_PosX, *h_OptPho_PosY, *h_OptPho_PosZ;
-  TH2F *h_OptPho_XvsY;
+  //TH2F *h_OptPho_XvsY;
   //TH1I h_nOptPho;
   TFile *oFile;
   /* TH1F *h_events; */
@@ -55,17 +56,27 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   //TGaxis::SetMaxDigits(2);
   //Initialize histogram here
   //h_selectBaselineYields_ = new TH1F("cutflows","cutflows",60,-0.5,60.5);
-  h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",100,0,0.7);
-  h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",100,0,0.7);
 
-  h_ComptVsPhoto_Edep = new TH2D("ComptVsPho","Compt_vs_Photo_Edep",100,0.,0.7, 100,0.,0.7);
+  vector<TString> Energy, Material;
+  vector<double> hist_Max;
+  vector<int> Energy_val;
+  
+  Material = {"BGO", "PbWO4", "Plastic"}
+  Energy = {"511keV", "100keV", "150keV", "300keV", "450keV", "600keV", "800keV", "1000keV"};
+  Energy_val = {511, 100, 150, 300, 450, 600, 800, 1000};
+  
+  
+  h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",100,0,1);
+  h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",100,0,1);
+
+  h_ComptVsPhoto_Edep = new TH2D("ComptVsPho","Compt_vs_Photo_Edep",100,0.,1., 100,0.,1.);
   h_ComptVsPhoto_Edep->SetXTitle("Comp_Edep");
   h_ComptVsPhoto_Edep->SetYTitle("PhotoElectric_Edep");
 
-  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,0.7);
+  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,1.);
   //h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
-  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 150, 0, 150);
+  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 10000, 0, 10000);
 
   // h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
   // h_nOptPho_Edep->SetXTitle("Total Edep");
@@ -85,9 +96,9 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_OptPho_PosY = new TH1D("OptPho_PosY", "OptPho_PosY",400,-200,200);
   h_OptPho_PosZ = new TH1D("OptPho_PosZ", "OptPho_PosZ",400,-200,200);
   
-  h_OptPho_XvsY = new TH2F("OptPho_XvsY", "OptPho_XvsY",400, -200, 200, 400, -200, 200);
-  h_OptPho_XvsY->SetXTitle("PosX");
-  h_OptPho_XvsY->SetYTitle("PosY");
+  // h_OptPho_XvsY = new TH2F("OptPho_XvsY", "OptPho_XvsY",400, -200, 200, 400, -200, 200);
+  // h_OptPho_XvsY->SetXTitle("PosX");
+  // h_OptPho_XvsY->SetYTitle("PosY");
 
 }
 

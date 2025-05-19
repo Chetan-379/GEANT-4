@@ -158,12 +158,27 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
       hist.at(i)->GetYaxis()->SetTitle(ytitile);
     }
 
-    hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
-    hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
-    hist.at(i)->SetLineStyle(line_style[i]);
-    hist.at(i)->SetLineColor(line_color[i]);
-    hist.at(i)->SetTitle(xtitile); //you can change it if you want
-    //setLastBinAsOverFlow(hist.at(i),0);
+    //getting the value of xmax:
+    int nbins = hist.at(i)->GetNbinsX();
+    int lastNonZeroBin = 0;
+    
+    for (int ibin = nbins; ibin >= 1; --ibin) {
+      //if (hist.at(i)->GetBinContent(ibin) > 0) {
+      if (hist.at(i)->GetBinContent(ibin) >= (hist.at(i)->GetMaximum())*0.001) {
+        lastNonZeroBin = ibin;
+        break;
+      }
+    }
+
+ double effectiveXmax = hist.at(i)->GetBinLowEdge(lastNonZeroBin + 1);
+
+ //hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
+hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
+ hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
+ hist.at(i)->SetLineStyle(line_style[i]);
+ hist.at(i)->SetLineColor(line_color[i]);
+ hist.at(i)->SetTitle(xtitile); //you can change it if you want
+ //setLastBinAsOverFlow(hist.at(i),0);
     //
     hist.at(i)->GetXaxis()->SetTitleSize(0.05);
     hist.at(i)->GetXaxis()->SetLabelSize(x_label_size);
@@ -310,22 +325,67 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
 
 const int nfiles=100,nBG=6;                                                                                                                                                              
 
-void plot_all_hists(string pathname, string root_file_name, string material)
+
+void plot_all_hists(string pathname)
 {
   char *hist_name = new char[100];
   char *full_path = new char[1000];
   char *leg_head = new char[100];
   vector<string> f;
-  vector<string> filetag;
-  vector<string> folder;
+  string filetag, folder, Energy, Width;
 
   // f = {"out_root_files/Si_FluON_10000evts_out.root", "out_root_files/PbWO4_FluON_10000evts_out.root", "out_root_files/BGO_FluON_10000evts_out.root"};
   // filetag={"Si", "PbWO4", "BGO"};
   // folder = {"plots/Si", "plots/PbWO4", "plots/BGO"};
 
-  f = {root_file_name}; 
-  filetag={material};
-  folder = {"plots/BGO/PhoInteract"};
+  
+  
+  // string path = "./out_root_files";  // current directory
+  // vector<string> rootFile;
+  //   for (const auto& entry : fs::directory_iterator(path)) {
+  //       if (entry.is_regular_file()) {
+  //           std::string filename = entry.path().filename().string();
+  //           if (filename.find(".root") != std::string::npos) {
+  //               rootFile.push_back(filename);
+  //           }
+  //       }
+  //   }
+
+   std::vector<std::string> rootFiles;
+
+    TSystemDirectory dir("out_root_files", "out_root_files");
+    TList* files = dir.GetListOfFiles();
+    if (!files) return;
+
+    TIter next(files);
+    TObject* obj;
+
+    while ((obj = next())) {
+      TString fname = obj->GetName();
+        if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
+        if (fname.EndsWith(".root")) {
+	  f.push_back("out_root_files/" + string(fname.Data()));
+        }
+    }
+
+    cout << "\n\nSize of the files vector is: " << f.size() << endl;
+
+  
+    // filetag={material};
+
+  // vector<TString> Energy, Material, Widths;
+  // vector<double> hist_Max;
+  // vector<int> Energy_val;
+  
+  // Material = {"BGO", "PbWO4", "Plastic"};
+  // Widths = {"2.5cm", "5cm", "10cm", "20cm"};
+
+  
+  // Energy = {"511keV", "100keV", "150keV", "300keV", "450keV", "600keV", "800keV", "1000keV"};
+  // Energy_val = {511, 100, 150, 300, 450, 600, 800, 1000};
+
+  //folder = {"plots/BGO/PhoInteract"};
+  //folder = {"plots"};
 
   vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
@@ -334,7 +394,7 @@ void plot_all_hists(string pathname, string root_file_name, string material)
   vector<int>xmin = {300,0,0,0,0,0,0,0};
 
       
-  for(int iFile=0; iFile < f.size(); iFile++){ //looping over each file	
+  for(int iFile=0; iFile < f.size(); iFile++){ //looping over each file    		    
     TFile *root_file = new TFile(f[iFile].c_str());
 
     // Loop over all objects in the file
@@ -350,8 +410,11 @@ void plot_all_hists(string pathname, string root_file_name, string material)
       string histType = key->GetClassName();
       vector<TH1*> hist_list;
 
+      TString histId = hist->GetName();
+
+      //if(!(histId.Contains("Edep") || histId.Contains("Compt"))) continue;
       hist_list.push_back(hist);
-	  
+      //if (hist_list.size() > 0) cout << hist_list[0]->GetName() << endl;
       int xrange=0.0;	  
 	
       //setting up the axis titles
@@ -364,11 +427,52 @@ void plot_all_hists(string pathname, string root_file_name, string material)
 	xtitle = hist->GetName();
 	ytitle = "Entries";}
 
+      //specifying the folder to save the plots
+      string MainFolder;
+      if(histId.Contains("Edep") || histId.Contains("Compt")) MainFolder = "Pho_Interact";
+      else MainFolder = "Scintillation/Opt_Pho_Ana";
+      TString FileId = f[iFile];
+
+    //making identifier for energy
+      if (FileId.Contains("511keV")) Energy = "511keV";
+      if (FileId.Contains("100keV")) Energy = "100keV";
+      if (FileId.Contains("150keV")) Energy = "150keV";
+      if (FileId.Contains("300keV")) Energy = "300keV";
+      if (FileId.Contains("450keV")) Energy = "450keV";
+      if (FileId.Contains("600keV")) Energy = "600keV";
+      if (FileId.Contains("800keV")) Energy = "800keV";
+      if (FileId.Contains("1000keV")) Energy = "1000keV";
+      
+      if(FileId.Contains("BGO")){
+	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/BGO/2.5cm"; Width = "2.5cm";} 
+	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/BGO/5cm" Width = "5cm";}
+	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/BGO/10cm"; Width = "10cm";}
+
+	filetag = "BGO_" + Energy + "_" + Width;
+      }
+      
+      if(FileId.Contains("PbWO4")){
+	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/PbWO4/2.5cm" Width = "2.5cm";}
+	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/PbWO4/5cm"; Width = "5cm";}
+	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/PbWO4/10cm"; Width = "10cm";}
+
+	filetag = "PbWO4_" + Energy + "_" + Width;
+      }
+      
+      if(FileId.Contains("Plastic")){
+	filetag = "Plastic_" + Energy + "_" + Width;
+	if (FileId.Contains("20cm")) {folder = "plots/" + MainFolder + "/Plastic/20cm"; Width = "20cm";}
+	if (FileId.Contains("5cm")) {folder = "plots/" + MainFolder + "/Plastic/5cm"; Width = "5cm";}
+	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/Plastic/10cm"; Width = "10cm";}
+
+	filetag = "Plastic_" + Energy + "_" + Width;
+      }
+      
       //path to save the files a jpg or pdf
-      sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder[0].c_str(), xtitle.c_str(),filetag[0].c_str());
+      sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), xtitle.c_str(),filetag.c_str());
 
       //calling generate_1Dplot which will take this vector of histograms 
-      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag[0].c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
     }
   }
 }

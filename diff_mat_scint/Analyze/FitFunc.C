@@ -1,5 +1,5 @@
 int line_width[12] = {2,2,2,2,2,2,2,2,2,2,2,2};
-int line_style[12] = {1,1,1,1,1,1,1,1,1,1,1,1};                                                                   
+int line_style[12] = {1,1,1,1,1,1,1,1,1,1,1,1};
 int marker_style[12] = {8,22,34,47,33,22,34,39,41,43,45,23};
 int line_color[9] = {kBlue,kRed,kGreen+2,kViolet+2,kCyan+2,kYellow+1,kGray+2,kMagenta,kBlue+2};
 int line_color1[9]= {kBlue,kGreen+2,kGray+1,kViolet+2,kGreen-2,kYellow+1,kGray+2,kMagenta,kBlue+2};
@@ -8,23 +8,23 @@ vector<int> col={kGreen+2,kBlue,kViolet,kGray,kViolet+2,kGreen-2,kYellow+1,kGray
 vector<int> Style={3008,1001,3008,1001};
 void decorate(TH1F*,int);
 void decorate(TH1F* hist,int i){
-  hist->SetLineWidth(3);                                                                                                                        
+  hist->SetLineWidth(3);
 }
 void setLastBinAsOverFlow(TH1F*);
 TH1F* setMyRange(TH1F*,double,double);
 
 TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
-  //call it after setting last bin as overflow                                                                                                                               
+  //call it after setting last bin as overflow
   double err=0;
   if(xHigh > 13000) return h1;
-  if(xLow < -13000) return h1;                                                                                                                     
+  if(xLow < -13000) return h1;
   int nMax=h1->FindBin(xHigh);
   h1->SetBinContent(nMax,h1->IntegralAndError(nMax,h1->GetNbinsX(),err));
-  h1->SetBinError(nMax,err);                                                                                                                 
+  h1->SetBinError(nMax,err);
   for(int i=nMax+1;i<=h1->GetNbinsX()+1;i++){
     h1->SetBinContent(i,0);
     h1->SetBinError(i,0);
-                                                                                                                         
+
   }
   h1->GetXaxis()->SetRangeUser(xLow,xHigh);
   cout<<xLow<<"\t"<<xHigh<<"\t"<<"set range"<<endl;
@@ -53,9 +53,9 @@ TH1F* DrawOverflow(TH1F* h,int xmin, int xrange){
     htmp->Fill(htmp->GetBinCenter(i), h->GetBinContent(i));
   // Fill the underflows
   htmp->Fill(h->GetBinLowEdge(1)-1, h->GetBinContent(0));
-   
+
   htmp->SetEntries(h->GetEntries());
-   
+
   return htmp;
 }
 void setLastBinAsOverFlow(TH1F* h_hist){
@@ -83,20 +83,20 @@ void setLastBinAsOverFlow(TH1F* h_hist){
 
 // Define the Gaussian function
 double Gauss(double *x, double *par) {
- 
+
   double A = par[0];   // Amplitude
   double mu = par[1];  // Mean
   double sigma = par[2]; // Std. deviation
   double arg = ((x[0] - mu) * (x[0] - mu)) / (sigma*sigma);
 
-  return A * TMath::Exp(-0.5 * arg);    
+  return A * TMath::Exp(-0.5 * arg);
 }
 
-const int nfiles=100;                                                                                                                                                             
+const int nfiles=100;
 TFile *f[nfiles];
 
 vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int xmin=-1,char const *leg_head="",
-			       bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", const char* ytitile="", int rebin=-1){  
+			       bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", const char* ytitile="", int rebin=-1){
 
   TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name, 950, 850);
   canvas_n1->SetLeftMargin(0.135);
@@ -136,10 +136,10 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     for (int j = 1; j <= hist.at(i)->GetNbinsX(); ++j) {
       double center = hist.at(i)->GetBinCenter(j);
       double content = hist.at(i)->GetBinContent(j);
-	   
+
       // Skip the peak at 0
       if (center >= -0.5 && center <= +0.5) continue;
-	   
+
       if (content > maxContent) {
 	maxContent = content;
 	maxBin = j;
@@ -164,11 +164,11 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
     double fitMin = hist.at(i)->GetXaxis()->GetBinCenter(binLeft);
     double fitMax = hist.at(i)->GetXaxis()->GetBinCenter(binRight);
-	
+
     //        fitMin=xmin;
     fitMin=xmin;
     fitMax=xmax;
-	
+
     double old_mean=hist.at(i)->GetMean();
     double old_sigma = hist.at(i)->GetRMS();
     // cout << "\nsigma is: " << old_sigma << endl;
@@ -178,15 +178,11 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
       Fit_func[i] = new TF1("GaussFit", Gauss, fitMin, fitMax, 3);
       Fit_func[i]->SetParameters(peakValue, old_mean, 5.55);
       //else Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
-      hist.at(i)->Fit(Fit_func[i], "R");
-	  
+      hist.at(i)->Fit(Fit_func[i], "RQ");
+
       double mu = Fit_func[i]->GetParameter(1);
       double sigma = Fit_func[i]->GetParameter(2);
       double chi2byNDF = Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF();
-	  
-      // cout << "mu: " << mu << endl;
-      // cout << "sigma: " << sigma << endl;
-      // cout << "chi2/NDF: " << chi2byNDF << "\n\n";
 
       double rangeMin = peakValue - 2.0 * abs(sigma);
       double rangeMax = peakValue + 2.0 * abs(sigma);
@@ -195,10 +191,10 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
       fitMin = rangeMin;
       fitMax = rangeMax;
-	 
+
       //Fit_func[i]->SetRange(rangeMin, rangeMax);
       Fit_func[i]->SetRange(fitMin, fitMax);
-	
+
       old_mean = mu;
       old_sigma = sigma;
     }
@@ -217,13 +213,13 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
     TLatex *latex = new TLatex();
     latex->SetTextSize(0.03);
-    
+
     char* param1 = new char[50];
     char* param2 = new char[50];
     char* param3 = new char[50];
     char* chisqrNDF = new char[50];
-    
-    
+
+
     // sprintf(param1, "A: %0.2e #pm %0.4f", Fit_func[i]->GetParameter(0), Fit_func[i]->GetParError(0));
     // sprintf(param2, "\\mu: %0.3f \\pm %0.4f", Fit_func[i]->GetParameter(1), Fit_func[i]->GetParError(1));
     // sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", Fit_func[i]->GetParameter(2), Fit_func[i]->GetParError(2));
@@ -233,12 +229,12 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     sprintf(param2, "\\mu: %0.3f \\pm %0.4f", Mu, Fit_func[i]->GetParError(1));
     sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", Sigma, Fit_func[i]->GetParError(2));
     sprintf(chisqrNDF, "\\chi^{2}/NDF: %.4f", Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF());
-        
+
     latex->DrawLatexNDC(0.70,0.80, param1);
     latex->DrawLatexNDC(0.70,0.75, param2);
     latex->DrawLatexNDC(0.70,0.70, param3);
     latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
-  
+
     results.push_back(Mu);
     results.push_back(Fit_func[i]->GetParError(1));
     results.push_back(Sigma);
@@ -249,184 +245,254 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   legend->Draw();
   gPad->Modified();
   gPad->Update();
-   
+
   if (save_canvas) {
     canvas_n1->SaveAs(Form("%s.png", tag_name));
   }
 
-  return results;  
+  return results;
 }
 
-// Defining the fit function 
+// Defining the fit function
 double sqrtE(double *x, double *par) {
- 
+
   double a = par[0];   // coefficient
   double b = par[1];  // any constant
   double c = par[2];
 
   //return (sqrt((pow(a/sqrt(x[0]), 2)) + (pow(b,2))));
   return (sqrt((pow(a/sqrt(x[0]), 2)) + (pow(b/x[0],2)) + (pow(c,2))));
-  
+
   // double a = par[0];   // coefficient
   // double n = par[1];  //power
   // double b = par[2];  // any constant
   // return (sqrt((pow(a/pow(x[0],n), 2)) + (pow(b,2))));
 }
 
+
 void data_plot() {
   vector<string> data_files;
   vector<string> xtitle, ytitle;
 
-  data_files = {"Emeasured_vs_Einc.txt", "Ngamma_vs_Einc.txt", "Response_vs_Einc.txt", "Resolution_vs_Einc.txt"};
-  xtitle = {"E_{incident}(keV)", "E_{incident}(keV)", "E_{incident}(keV)", "E_{incident}(keV)"};
-  ytitle = {"E_{Measured}(keV)", "N_{\\gamma}", "\\frac{E_{Measured}}{E_{incident}}", "\\frac{\\sigma_{N_{\\gamma}}}{\\mu_{N_{\\gamma}}}"};
+  //filling all the txt files in a loop
 
-  for (int i=0; i<4; i++){
-    std::ifstream infile(data_files[i]);
-    if (!infile.is_open()) {
-        std::cerr << "Could not open data.txt!" << std::endl;
-        return;
-    }
+  // TSystemDirectory dir("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
+  // TList* files = dir.GetListOfFiles();
+  // if (!files) return;
 
-    std::vector<double> x_vals, y_vals, x_err_vals, y_err_vals;
+  // TIter next(files);
+  // TObject* obj;
+
+  // while ((obj = next())) {
+  //   TString fname = obj->GetName();
+  //   if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
+  //   if (fname.EndsWith(".txt")) {
+  //     //f.push_back("out_root_files/" + string(fname.Data()));
+  //     data_files.push_back("plots/Scintillation/Fits/txtFiles/" + string(fname.Data()));
+  //   }
+  // }
+
+  // cout << "\n\nSize of the files vector is: " << data_files.size() << endl;
+
+  for (int i=0; i<data_files.size(); i++){
+    TString FileName = data_files[i];
+    string ImgId;
+    
+    ifstream infile;
+
+    vector<double> x_vals, y_vals, x_err_vals, y_err_vals;
     double x, y, y_err;
 
-    while (infile >> x >> y >> y_err){
-        x_vals.push_back(x);
-        y_vals.push_back(y);
-	x_err_vals.push_back(0);
-	y_err_vals.push_back(y_err);
-    }
-
-    if (x_vals.empty()) {
-        std::cerr << "No data found!" << std::endl;
-        return;
-    }
 
     // Create canvas
-     data_files[i].resize(data_files[i].length() - 4);        //removing .txt part 
-     TCanvas *canvas = new TCanvas(data_files[i].c_str(), data_files[i].c_str(), 800, 600);
-     canvas->SetLeftMargin(0.135);
-     canvas->SetRightMargin(0.035);
-     canvas->SetTopMargin(0.057);
-     canvas->SetBottomMargin(0.11);
+    data_files[i].resize(data_files[i].length() - 4);        //removing .txt part
+    TCanvas *canvas = new TCanvas(data_files[i].c_str(), data_files[i].c_str(), 800, 600);
+    canvas->SetLeftMargin(0.135);
+    canvas->SetRightMargin(0.035);
+    canvas->SetTopMargin(0.057);
+    canvas->SetBottomMargin(0.11);
 
-
-    // char *xtitle = new char[50];
-    // char *ytitle = new char[50];
-
-    //sprintf(xtitle, %s, "");
-
-    // Create and draw the graph
-     //TGraph *graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
-
-     auto graph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
-
-    graph->SetTitle(" ");
-    graph->SetMarkerStyle(20);
-    graph->SetMarkerSize(1.0);
-    graph->SetMarkerColor(kBlue);
-    graph->Draw("AP");
-    // graph->GetXaxis()->SetTitle("E_{True}");
-    // graph->GetYaxis()->SetTitle("N_{\\gamma}");
-
-    graph->GetXaxis()->SetTitle(xtitle[i].c_str());
-    graph->GetXaxis()->SetTitleSize(0.055);
-    graph->GetXaxis()->SetTitleOffset(0.8);
-    
-    graph->GetYaxis()->SetTitle(ytitle[i].c_str());
-    graph->GetYaxis()->SetTitleSize(0.055);
-    graph->GetYaxis()->SetTitleOffset(0.9);
 
     // Fit with a straight line (pol1) and draw
-    if (data_files[i] == "Emeasured_vs_Einc" || data_files[i] == "Ngamma_vs_Einc"){
-    TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
-    graph->Fit(fit);  // "Q" = quiet, no print to stdout
-    fit->SetLineColor(kRed);
-    fit->Draw("same");
+    ;
+    TGraph *graph;
+    if (FileName.Contains("Emeasured_vs_Einc") || FileName.Contains("Ngamma_vs_Einc")){
 
-    // cout << "R2value: " << fit->GetR
+      infile.open(FileName);
+      while (infile >> x >> y){
+        x_vals.push_back(x);
+        y_vals.push_back(y);
+      }
+      cout << "EMEs/Ngama" << endl;
+      if (x_vals.empty()) {
+        std::cerr << "No data found!" << std::endl;
+        return;
+      }
+
+      graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
+      
+      
+      TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
+      graph->Fit(fit, "Q");  // "Q" = quiet, no print to stdout
+      fit->SetLineColor(kRed);
+      fit->Draw("same");
+
+      // cout << "R2value: " << fit->GetR
       double a = fit->GetParameter(0);  // intercept
-    double b = fit->GetParameter(1);  // slope
+      double b = fit->GetParameter(1);  // slope
 
-    // Create equation string
-    TString eq;
-    eq.Form("y = %.2fx + %.2f", b, a);
+      // Create equation string
+      TString eq;
+      eq.Form("y = %.2fx + %.2f", b, a);
 
-    // Draw equation on canvas using TLatex
-    TLatex latex;
-    latex.SetNDC();         // Use normalized coordinates
-    latex.SetTextSize(0.05);
-    latex.DrawLatex(0.25, 0.85, eq);
+      // Draw equation on canvas using TLatex
+      TLatex latex;
+      latex.SetNDC();         // Use normalized coordinates
+      latex.SetTextSize(0.05);
+      latex.DrawLatex(0.25, 0.85, eq);
 
-    canvas->Update();
+      canvas->Update();
+      if (FileName.Contains("Ngamma_vs_Einc")) ImgId = "Ngamma_vs_Einc";
+      if (FileName.Contains("Emeasured_vs_Einc")) ImgId = "Emeasured_vs_Einc";
+    
     }
 
-    if (data_files[i] == "Response_vs_Einc"){
+    if (FileName.Contains("Response_vs_Einc")){
       graph->GetYaxis()->SetRangeUser(0.5,1.2);
       TLine *line = new TLine(10, 1, 1090, 1);
       line->SetLineColor(kRed);
       line->SetLineWidth(2);
       line->SetLineStyle(2);
       line->Draw("same");
-      canvas->Update();  
+      canvas->Update();
+      ImgId = "Response_vs_Einc";
     }
 
-    if (data_files[i] == "Resolution_vs_Einc"){      
+    if (FileName.Contains("Resolution_vs_Einc")){
+
+      //infile = string(FileName).c_str();
+      infile.open(FileName);
+      while (infile >> x >> y >> y_err){
+        x_vals.push_back(x);
+        y_vals.push_back(y);
+    	x_err_vals.push_back(0);
+    	y_err_vals.push_back(y_err);
+      }
+
+      cout << "resolution" << endl;
+      if (x_vals.empty()) {
+        std::cerr << "No data found!" << std::endl;
+        return;
+      }
+
+      auto EGraph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
+    
+      EGraph->SetTitle(" ");
+      EGraph->SetMarkerStyle(20);
+      EGraph->SetMarkerSize(1.0);
+      EGraph->SetMarkerColor(kBlue);
+      EGraph->Draw("AP");
+      // EGraph->GetXaxis()->SetTitle("E_{True}");
+      // EGraph->GetYaxis()->SetTitle("N_{\\gamma}");
+    
+      //EGraph->GetXaxis()->SetTitle(xtitle[i].c_str());
+      EGraph->GetXaxis()->SetTitleSize(0.055);
+      EGraph->GetXaxis()->SetTitleOffset(0.8);
+
+      //EGraph->GetYaxis()->SetTitle(ytitle[i].c_str());
+      EGraph->GetYaxis()->SetTitleSize(0.055);
+      EGraph->GetYaxis()->SetTitleOffset(0.9);
+    
+    
       TF1 *fit_func = new TF1("fit_fcn", sqrtE, 100, 1000,3);
       fit_func->SetParameters(1,1/2,0);
-      
+    
       //TF1 *fit_func = new TF1("fit_fcn", sqrtE, 100, 1000,2);
       //fit_func->SetParameters(1,0);
       fit_func->SetRange(100, 1000);
-
-      graph->Fit(fit_func, "E");  
-
+    
+      EGraph->Fit(fit_func, "EQ");
+      // Filename.ReplaceAll(".txt", "");  
       fit_func->SetLineColor(kRed);
       fit_func->Draw("same");
 
-      double a = fit_func->GetParameter(0); 
-      double b = fit_func->GetParameter(1); 
-      double c = fit_func->GetParameter(2); 
-      
-      // double a = fit_func->GetParameter(0); 
-      // double n = fit_func->GetParameter(1); 
-      // double b = fit_func->GetParameter(2); 
-     
-    // Create equation string
-    TString eq;
-
-    //eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2f", a, b);
-    eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2fE^{-1} \\oplus %.2f", a, b, c);
+      double a = fit_func->GetParameter(0);
+      double b = fit_func->GetParameter(1);
+      double c = fit_func->GetParameter(2);
     
-    //eq.Form("R = %.2fE^{-%.2f} \\oplus %.2f", a, n, b);
+      // double a = fit_func->GetParameter(0);
+      // double n = fit_func->GetParameter(1);
+      // double b = fit_func->GetParameter(2);
     
-
-    char* chisqrNDF = new char[50];    
-    char *a_err = new char[50];
-    char *b_err = new char[50];
-    char *c_err = new char[50];
-
-    sprintf(chisqrNDF, "\\chi^{2}/NDF: %.2e", fit_func->GetChisquare()/fit_func->GetNDF());
-    sprintf(a_err, "\\Delta a: %.2e", fit_func->GetParError(0));
-    sprintf(b_err, "\\Delta b: %.2e", fit_func->GetParError(1));
-    sprintf(c_err, "\\Delta c: %.2e", fit_func->GetParError(2));
-
-
-    TLatex latex;
-    latex.SetNDC();   
-    latex.SetTextSize(0.045);
-    latex.DrawLatex(0.45, 0.85, eq);
-    latex.DrawLatexNDC(0.45,0.78, chisqrNDF);
-    latex.DrawLatexNDC(0.45,0.71, a_err);
-    latex.DrawLatexNDC(0.45,0.64, b_err);
-    latex.DrawLatexNDC(0.45,0.57, c_err);
+      // Create equation string
+      TString eq;
     
-    canvas->Update();    
+      //eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2f", a, b);
+      eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2fE^{-1} \\oplus %.2f", a, b, c);
+
+      //eq.Form("R = %.2fE^{-%.2f} \\oplus %.2f", a, n, b);
+
+
+      char* chisqrNDF = new char[50];
+      char *a_err = new char[50];
+      char *b_err = new char[50];
+      char *c_err = new char[50];
+
+      sprintf(chisqrNDF, "\\chi^{2}/NDF: %.2e", fit_func->GetChisquare()/fit_func->GetNDF());
+      sprintf(a_err, "\\Delta a: %.2e", fit_func->GetParError(0));
+      sprintf(b_err, "\\Delta b: %.2e", fit_func->GetParError(1));
+      sprintf(c_err, "\\Delta c: %.2e", fit_func->GetParError(2));
+
+
+      TLatex latex;
+      latex.SetNDC();
+      latex.SetTextSize(0.045);
+      latex.DrawLatex(0.45, 0.85, eq);
+      latex.DrawLatexNDC(0.45,0.78, chisqrNDF);
+      latex.DrawLatexNDC(0.45,0.71, a_err);
+      latex.DrawLatexNDC(0.45,0.64, b_err);
+      latex.DrawLatexNDC(0.45,0.57, c_err);
+
+      canvas->Update();
+      ImgId = "Resolution_vs_Einc";
     }
 
+    infile.close();
+
+    //Defining the folder names:
+
+    string MainFolder, folder, ImgName;
+    MainFolder = "plots/Scintillation/Fits/Resol_Resp";
+    string Width, ImageId;
+
+    if(FileName.Contains("BGO")){
+      if (FileName.Contains("2.5cm")) {folder = MainFolder + "/BGO/2.5cm/"; Width = "2.5cm";}
+      if (FileName.Contains("_5cm")) {folder = MainFolder + "/BGO/5cm/"; Width = "5cm";}
+      if (FileName.Contains("10cm")) {folder = MainFolder + "/BGO/10cm/"; Width = "10cm";}
+      
+      ImgName = "BGO_" + Width + ImgId;
+      
+    }
+    
+    if(FileName.Contains("PbWO4")){
+      if (FileName.Contains("2.5cm")) {folder = MainFolder + "/PbWO4/2.5cm/"; Width = "2.5cm";}
+      if (FileName.Contains("_5cm")) {folder = MainFolder + "/PbWO4/5cm/"; Width = "5cm";}
+      if (FileName.Contains("10cm")) {folder = MainFolder + "/PbWO4/10cm/"; Width = "10cm";}
+      
+      ImgName = "PbWO4_" + Width + "_" + ImgId;
+    }
+    
+    if(FileName.Contains("Plastic")){
+      if (FileName.Contains("20cm")) {folder = MainFolder + "/Plastic/20cm/"; Width = "20cm";}
+      if (FileName.Contains("5cm")) {folder = MainFolder + "/Plastic/5cm/"; Width = "5cm";}
+      if (FileName.Contains("10cm")) {folder = MainFolder + "/Plastic/10cm/"; Width = "10cm";}
+      
+      ImgName = "Plastic_" + Width + "_"  + ImgId;
+    }
+    
     //saving the canvas
-    string image_name = "./plots/ScintPlots/" +  data_files[i] + ".png";
+    string image_name = folder + ImgName + ".png";
+    cout << image_name << endl;
     canvas->SaveAs(image_name.c_str());
   }
 }
@@ -438,97 +504,213 @@ void FitFunc(string pathname)
   char *full_path = new char[1000];
   char *leg_head = new char[100];
   vector<string> f;
-  vector<string> filetag;
-  vector<string> folder;
+  string filetag;
+  string folder;
 
-  vector<string> Energy;
   double Mu_calib = 0, E_calib = 0;
-  Energy = {"511keV", "100keV", "150keV", "300keV", "450keV", "600keV", "800keV", "1000keV"};
-  std::ofstream outFile1("Resolution_vs_Einc.txt"), outFile2("Ngamma_vs_Einc.txt"), outFile3("Emeasured_vs_Einc.txt"), outFile4("Response_vs_Einc.txt");
 
-  if (!outFile1 || !outFile2 || !outFile3 || !outFile4) {
-    std::cerr << "Error opening file!" << std::endl;
-    return 1;
-  }
+  std::vector<std::string> rootFiles;
 
-  for (int iEn = 0; iEn < Energy.size(); iEn++){
-    cout << "\n=======================Results for " << Energy[iEn] << "=========================================\n\n";
-    f={"out_root_files/gammaE_" + Energy[iEn] + "_water_RI_Birk_0_SY200_pram_reproduce_PbWO4_out.root"};
-    filetag={"\\gamma_{inc} = " + Energy[iEn]};
-    folder = {"plots/ScintPlots/ItrFit"};
-    
-    vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
-      
-    vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
-    vector<int>xmin = {-200,0,0,0,0,0,0,0};
-    
-    string name = "nOptical_Photons";
-    sprintf(hist_name,"%s",name.c_str());
-  
-    for(int iFile=0; iFile < f.size(); iFile++){
-      TFile *root_file = new TFile(f[iFile].c_str());
-      vector<TH1F> HistList;
-      TH1F* hist = (TH1F*)root_file->Get(hist_name);
-    
-      vector<TH1*> hist_list;
-    
-      hist_list.push_back(hist);
-    
-      int xrange=0.0;	  
-      string xtitle, ytitle;
-      
-      xtitle = hist->GetXaxis()->GetTitle();
-      ytitle = hist->GetYaxis()->GetTitle();
-    
-      sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder[0].c_str(), "nOpticalPhotns_ItrFit", Energy[iEn].c_str());
+  //filling all the root files in an array f
+  //TSystemDirectory dir("out_root_files", "out_root_files");
+  TSystemDirectory dir("check_out_root_files", "check_out_root_files");
+  TList* files = dir.GetListOfFiles();
+  if (!files) return;
 
-      vector<double> params;
-      params = generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag[0].c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+  TIter next(files);
+  TObject* obj;
 
-      //storing the parameters in the txt file
-      double Mu, Mu_err, Sigma, Sigma_err, Resol, Resol_err, EMeasured;
-      string energy;
-
-      int energy_val;
-   
-      Mu = params[0];
-      Mu_err = params[1];
-      Sigma = params[2];
-      Sigma_err = params[3];
-
-      Resol = Sigma/Mu;
-      Resol_err = Resol * sqrt((pow(Sigma_err/Sigma,2)) + (pow(Mu_err/Mu,2)));
-
-      energy = Energy[iEn].erase(Energy[iEn].length() - 3);
-      energy_val = stoi(energy);
-
-      if ( energy == "511") {
-	Mu_calib = Mu;
-	E_calib = energy_val;
-      }
-
-      EMeasured = (E_calib/Mu_calib)*Mu;
-      
-      outFile1 << energy << fixed << setprecision(2)
-	       << setw(12) << Resol << fixed << setprecision(5)
-	       << setw(12) << Resol_err << endl;
-
-      outFile2 << energy << fixed << setprecision(2)
-	       << setw(12) << Mu << endl;
-
-      outFile3 << energy << fixed << setprecision(2)
-	       << setw(12) << EMeasured << endl;
-
-      outFile4 << energy << fixed << setprecision(2)
-	       << setw(12) << EMeasured/energy_val << endl;      
+  while ((obj = next())) {
+    TString fname = obj->GetName();
+    if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
+    if (fname.EndsWith(".root")) {
+      //f.push_back("out_root_files/" + string(fname.Data()));
+      f.push_back("check_out_root_files/" + string(fname.Data()));
     }
   }
-  outFile1.close();
-  outFile2.close();
-  outFile3.close();
-  outFile4.close();
 
-  //fitting the datapoints
+  cout << "\n\nSize of the files vector is: " << f.size() << endl;
+
+
+  vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
+
+  vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
+  vector<int>xmin = {-200,0,0,0,0,0,0,0};
+  
+  string name = "nOptical_Photons";
+  sprintf(hist_name,"%s",name.c_str());
+  
+  //cleaning the contents of the txt files before starting
+  int result = system("./txtClean.sh");  // Ensure script is executable
+  
+  if (result != 0) {
+    cerr << "Shell script failed with code: " << result << endl;
+  } else {
+    cout << "Old txt files removed!!." << endl;
+  }
+
+  //starting looping over the files
+  for(int iFile=0; iFile < f.size(); iFile++){
+    TFile *root_file = new TFile(f[iFile].c_str());
+    vector<TH1F> HistList;
+    TH1F* hist = (TH1F*)root_file->Get(hist_name);
+
+    vector<TH1*> hist_list;
+
+    hist_list.push_back(hist);
+
+    int xrange=0.0;
+    string xtitle, ytitle;
+
+    xtitle = hist->GetXaxis()->GetTitle();
+    ytitle = hist->GetYaxis()->GetTitle();
+
+
+    //specifying the path of the folder etc
+    string MainFolder;
+    //if(histId.Contains("Edep") || histId.Contains("Compt")) MainFolder = "Pho_Interact";
+    MainFolder = "Scintillation/Fits/ItrFit";
+    TString FileId = f[iFile];
+    string Energy, Width, txtFileId;
+    
+    //making identifier for energy
+    if (FileId.Contains("511keV")) Energy = "511keV";
+    if (FileId.Contains("100keV")) Energy = "100keV";
+    if (FileId.Contains("150keV")) Energy = "150keV";
+    if (FileId.Contains("300keV")) Energy = "300keV";
+    if (FileId.Contains("450keV")) Energy = "450keV";
+    if (FileId.Contains("600keV")) Energy = "600keV";
+    if (FileId.Contains("800keV")) Energy = "800keV";
+    if (FileId.Contains("1000keV")) Energy = "1000keV";
+
+
+    if(FileId.Contains("BGO")){
+      if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/BGO/2.5cm"; Width = "2.5cm";}
+      if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/BGO/5cm"; Width = "5cm";}
+      if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/BGO/10cm"; Width = "10cm";}
+
+      filetag = "BGO_" + Energy + "_" + Width;
+      txtFileId = "BGO_" + Width;
+	
+    }
+
+    if(FileId.Contains("PbWO4")){
+      if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/PbWO4/2.5cm"; Width = "2.5cm";}
+      if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/PbWO4/5cm"; Width = "5cm";}
+      if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/PbWO4/10cm"; Width = "10cm";}
+
+      filetag = "PbWO4_" + Energy + "_" + Width;
+      txtFileId = "PbWO4_" + Width;
+    }
+
+    if(FileId.Contains("Plastic")){
+      filetag = "Plastic_" + Energy + "_" + Width;
+      if (FileId.Contains("20cm")) {folder = "plots/" + MainFolder + "/Plastic/20cm"; Width = "20cm";}
+      if (FileId.Contains("5cm")) {folder = "plots/" + MainFolder + "/Plastic/5cm"; Width = "5cm";}
+      if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/Plastic/10cm"; Width = "10cm";}
+
+      filetag = "Plastic_" + Energy + "_" + Width;
+      txtFileId = "Plastic_" + Width;
+    }
+
+    sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), "nOpticalPhotns_ItrFit", Energy.c_str());
+
+    vector<double> params;
+    params = generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+
+    //storing the parameters in the txt file
+    ofstream outFile1("plots/Scintillation/Fits/txtFiles/Resolution_vs_Einc_" + txtFileId + ".txt", ios::app), outFile2("plots/Scintillation/Fits/txtFiles/Ngamma_vs_Einc_" + txtFileId + ".txt", ios::app);
+    
+    if (!outFile1 || !outFile2) {
+      std::cerr << "Error opening file!" << std::endl;
+      return 1;
+    }
+
+    double Mu, Mu_err, Sigma, Sigma_err, Resol, Resol_err;
+    string energy;
+
+    int energy_val;
+
+    Mu = params[0];
+    Mu_err = params[1];
+    Sigma = params[2];
+    Sigma_err = params[3];
+
+    Resol = Sigma/Mu;
+    Resol_err = Resol * sqrt((pow(Sigma_err/Sigma,2)) + (pow(Mu_err/Mu,2)));
+
+    energy = Energy.erase(Energy.length() - 3);
+    energy_val = stoi(energy);
+
+    //writing the txt files
+    outFile1 << energy << fixed << setprecision(2)
+	     << setw(12) << Resol << fixed << setprecision(5)
+	     << setw(12) << Resol_err << endl;
+
+    outFile2 << energy << fixed << setprecision(2)
+	     << setw(12) << Mu << endl;
+
+    outFile1.close();
+    outFile2.close();
+  }
+
+  vector<string> TxtArr;
+  double x, y, EMeasured;
+  TxtArr = {"BGO_2.5cm", "BGO_5cm", "BGO_10cm", "PbWO4_2.5cm", "PbWO4_5cm", "PbWO4_10cm", "Plastic_5cm", "Plastic_10cm", "Plastic_20cm"};
+
+  vector<string> data_files1;
+  //storing the names of all txt files in the array:
+   TSystemDirectory dir1("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
+  TList* files1 = dir1.GetListOfFiles();
+  if (!files1) return;
+
+  TIter next1(files1);
+  TObject* obj1;
+
+  while ((obj1 = next1())) {
+    TString fname = obj1->GetName();
+    if (!obj1->IsA()->InheritsFrom("TSystemFile")) continue;
+    if (fname.Contains("Ngamma") && fname.EndsWith(".txt")) {
+      data_files1.push_back("plots/Scintillation/Fits/txtFiles/" + string(fname.Data()));
+    }
+  }
+
+  for (int itxt = 0; itxt < TxtArr.size(); itxt++){
+    for (int ifile = 0; ifile< data_files1.size(); ifile++){
+      TString FileName;
+      FileName = data_files1[ifile];
+      if(FileName.Contains(TxtArr[itxt])){
+	ifstream ChkFile("plots/Scintillation/Fits/txtFiles/Ngamma_vs_Einc_" + TxtArr[itxt] + ".txt");
+	ofstream outFile3("plots/Scintillation/Fits/txtFiles/Emeasured_vs_Einc_" + TxtArr[itxt] + ".txt");
+
+	ofstream outFile4("plots/Scintillation/Fits/txtFiles/Response_vs_Einc_" + TxtArr[itxt] + ".txt");
+	while (ChkFile >> x >> y){ 
+	  if (x == 511) {E_calib = x; Mu_calib = y;}   	  
+	}
+
+	ChkFile.clear();                // Clear EOF flag
+	ChkFile.seekg(0, std::ios::beg); // Go back to beginning
+	
+
+	//now filling the values of the txt file for EMeaured and Response
+	while (ChkFile >> x >> y){
+	  EMeasured = (E_calib/Mu_calib)*y;
+
+	  outFile3 << x << setw(12) << EMeasured << endl;
+
+	  outFile4 << x << fixed << setprecision(2)
+		   << setw(12) << EMeasured/x << endl;
+	}
+
+	ChkFile.close();
+	outFile3.close();
+	outFile4.close();
+			
+      }
+    }
+  }
+
+  // fitting the datapoints
   data_plot();
 }
 
