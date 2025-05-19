@@ -1,12 +1,12 @@
 #!/bin/bash
 
 make
-materials=("BGO" "Plastic" "PbWO4")
+materials=("PbWO4")
 
 txt_file="inputfile.txt"
 for id in "${materials[@]}"; do
 
-    for f in src_root_files/*.root; do
+    for f in src_root_files/*_5cm*.root; do
 	#> "$txt_file"
       [[ -e "$f" ]] || continue
       if [[ "$f" == *"$id"* ]]; then

@@ -105,7 +105,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   canvas_n1->SetBottomMargin(0.1);
   gStyle->SetOptStat(0);
 
-  TLegend *legend = new TLegend(0.71, 0.84, 0.85, 0.90);
+  TLegend *legend = new TLegend(0.66, 0.84, 0.80, 0.90);
   legend->SetTextSize(0.035);
   legend->SetLineColor(kWhite);
   legend->SetNColumns(2);
@@ -175,10 +175,11 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
     for (int itr = 0; itr < 400; ++itr) {
       //hist.at(i)->Fit(Fit_func[i], "RE");
+      cout << "Sigma is: " << old_sigma << endl;
       Fit_func[i] = new TF1("GaussFit", Gauss, fitMin, fitMax, 3);
-      Fit_func[i]->SetParameters(peakValue, old_mean, 5.55);
+      Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
       //else Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
-      hist.at(i)->Fit(Fit_func[i], "RQ");
+      hist.at(i)->Fit(Fit_func[i], "R");
 
       double mu = Fit_func[i]->GetParameter(1);
       double sigma = Fit_func[i]->GetParameter(2);
@@ -196,7 +197,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
       Fit_func[i]->SetRange(fitMin, fitMax);
 
       old_mean = mu;
-      old_sigma = sigma;
+      old_sigma = abs(sigma);
     }
 
     //hist.at(i)->GetXaxis()->SetRangeUser(fitMin, fitMax);
@@ -272,29 +273,31 @@ double sqrtE(double *x, double *par) {
 
 void data_plot() {
   vector<string> data_files;
-  vector<string> xtitle, ytitle;
-
+  
   //filling all the txt files in a loop
 
-  // TSystemDirectory dir("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
-  // TList* files = dir.GetListOfFiles();
-  // if (!files) return;
+  TSystemDirectory dir("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
+  TList* files = dir.GetListOfFiles();
+  if (!files) return;
 
-  // TIter next(files);
-  // TObject* obj;
+  TIter next(files);
+  TObject* obj;
 
-  // while ((obj = next())) {
-  //   TString fname = obj->GetName();
-  //   if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
-  //   if (fname.EndsWith(".txt")) {
-  //     //f.push_back("out_root_files/" + string(fname.Data()));
-  //     data_files.push_back("plots/Scintillation/Fits/txtFiles/" + string(fname.Data()));
-  //   }
-  // }
+  while ((obj = next())) {
+    TString fname = obj->GetName();
+    if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
+    if (fname.EndsWith(".txt")) {
+      //f.push_back("out_root_files/" + string(fname.Data()));
+      data_files.push_back("plots/Scintillation/Fits/txtFiles/" + string(fname.Data()));
+    }
+  }
 
-  // cout << "\n\nSize of the files vector is: " << data_files.size() << endl;
+  cout << "\n\nSize of the files vector is: " << data_files.size() << endl;
 
   for (int i=0; i<data_files.size(); i++){
+    string xtitle, ytitle;
+    xtitle = "E_{incident}(keV)";
+
     TString FileName = data_files[i];
     string ImgId;
     
@@ -314,22 +317,36 @@ void data_plot() {
 
 
     // Fit with a straight line (pol1) and draw
-    ;
+    
     TGraph *graph;
     if (FileName.Contains("Emeasured_vs_Einc") || FileName.Contains("Ngamma_vs_Einc")){
+      if (FileName.Contains("Ngamma_vs_Einc")) {ImgId = "Ngamma_vs_Einc"; ytitle = "N_{\\gamma}";}
+      if (FileName.Contains("Emeasured_vs_Einc")) {ImgId = "Emeasured_vs_Einc"; ytitle = "E_{Measured}(keV)";} 
 
       infile.open(FileName);
       while (infile >> x >> y){
         x_vals.push_back(x);
-        y_vals.push_back(y);
-      }
-      cout << "EMEs/Ngama" << endl;
+        y_vals.push_back(y);}
+
       if (x_vals.empty()) {
         std::cerr << "No data found!" << std::endl;
-        return;
-      }
+        return;}
 
       graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
+
+      graph->SetTitle(" ");
+      graph->SetMarkerStyle(20);
+      graph->SetMarkerSize(1.0);
+      graph->SetMarkerColor(kBlue);
+      graph->Draw("AP");
+
+      graph->GetXaxis()->SetTitle(xtitle.c_str());
+      graph->GetXaxis()->SetTitleSize(0.055);
+      graph->GetXaxis()->SetTitleOffset(0.8);
+      
+      graph->GetYaxis()->SetTitle(ytitle.c_str());
+      graph->GetYaxis()->SetTitleSize(0.055);
+      graph->GetYaxis()->SetTitleOffset(0.9);
       
       
       TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
@@ -352,25 +369,54 @@ void data_plot() {
       latex.DrawLatex(0.25, 0.85, eq);
 
       canvas->Update();
-      if (FileName.Contains("Ngamma_vs_Einc")) ImgId = "Ngamma_vs_Einc";
-      if (FileName.Contains("Emeasured_vs_Einc")) ImgId = "Emeasured_vs_Einc";
+      
     
-    }
+      }
 
     if (FileName.Contains("Response_vs_Einc")){
+      ImgId = "Response_vs_Einc";
+      ytitle = "\\frac{E_{Measured}}{E_{incident}}";
+
+      infile.open(FileName);
+      while (infile >> x >> y){
+        x_vals.push_back(x);
+        y_vals.push_back(y);}
+      
+      if (x_vals.empty()) {
+        std::cerr << "No data found!" << std::endl;
+        return;}
+      
+      graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
+
+      graph->SetTitle(" ");
+      graph->SetMarkerStyle(20);
+      graph->SetMarkerSize(1.0);
+      graph->SetMarkerColor(kBlue);
+      graph->Draw("AP");
+          
+      graph->GetXaxis()->SetTitle(xtitle.c_str());
+      graph->GetXaxis()->SetTitleSize(0.055);
+      graph->GetXaxis()->SetTitleOffset(0.8);
+      
+      graph->GetYaxis()->SetTitle(ytitle.c_str());
+      graph->GetYaxis()->SetTitleSize(0.055);
+      graph->GetYaxis()->SetTitleOffset(0.9);
+
       graph->GetYaxis()->SetRangeUser(0.5,1.2);
+
       TLine *line = new TLine(10, 1, 1090, 1);
       line->SetLineColor(kRed);
       line->SetLineWidth(2);
       line->SetLineStyle(2);
       line->Draw("same");
+      
       canvas->Update();
-      ImgId = "Response_vs_Einc";
     }
 
     if (FileName.Contains("Resolution_vs_Einc")){
+      ImgId = "Resolution_vs_Einc";
+      ytitle = "\\frac{\\sigma_{N_{\\gamma}}}{\\mu_{N_{\\gamma}}}";
 
-      //infile = string(FileName).c_str();
       infile.open(FileName);
       while (infile >> x >> y >> y_err){
         x_vals.push_back(x);
@@ -379,7 +425,6 @@ void data_plot() {
     	y_err_vals.push_back(y_err);
       }
 
-      cout << "resolution" << endl;
       if (x_vals.empty()) {
         std::cerr << "No data found!" << std::endl;
         return;
@@ -392,14 +437,12 @@ void data_plot() {
       EGraph->SetMarkerSize(1.0);
       EGraph->SetMarkerColor(kBlue);
       EGraph->Draw("AP");
-      // EGraph->GetXaxis()->SetTitle("E_{True}");
-      // EGraph->GetYaxis()->SetTitle("N_{\\gamma}");
-    
-      //EGraph->GetXaxis()->SetTitle(xtitle[i].c_str());
+      
+      EGraph->GetXaxis()->SetTitle(xtitle.c_str());
       EGraph->GetXaxis()->SetTitleSize(0.055);
       EGraph->GetXaxis()->SetTitleOffset(0.8);
 
-      //EGraph->GetYaxis()->SetTitle(ytitle[i].c_str());
+      EGraph->GetYaxis()->SetTitle(ytitle.c_str());
       EGraph->GetYaxis()->SetTitleSize(0.055);
       EGraph->GetYaxis()->SetTitleOffset(0.9);
     
@@ -407,8 +450,6 @@ void data_plot() {
       TF1 *fit_func = new TF1("fit_fcn", sqrtE, 100, 1000,3);
       fit_func->SetParameters(1,1/2,0);
     
-      //TF1 *fit_func = new TF1("fit_fcn", sqrtE, 100, 1000,2);
-      //fit_func->SetParameters(1,0);
       fit_func->SetRange(100, 1000);
     
       EGraph->Fit(fit_func, "EQ");
@@ -419,11 +460,7 @@ void data_plot() {
       double a = fit_func->GetParameter(0);
       double b = fit_func->GetParameter(1);
       double c = fit_func->GetParameter(2);
-    
-      // double a = fit_func->GetParameter(0);
-      // double n = fit_func->GetParameter(1);
-      // double b = fit_func->GetParameter(2);
-    
+        
       // Create equation string
       TString eq;
     
@@ -454,7 +491,6 @@ void data_plot() {
       latex.DrawLatexNDC(0.45,0.57, c_err);
 
       canvas->Update();
-      ImgId = "Resolution_vs_Einc";
     }
 
     infile.close();
@@ -494,8 +530,8 @@ void data_plot() {
     string image_name = folder + ImgName + ".png";
     cout << image_name << endl;
     canvas->SaveAs(image_name.c_str());
+    }
   }
-}
 
 
 void FitFunc(string pathname)
@@ -512,8 +548,8 @@ void FitFunc(string pathname)
   std::vector<std::string> rootFiles;
 
   //filling all the root files in an array f
-  //TSystemDirectory dir("out_root_files", "out_root_files");
-  TSystemDirectory dir("check_out_root_files", "check_out_root_files");
+  TSystemDirectory dir("out_root_files", "out_root_files");
+  //TSystemDirectory dir("check_out_root_files", "check_out_root_files");
   TList* files = dir.GetListOfFiles();
   if (!files) return;
 
@@ -524,8 +560,8 @@ void FitFunc(string pathname)
     TString fname = obj->GetName();
     if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
     if (fname.EndsWith(".root")) {
-      //f.push_back("out_root_files/" + string(fname.Data()));
-      f.push_back("check_out_root_files/" + string(fname.Data()));
+      f.push_back("out_root_files/" + string(fname.Data()));
+      //f.push_back("check_out_root_files/" + string(fname.Data()));
     }
   }
 
@@ -685,8 +721,7 @@ void FitFunc(string pathname)
 
 	ofstream outFile4("plots/Scintillation/Fits/txtFiles/Response_vs_Einc_" + TxtArr[itxt] + ".txt");
 	while (ChkFile >> x >> y){ 
-	  if (x == 511) {E_calib = x; Mu_calib = y;}   	  
-	}
+	  if (x == 511) {E_calib = x; Mu_calib = y;}}
 
 	ChkFile.clear();                // Clear EOF flag
 	ChkFile.seekg(0, std::ios::beg); // Go back to beginning
@@ -699,13 +734,12 @@ void FitFunc(string pathname)
 	  outFile3 << x << setw(12) << EMeasured << endl;
 
 	  outFile4 << x << fixed << setprecision(2)
-		   << setw(12) << EMeasured/x << endl;
-	}
+		   << setw(12) << EMeasured/x << endl;}
+
 
 	ChkFile.close();
 	outFile3.close();
-	outFile4.close();
-			
+	outFile4.close();			
       }
     }
   }

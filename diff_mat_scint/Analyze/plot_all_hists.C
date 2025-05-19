@@ -93,14 +93,14 @@ TH1F* setMyRange(TH1F *h1,double xLow,double xHigh){
 //void generate_1Dplot(vector<TH1F*> hist, TH1* hist_ratio,char const *tag_name="", float energy=-1, int xmax=-1,int xmin=-1,char const *leg_head="",
 //		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
 void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int xmin=-1,char const *leg_head="",
-		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", const char* ytitile="", int rebin=-1){  
+		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", const char* ytitile="", int rebin=-1, bool statFlag = false){  
 
   TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
   canvas_n1->Range(-60.25,-0.625,562.25,0.625);
   canvas_n1->SetFillColor(0);
   canvas_n1->SetBorderMode(0);
   canvas_n1->SetBorderSize(2);
-  gStyle->SetOptStat(1);
+  gStyle->SetOptStat(statFlag);
   
 
   auto *p1 = new TPad("p1","p1",0.,0.01,1.,1.);  p1->Draw();
@@ -116,7 +116,7 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.47,0.76,0.55,0.89);  
+  legend = new TLegend(0.37,0.76,0.45,0.89);  
   legend->SetTextSize(0.030);
   legend->SetLineColor(kWhite);
   char* lhead = new char[100];
@@ -170,10 +170,10 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
       }
     }
 
- double effectiveXmax = hist.at(i)->GetBinLowEdge(lastNonZeroBin + 1);
+    //double effectiveXmax = hist.at(i)->GetBinLowEdge(lastNonZeroBin + 1);
 
- //hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
-hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
+ hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
+    //hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
  hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
  hist.at(i)->SetLineStyle(line_style[i]);
  hist.at(i)->SetLineColor(line_color[i]);
@@ -247,8 +247,8 @@ hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
     // if(!i) hist.at(i)->Draw("hist colz");
     // else   hist.at(i)->Draw("hist sames colz"); //overlaying the histograms
 
-    if(!i) hist.at(i)->Draw("Hist");
-    else   hist.at(i)->Draw("Hist"); //overlaying the histograms
+    if(!i) hist.at(i)->Draw("hist colz");
+    else   hist.at(i)->Draw("hist colz"); //overlaying the histograms
     
     TPaveStats *ptstats1 = new TPaveStats(0.80,0.75,0.965,0.9,"brNDC");
     ptstats1->SetBorderSize(1);
@@ -300,7 +300,7 @@ hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
 
   TLatex* MatName = new TLatex();
   MatName->SetTextSize(0.035);
-  MatName->DrawLatexNDC(0.65,0.83, title);
+  MatName->DrawLatexNDC(0.50,0.83, title);
  
   // char* en_lat = new char[500];
   // textOnTop->SetTextSize(0.04);
@@ -419,9 +419,11 @@ void plot_all_hists(string pathname)
 	
       //setting up the axis titles
       string xtitle, ytitle;
+      bool hist_2d = false;
       if ( histType == "TH2I" || histType == "TH2F" || histType == "TH2D") {
 	xtitle = hist->GetXaxis()->GetTitle();
-	ytitle = hist->GetYaxis()->GetTitle();}
+	ytitle = hist->GetYaxis()->GetTitle();
+	hist_2d = true;}
 
       else {
 	xtitle = hist->GetName();
@@ -429,8 +431,10 @@ void plot_all_hists(string pathname)
 
       //specifying the folder to save the plots
       string MainFolder;
-      if(histId.Contains("Edep") || histId.Contains("Compt")) MainFolder = "Pho_Interact";
-      else MainFolder = "Scintillation/Opt_Pho_Ana";
+      bool logFlag = false;
+      bool statFlag = false;
+      if(histId.Contains("Edep") || histId.Contains("Compt")) {MainFolder = "Pho_Interact"; if (!hist_2d) logFlag = true;}
+      else {MainFolder = "Scintillation/Opt_Pho_Ana"; statFlag = true;}
       TString FileId = f[iFile];
 
     //making identifier for energy
@@ -445,14 +449,14 @@ void plot_all_hists(string pathname)
       
       if(FileId.Contains("BGO")){
 	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/BGO/2.5cm"; Width = "2.5cm";} 
-	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/BGO/5cm" Width = "5cm";}
+	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/BGO/5cm"; Width = "5cm";}
 	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/BGO/10cm"; Width = "10cm";}
 
 	filetag = "BGO_" + Energy + "_" + Width;
       }
       
       if(FileId.Contains("PbWO4")){
-	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/PbWO4/2.5cm" Width = "2.5cm";}
+	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/PbWO4/2.5cm"; Width = "2.5cm";}
 	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/PbWO4/5cm"; Width = "5cm";}
 	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/PbWO4/10cm"; Width = "10cm";}
 
@@ -472,7 +476,7 @@ void plot_all_hists(string pathname)
       sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), xtitle.c_str(),filetag.c_str());
 
       //calling generate_1Dplot which will take this vector of histograms 
-      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+      generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
     }
   }
 }
