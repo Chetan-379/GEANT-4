@@ -231,11 +231,16 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", Sigma, Fit_func[i]->GetParError(2));
     sprintf(chisqrNDF, "\\chi^{2}/NDF: %.4f", Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF());
 
+    // latex->DrawLatexNDC(0.70,0.80, param1);
+    // latex->DrawLatexNDC(0.70,0.75, param2);
+    // latex->DrawLatexNDC(0.70,0.70, param3);
+    // latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
+
     latex->DrawLatexNDC(0.70,0.80, param1);
     latex->DrawLatexNDC(0.70,0.75, param2);
     latex->DrawLatexNDC(0.70,0.70, param3);
     latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
-
+    
     results.push_back(Mu);
     results.push_back(Fit_func[i]->GetParError(1));
     results.push_back(Sigma);
@@ -269,6 +274,14 @@ double sqrtE(double *x, double *par) {
   // double b = par[2];  // any constant
   // return (sqrt((pow(a/pow(x[0],n), 2)) + (pow(b,2))));
 }
+
+double Linear(double *x, double *par) {
+
+  double a = par[0];   // slope
+  
+  return a*x[0];
+}
+
 
 
 void data_plot() {
@@ -349,18 +362,41 @@ void data_plot() {
       graph->GetYaxis()->SetTitleOffset(0.9);
       
       
-      TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
+      // TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
+      // graph->Fit(fit, "Q");  // "Q" = quiet, no print to stdout
+      // fit->SetLineColor(kRed);
+      // fit->Draw("same");
+
+      // // cout << "R2value: " << fit->GetR
+      // double a = fit->GetParameter(0);  // intercept
+      // double b = fit->GetParameter(1);  // slope
+
+      // // Create equation string
+      // TString eq;
+      // eq.Form("y = %.2fx + %.2f", b, a);
+
+      // // Draw equation on canvas using TLatex
+      // TLatex latex;
+      // latex.SetNDC();         // Use normalized coordinates
+      // latex.SetTextSize(0.05);
+      // latex.DrawLatex(0.25, 0.85, eq);
+
+      // canvas->Update();
+
+      TF1 *fit = new TF1("line_fit", Linear, 100, 1000,1);
+      fit ->SetParameters(1.,1);
+      fit ->SetRange(100.,1000.);
+
       graph->Fit(fit, "Q");  // "Q" = quiet, no print to stdout
       fit->SetLineColor(kRed);
       fit->Draw("same");
-
+      
       // cout << "R2value: " << fit->GetR
       double a = fit->GetParameter(0);  // intercept
-      double b = fit->GetParameter(1);  // slope
-
+      
       // Create equation string
       TString eq;
-      eq.Form("y = %.2fx + %.2f", b, a);
+      eq.Form("N_\\gamma = (%.2f \\pm %.1e)E_{inc}", a, fit->GetParError(0));
 
       // Draw equation on canvas using TLatex
       TLatex latex;
@@ -368,9 +404,7 @@ void data_plot() {
       latex.SetTextSize(0.05);
       latex.DrawLatex(0.25, 0.85, eq);
 
-      canvas->Update();
-      
-    
+      canvas->Update();          
       }
 
     if (FileName.Contains("Response_vs_Einc")){
@@ -386,7 +420,8 @@ void data_plot() {
         std::cerr << "No data found!" << std::endl;
         return;}
       
-      graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
+      //graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
+      graph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
 
       graph->SetTitle(" ");
       graph->SetMarkerStyle(20);
@@ -548,7 +583,8 @@ void FitFunc(string pathname)
   std::vector<std::string> rootFiles;
 
   //filling all the root files in an array f
-  TSystemDirectory dir("out_root_files", "out_root_files");
+  TSystemDirectory dir("BGO_out_root_files", "BGO_out_root_files");
+  //TSystemDirectory dir("out_root_files", "out_root_files");
   //TSystemDirectory dir("check_out_root_files", "check_out_root_files");
   TList* files = dir.GetListOfFiles();
   if (!files) return;
@@ -560,7 +596,7 @@ void FitFunc(string pathname)
     TString fname = obj->GetName();
     if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
     if (fname.EndsWith(".root")) {
-      f.push_back("out_root_files/" + string(fname.Data()));
+      f.push_back("BGO_out_root_files/" + string(fname.Data()));
       //f.push_back("check_out_root_files/" + string(fname.Data()));
     }
   }
@@ -568,10 +604,12 @@ void FitFunc(string pathname)
   cout << "\n\nSize of the files vector is: " << f.size() << endl;
 
 
-  vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
+  //vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
 
-  vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
-  vector<int>xmin = {-200,0,0,0,0,0,0,0};
+  //vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
+  //vector<int>xmin = {-200,0,0,0,0,0,0,0};
+
+  int xmax, xmin, rebin;
   
   string name = "nOptical_Photons";
   sprintf(hist_name,"%s",name.c_str());
@@ -627,6 +665,12 @@ void FitFunc(string pathname)
 
       filetag = "BGO_" + Energy + "_" + Width;
       txtFileId = "BGO_" + Width;
+      xmax = 10000;
+      xmin = 500;
+      if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 2;
+      else if (Energy == "800keV") rebin = 6;
+      else rebin = 10;
+      
 	
     }
 
@@ -637,6 +681,10 @@ void FitFunc(string pathname)
 
       filetag = "PbWO4_" + Energy + "_" + Width;
       txtFileId = "PbWO4_" + Width;
+
+      xmax = 250;
+      xmin = 0;
+      rebin =1
     }
 
     if(FileId.Contains("Plastic")){
@@ -652,7 +700,7 @@ void FitFunc(string pathname)
     sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), "nOpticalPhotns_ItrFit", Energy.c_str());
 
     vector<double> params;
-    params = generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0]);
+    params = generate_1Dplot(hist_list,full_path,xmax,xmin,leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin);
 
     //storing the parameters in the txt file
     ofstream outFile1("plots/Scintillation/Fits/txtFiles/Resolution_vs_Einc_" + txtFileId + ".txt", ios::app), outFile2("plots/Scintillation/Fits/txtFiles/Ngamma_vs_Einc_" + txtFileId + ".txt", ios::app);
@@ -677,14 +725,19 @@ void FitFunc(string pathname)
 
     energy = Energy.erase(Energy.length() - 3);
     energy_val = stoi(energy);
+  
 
-    //writing the txt files
     outFile1 << energy << fixed << setprecision(2)
-	     << setw(12) << Resol << fixed << setprecision(5)
-	     << setw(12) << Resol_err << endl;
+    	     << setw(12) << Resol << fixed << setprecision(5)
+    	     << setw(12) << Resol_err << endl;
+
+    // outFile2 << energy << fixed << setprecision(2)
+    // 	     << setw(12) << Mu << fixed << setprecision(5)
+    // 	     << setw(12) << Mu_err << endl;
 
     outFile2 << energy << fixed << setprecision(2)
 	     << setw(12) << Mu << endl;
+
 
     outFile1.close();
     outFile2.close();
