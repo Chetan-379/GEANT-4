@@ -122,6 +122,8 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   vector<double> results;
   for(int i = 0; i < (int)hist.size(); i++) {
 
+    TH1* hist_uncut = hist.at(i);   //hist used for calculating efficiency
+    
     if(normalize) {
       //hist.at(i)->Scale(1.0 / hist.at(i)->Integral());
       hist.at(i)->GetYaxis()->SetTitle("Normalized");
@@ -193,7 +195,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
       Fit_func[i] = new TF1("GaussFit", Gauss, fitMin, fitMax, 3);
       Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
       //else Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
-      hist.at(i)->Fit(Fit_func[i], "RQ");
+      hist.at(i)->Fit(Fit_func[i], "ERQ");
 
       double mu = Fit_func[i]->GetParameter(1);
       double sigma = Fit_func[i]->GetParameter(2);
@@ -218,6 +220,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
       old_sigma = abs(sigma);
     }
 
+    
     //hist.at(i)->GetXaxis()->SetRangeUser(fitMin, fitMax);
     hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax);
     hist.at(i)->Draw("hist");
@@ -259,12 +262,48 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     latex->DrawLatexNDC(0.70,0.70, param3);
     latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
     
+    // results.push_back(Mu);
+    // results.push_back(Fit_func[i]->GetParError(1));
+    // results.push_back(Sigma);
+    // results.push_back(Fit_func[i]->GetParError(2));
+
+    //calculating the efficiency
+    int BinMax=0, BinMin=0;
+    double MAX=0, MIN=0;
+    double GaussArea=0, HistArea=0, Efficiency;
+
+    MAX = Mu + 3 * Sigma;
+    MIN = Mu - 3 * Sigma;
+
+    BinMax = hist_uncut->FindBin(MAX);
+    BinMin = hist_uncut->FindBin(MIN);
+
+    cout << "\n\n" << tag_name << endl;
+    cout << "BinMax: " << BinMax << endl;
+    cout << "BinMin: " << BinMin << endl;
+
+    HistArea = hist_uncut->Integral();
+    
+    for (int ibin = BinMin; ibin <= BinMax; ibin++){
+      GaussArea += hist_uncut->GetBinContent(ibin);   
+    }
+
+    Efficiency = GaussArea/HistArea;
+
+    cout << "Integral in 1st bin" << hist_uncut->Integral() << endl;
+
+    cout << "\nGaussian Area is: " << GaussArea << endl;
+    cout << "Hist Area is: " << HistArea << endl;
+    cout << "Efficiency is: " << Efficiency << endl;
+
     results.push_back(Mu);
     results.push_back(Fit_func[i]->GetParError(1));
-    results.push_back(abs(Sigma));
+    results.push_back(Sigma);
     results.push_back(Fit_func[i]->GetParError(2));
+    results.push_back(Efficiency);
 
-  }
+    
+  }  //overlay hist loop end
 
   legend->Draw();
   gPad->Modified();
@@ -273,7 +312,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   if (save_canvas) {
     canvas_n1->SaveAs(Form("%s.png", tag_name));
   }
-
+  
   return results;
 }
 
@@ -379,7 +418,6 @@ void data_plot() {
     TString fname = obj->GetName();
     if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
     if (fname.EndsWith(".txt")) {
-      //f.push_back("out_root_files/" + string(fname.Data()));
       data_files.push_back("plots/Scintillation/Fits/txtFiles/" + string(fname.Data()));
     }
   }
@@ -412,8 +450,6 @@ void data_plot() {
     canvas->SetTopMargin(0.057);
     canvas->SetBottomMargin(0.11);
 
-
-    // Fit with a straight line (pol1) and draw
     
     TGraph *graph;
     if (FileName.Contains("Emeasured_vs_Einc") || FileName.Contains("Ngamma_vs_Einc")){
@@ -445,25 +481,6 @@ void data_plot() {
       graph->GetYaxis()->SetTitleSize(0.055);
       graph->GetYaxis()->SetTitleOffset(0.9);
       
-      
-      // TF1 *fit = new TF1("fit", "pol1", *std::min_element(&x_vals[0], &x_vals[0]+x_vals.size()), *std::max_element(&x_vals[0], &x_vals[0]+x_vals.size()));
-      // graph->Fit(fit, "Q");  // "Q" = quiet, no print to stdout
-      // fit->SetLineColor(kRed);
-      // fit->Draw("same");
-
-      // // cout << "R2value: " << fit->GetR
-      // double a = fit->GetParameter(0);  // intercept
-      // double b = fit->GetParameter(1);  // slope
-
-      // // Create equation string
-      // TString eq;
-      // eq.Form("y = %.2fx + %.2f", b, a);
-
-      // // Draw equation on canvas using TLatex
-      // TLatex latex;
-      // latex.SetNDC();         // Use normalized coordinates
-      // latex.SetTextSize(0.05);
-      // latex.DrawLatex(0.25, 0.85, eq);
 
       // canvas->Update();
 
@@ -471,7 +488,7 @@ void data_plot() {
       fit ->SetParameters(1.,1);
       fit ->SetRange(100.,1000.);
 
-      graph->Fit(fit, "Q");  // "Q" = quiet, no print to stdout
+      graph->Fit(fit, "EQ");  // "Q" = quiet, no print to stdout
       fit->SetLineColor(kRed);
       fit->Draw("same");
       
@@ -677,8 +694,8 @@ void FitFunc(string pathname)
   std::vector<std::string> rootFiles;
 
   //filling all the root files in an array f
-  string FileFolder = "BGO_out_root_files";
-  //string FileFolder = "PbWO4_out_root_files";
+  //string FileFolder = "BGO_out_root_files";
+  string FileFolder = "PbWO4_out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
   //TSystemDirectory dir("out_root_files", "out_root_files");
   //TSystemDirectory dir("check_out_root_files", "check_out_root_files");
@@ -853,21 +870,23 @@ void FitFunc(string pathname)
 
     //storing the parameters in the txt file
     ofstream outFile1("plots/Scintillation/Fits/txtFiles/Resolution_vs_Einc_" + txtFileId + ".txt", ios::app), outFile2("plots/Scintillation/Fits/txtFiles/Ngamma_vs_Einc_" + txtFileId + ".txt", ios::app);
+    ofstream outFile5("plots/Scintillation/Fits/txtFiles/Efficiency_vs_Einc_" + txtFileId + ".txt", ios::app);
     
     if (!outFile1 || !outFile2) {
       std::cerr << "Error opening file!" << std::endl;
       return 1;
     }
 
-    double Mu, Mu_err, Sigma, Sigma_err, Resol, Resol_err;
+    double Mu, Mu_err, Sigma, Sigma_err, Resol, Resol_err, eff;
     string energy;
 
     int energy_val;
 
     Mu = params[0];
     Mu_err = params[1];
-    Sigma = params[2];
+    Sigma = abs(params[2]);
     Sigma_err = params[3];
+    eff = params[4];
 
     Resol = Sigma/Mu;
     Resol_err = Resol * sqrt((pow(Sigma_err/Sigma,2)) + (pow(Mu_err/Mu,2)));
@@ -886,6 +905,9 @@ void FitFunc(string pathname)
 
     outFile2 << energy << fixed << setprecision(2)
 	     << setw(12) << Mu << endl;
+
+    outFile5 << energy << fixed << setprecision(4)
+	     << setw(12) << eff << endl;
 
 
     outFile1.close();
