@@ -64,6 +64,7 @@ void fit(string rootfile){
   char* param2 = new char[50];
   char* param3 = new char[50];
   char* param4 = new char[50];
+  char* chi2ndf = new char[50];
 
   float delTau1=(1/pow(func->GetParameter(3),2))*func->GetParError(3);
   float delTau2=(1/pow(func->GetParameter(2),2))*func->GetParError(2);
@@ -72,15 +73,17 @@ void fit(string rootfile){
   sprintf(param2, "B: %0.2e #pm %0.2f", func->GetParameter(0), func->GetParError(0));
   sprintf(param3, "tau1: %0.2f #pm %0.2e", -1/func->GetParameter(3), delTau1);
   sprintf(param4, "tau2: %0.2f #pm %0.2e", -1/func->GetParameter(2), delTau2);
+  sprintf(chi2ndf, "\\chi^{2}/NDF: %0.2e", func->GetChisquare()/func->GetNDF());
 
   latex->DrawLatexNDC(0.66,0.70, param1);
   latex->DrawLatexNDC(0.66,0.65, param2);
   latex->DrawLatexNDC(0.66,0.60, param3);
   latex->DrawLatexNDC(0.66,0.55, param4);
+  latex->DrawLatexNDC(0.66,0.50, chi2ndf);  
 
  
   char* canvas_name = new char[100];
-  sprintf(canvas_name,"%s.png","plots/fitting");
+  sprintf(canvas_name,"%s.png","plots/Scintillation/Opt_Pho_Ana/PbWO4");
   canvas_n1->SaveAs(canvas_name);
 
   gPad->SetLogy();

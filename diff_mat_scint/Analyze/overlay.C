@@ -1,7 +1,8 @@
 const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
-TString legend_text[15] = {"PbWO4","Si", "BGO"};//,"NHadJet>=2","ST>300","Trig_Eff","Event_clean","dPhi(MET,leadingJet)","remove overlap","MET>200","e/mu_veto","charge_trk_veto", "pMSSM_MCMC_106_19786","pMSSM_MCMC_473_54451"};
+//TString legend_text[15] = {"PbWO4","Si", "BGO"};
+TString legend_text[15] = {"2.5cm","5cm", "10cm"};
 int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
 int line_color[15] = {kBlue, kGreen+1, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
@@ -176,7 +177,8 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
     else {
       hist.at(i)->GetYaxis()->SetTitle("Entries");
        }
-    hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
+    //hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
+    hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax); //to be given while calling this function
     hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
     hist.at(i)->SetLineStyle(line_style[i]);
     hist.at(i)->SetLineColor(line_color[i]);
@@ -253,7 +255,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
   TLatex* textOnTop = new TLatex();
   textOnTop->SetTextSize(0.04);
   //textOnTop->DrawLatexNDC(0.12,0.96,"CMS #it{#bf{Preliminary}}");
-  textOnTop->DrawLatexNDC(0.12,0.96,"#bf{Work in Progress}");
+  //textOnTop->DrawLatexNDC(0.12,0.96,"#bf{Work in Progress}");
   
   char* en_lat = new char[500];
   textOnTop->SetTextSize(0.04);
@@ -308,12 +310,14 @@ void overlay(string pathname)
   //define your files here
   
   vector<string> f;
-  f = {"out_root_files/Gamma_Interaction_PbWO4_PPT_PbWO4_out.root", "out_root_files/Gamma_Interaction_Si_PPT_Si_out.root", "out_root_files/Gamma_Interaction_BGO_PPT_BGO_out.root"};
+  //f = {"out_root_files/Gamma_Interaction_PbWO4_PPT_PbWO4_out.root", "out_root_files/Gamma_Interaction_Si_PPT_Si_out.root", "out_root_files/Gamma_Interaction_BGO_PPT_BGO_out.root"};
+  f= {"PbWO4_out_root_files/PbWO4_2.5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_10cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root"};
+  
   //define your histograms to be read from here
   int n_files=f.size(); //you have n files in this example
  
   string histname1[100], histname2[100], histname3[100];
-  char hname_NHadJets[100], hname_Jet_Pt[100], hname_Jet_Eta[100], hname_Jet_Phi[100], hname_Met[100], hname_PhoPt[100], hname_PhoEta[100], hname_PhoPhi[100];
+  // char hname_NHadJets[100], hname_Jet_Pt[100], hname_Jet_Eta[100], hname_Jet_Phi[100], hname_Met[100], hname_PhoPt[100], hname_PhoEta[100], hname_PhoPhi[100];
   // Book your histograms & summary counters here
   // vector<string> selection = {"Total_Edep"};
 
@@ -342,7 +346,8 @@ void overlay(string pathname)
   // baseline3.push_back(histname3[i]); 
   //}
 
-  variables = {"Total_Edep", "Compton_Edep", "Photo_Edep"};   //put the names of variables here
+  //variables = {"Total_Edep", "Compton_Edep", "Photo_Edep"};   //put the names of variables here
+  variables = {"ComptVsPho"};   //put the names of variables here
   //baseline2 = 
   //string to be added to output file name - useful when you have different files and reading the same histograms from these
   vector<vector<string>> bigbaseline;
@@ -351,14 +356,15 @@ void overlay(string pathname)
   // for (int bigi=0; bigi<bigbaseline.size(); bigi++)
   //   {
       vector<string> filetag;
-      filetag={"PBWO4","Si", "BGO"};//, "WGJets_2018", "ZJetsToNuNu_2018", "ZNuNuGJets_2018", "QCD_2018","GJets_2018"};
+      filetag={"E_inc = 511 keV","E_inc = 511 keV", "E_inc = 511 keV"};//, "WGJets_2018", "ZJetsToNuNu_2018", "ZNuNuGJets_2018", "QCD_2018","GJets_2018"};
 
       //luminosity for each year - depends if you want to use it or - generate1Dplot uses this number and add it on the top
       vector<float>energyy;
       energyy={59.74,41.529};//,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,19.5,19.5,19.5,19.5,19.5,19.5,19.5,36.0,36.0,36.0,36.0,36.0,36.0,36.0};
 
       //rebin values
-      vector<int >rebin = {2,2,2,2,2,2,2,2,2,2,2,2}; //keep it 1 if you don't want to change hist bins
+      //vector<int >rebin = {2,2,2,2,2,2,2,2,2,2,2,2}; //keep it 1 if you don't want to change hist bins
+      vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
       //x axis title for all plots///
       // vector<string>xtitle = {title[bigi], title[bigi]};
@@ -393,7 +399,8 @@ void overlay(string pathname)
 	 
 	  //path to save the files a jpg or pdf
 	  vector<string> folder;
-	  folder = {"plots/PPT/", "plots/PPT/", "plots/PPT/"}; //, "plots/WG_/", "plots/ZNuNu_/", "plots/ZGNuNu_/", "plots/QCD_/","plots/GJets_/"};
+	  //folder = {"plots/PPT/", "plots/PPT/", "plots/PPT/"};
+	  folder = {"Overlay_plots/", "Overlay_plots/", "Overlay_plots/"};
 	  sprintf(full_path,"%s/%s%s_Overlay_%s",pathname.c_str(),folder[iVar].c_str(),diff_title[iVar].c_str(),filetag[iVar].c_str());
 	 	    
 	  //calling generate_1Dplot which will take this vector of histograms and 

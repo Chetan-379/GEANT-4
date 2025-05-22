@@ -172,10 +172,10 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
 
     //double effectiveXmax = hist.at(i)->GetBinLowEdge(lastNonZeroBin + 1);
 
- hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
+    hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax); //to be given while calling this function
     //hist.at(i)->GetXaxis()->SetRangeUser(xmin, effectiveXmax);
- hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
- hist.at(i)->SetLineStyle(line_style[i]);
+    hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
+    hist.at(i)->SetLineStyle(line_style[i]);
  hist.at(i)->SetLineColor(line_color[i]);
  hist.at(i)->SetTitle(xtitile); //you can change it if you want
  //setLastBinAsOverFlow(hist.at(i),0);
@@ -353,9 +353,11 @@ void plot_all_hists(string pathname)
 
    std::vector<std::string> rootFiles;
 
-    TSystemDirectory dir("out_root_files", "out_root_files");
-    TList* files = dir.GetListOfFiles();
-    if (!files) return;
+   string FileFolder;
+   FileFolder = "PbWO4_out_root_files";
+   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
+   TList* files = dir.GetListOfFiles();
+   if (!files) return;
 
     TIter next(files);
     TObject* obj;
@@ -364,7 +366,7 @@ void plot_all_hists(string pathname)
       TString fname = obj->GetName();
         if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
         if (fname.EndsWith(".root")) {
-	  f.push_back("out_root_files/" + string(fname.Data()));
+	  f.push_back(FileFolder + "/" + string(fname.Data()));
         }
     }
 

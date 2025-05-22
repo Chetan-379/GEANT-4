@@ -76,8 +76,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,1.1);
   //h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
-  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 15000, 0, 15000);
-  //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 250, 0, 250);
+  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 10000, 0, 10000);
 
   // h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
   // h_nOptPho_Edep->SetXTitle("Total Edep");
@@ -91,7 +90,6 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
   h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",2000,0,2000);
   
-  //h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
   h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
 
   h_OptPho_PosX = new TH1D("OptPho_PosX", "OptPho_PosX",400,-200,200);

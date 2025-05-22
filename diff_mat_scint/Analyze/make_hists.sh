@@ -1,12 +1,12 @@
 #!/bin/bash
 
 make
-materials=("PbWO4")
+materials=("BGO")
 
 txt_file="inputfile.txt"
 for id in "${materials[@]}"; do
 
-    for f in src_root_files/*_5cm*.root; do
+    for f in src_root_files/*.root; do
 	#> "$txt_file"
       [[ -e "$f" ]] || continue
       if [[ "$f" == *"$id"* ]]; then
@@ -14,11 +14,11 @@ for id in "${materials[@]}"; do
 	  echo "$f" > "$txt_file"
 
 	  initfile="${f#src_root_files/}"
-	  output_root_file="out_root_files/${initfile%.root}_out.root"
+	  output_root_file="${id}_out_root_files/${initfile%.root}_out.root"
 
-	  #echo $output_root_file
+	 echo $output_root_file
 
-	  ./analyzeLightBSM inputfile.txt $output_root_file $id
+	 ./analyzeLightBSM inputfile.txt $output_root_file $id
 	  	  
       fi
   done

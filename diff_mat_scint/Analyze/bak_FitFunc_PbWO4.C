@@ -246,7 +246,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
     sprintf(param1, "A: %0.2e #pm %0.4f", A, Fit_func[i]->GetParError(0));
     sprintf(param2, "\\mu: %0.3f \\pm %0.4f", Mu, Fit_func[i]->GetParError(1));
-    sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", abs(Sigma), Fit_func[i]->GetParError(2));
+    sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", Sigma, Fit_func[i]->GetParError(2));
     sprintf(chisqrNDF, "\\chi^{2}/NDF: %.4f", Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF());
 
     // latex->DrawLatexNDC(0.70,0.80, param1);
@@ -261,7 +261,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     
     results.push_back(Mu);
     results.push_back(Fit_func[i]->GetParError(1));
-    results.push_back(abs(Sigma));
+    results.push_back(Sigma);
     results.push_back(Fit_func[i]->GetParError(2));
 
   }
@@ -307,8 +307,8 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     // Create a canvas to draw on
     TCanvas* c1 = new TCanvas("c1", "Resolution fit Overlay", 800, 600);
     
-    funcs[0]->SetMinimum(0.012); // set lower Y bound
-    //funcs[0]->SetMaximum(0.045);  // set upper Y bound
+    funcs[0]->SetMinimum(0.07); // set lower Y bound
+    // funcs[0]->SetMaximum(0.25);  // set upper Y bound
  
     // Create functions and store in array
     for (int i = 0; i < funcs.size(); ++i) {
@@ -343,8 +343,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     legend->Draw();
     //gPad->Range(95, 0.075, 1005, 0.25);
     // Save to file (choose your preferred format)
-    //c1->SaveAs("resolution_function_overlay_PbWO4.png");
-    c1->SaveAs("resolution_function_overlay_BGO.png");
+    c1->SaveAs("resolution_function_overlay_PbWO4.png");
 
     TCanvas* c2 = new TCanvas("c2", "Resolution graphs Overlay", 800, 600);
     graphs[0]->Draw("AP");
@@ -576,8 +575,7 @@ void data_plot() {
       EGraph->Fit(fit_func, "EQ");
       // Filename.ReplaceAll(".txt", "");  
       fit_func->SetLineColor(kRed);
-      //fit_func->SetTitle("Resolution_PbWO4; E_{inc}; \\frac{\\sigma}{\\mu}");
-      fit_func->SetTitle("Resolution_BGO; E_{inc}; \\frac{\\sigma}{\\mu}");
+      fit_func->SetTitle("Resolution_PbWO4; E_{inc}; \\frac{\\sigma}{\\mu}");
       
       fit_func->Draw("same");
       
@@ -677,8 +675,8 @@ void FitFunc(string pathname)
   std::vector<std::string> rootFiles;
 
   //filling all the root files in an array f
-  string FileFolder = "BGO_out_root_files";
-  //string FileFolder = "PbWO4_out_root_files";
+  //string FileFolder = "BGO_out_root_files";
+  string FileFolder = "PbWO4_out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
   //TSystemDirectory dir("out_root_files", "out_root_files");
   //TSystemDirectory dir("check_out_root_files", "check_out_root_files");
@@ -705,7 +703,7 @@ void FitFunc(string pathname)
   //vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
   //vector<int>xmin = {-200,0,0,0,0,0,0,0};
 
-  
+  int xmax, xmin, rebin;
   
   string name = "nOptical_Photons";
   sprintf(hist_name,"%s",name.c_str());
@@ -725,7 +723,7 @@ void FitFunc(string pathname)
     TFile *root_file = new TFile(f[iFile].c_str());
     vector<TH1F> HistList;
     TH1F* hist = (TH1F*)root_file->Get(hist_name);
-    int xmax, xmin, rebin;
+
     vector<TH1*> hist_list;
 
     hist_list.push_back(hist);
@@ -764,56 +762,19 @@ void FitFunc(string pathname)
 
       filetag = "BGO_" + Energy + "_" + Width;
       txtFileId = "BGO_" + Width;
-      // xmax = 10000;
-      // xmin = 500;
-
-      rebin =2;
-      //if(Width != "5cm") continue;
-      // if (Width == "5cm") {
-      // 	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 5; //rebin = 1; //xmax = 3000, xmin = 500};
-      // 	else if (Energy == "800keV") rebin = 5;
-      // 	//else rebin = 10;}
-      // 	else rebin = 2;}
-
-      if(Width == "5cm") {
-	if (Energy == "100keV" || Energy == "150keV") {xmin = 600; xmax = 1500;}
-	if (Energy == "300keV") {xmin = 1500; xmax = 3000;}
-	if (Energy == "450keV" || Energy == "511keV") {xmin = 3000; xmax = 4500;}
-	if (Energy == "600keV") {xmin = 4000; xmax = 6500;}
-	if (Energy == "800keV") {xmin = 6000 ; xmax = 8000;}
-	if (Energy == "1000keV") {xmin = 7200; xmax=9000;}
-      }
-
-      if(Width == "10cm") {
-	if (Energy == "100keV" || Energy == "150keV") {xmin = 600; xmax = 1500;}
-	if (Energy == "300keV") {xmin = 1500; xmax = 3000;}
-	if (Energy == "450keV" || Energy == "511keV") {xmin = 3000; xmax = 4500;}
-	if (Energy == "600keV") {xmin = 4000; xmax = 6500;}
-	if (Energy == "800keV") {xmin = 6000 ; xmax = 8000;}
-	if (Energy == "1000keV") {xmin = 7200; xmax=9000;}
-      }
-
-      if(Width == "2.5cm") {
-	if (Energy == "100keV") {xmin = 600; xmax = 900;}
-	if (Energy == "150keV") {xmin = 1000; xmax = 1300;}		
-	if (Energy == "300keV") {xmin = 2000; xmax = 3000;}
-	if (Energy == "450keV") {xmin = 3300; xmax = 4500;}
-	if (Energy == "511keV") {xmin = 3700; xmax = 5000;}
-	if (Energy == "600keV") {xmin = 4500; xmax = 5100;}
-	if (Energy == "800keV") {xmin = 6000 ; xmax = 7000;}
-	if (Energy == "1000keV") {xmin = 7500; xmax=8500;}
-      }
-
+      xmax = 10000;
+      xmin = 500;
       
-      	// if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 5; //rebin = 1; //xmax = 3000, xmin = 500};
-      	// else if (Energy == "800keV") rebin = 1;
-      	//else rebin = 10;}
-      	//else rebin = 2;}
 
+      if (Width == "5cm") {
+	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 5; //rebin = 1; //xmax = 3000, xmin = 500};
+	else if (Energy == "800keV") rebin = 5;
+	//else rebin = 10;}
+	else rebin = 5;}
 
-      // if (Width == "10cm") {
-      // 	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 2;
-      // 	else rebin =2;}
+      if (Width == "10cm") {
+	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 2;
+	else rebin =5;}
       
 	
     }
