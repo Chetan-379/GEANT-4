@@ -111,19 +111,27 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   legend->SetNColumns(2);
   legend->SetHeader(title);
   double MaxY=0;
+
+  TH1F* hist_uncut;
+  
   for(int i = 0; i < (int)hist.size(); i++) {
+    hist_uncut = (TH1F*)hist.at(i)->Clone("hist_uncut");
     if(normalize)   hist.at(i)->Scale(1.0 / hist.at(i)->Integral());
     hist.at(i)->Rebin(rebin);
     hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax);
+
     if(hist.at(i)->GetMaximum() > MaxY){MaxY=hist.at(i)->GetMaximum();}
   }
+
+  
   vector<vector<TLatex>> latexVec(hist.size(),vector<TLatex>(3));
   vector<TF1*> Fit_func(hist.size());
   vector<double> results;
+  
   for(int i = 0; i < (int)hist.size(); i++) {
-
-    TH1* hist_uncut = hist.at(i);   //hist used for calculating efficiency
+   
     
+  
     if(normalize) {
       //hist.at(i)->Scale(1.0 / hist.at(i)->Integral());
       hist.at(i)->GetYaxis()->SetTitle("Normalized");
@@ -270,27 +278,31 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     //calculating the efficiency
     int BinMax=0, BinMin=0;
     double MAX=0, MIN=0;
-    double GaussArea=0, HistArea=0, Efficiency;
+    double GaussArea=0, HistArea = 0, Efficiency =0;
 
-    MAX = Mu + 3 * Sigma;
-    MIN = Mu - 3 * Sigma;
+    MAX = Mu + 3 * abs(Sigma);
+    MIN = Mu - 3 * abs(Sigma);
 
     BinMax = hist_uncut->FindBin(MAX);
     BinMin = hist_uncut->FindBin(MIN);
 
     cout << "\n\n" << tag_name << endl;
-    cout << "BinMax: " << BinMax << endl;
-    cout << "BinMin: " << BinMin << endl;
+    cout << "xMax: " << MAX << endl;
+    cout << "xMin: " << MIN << endl;
+
+    cout << "\nbinMax: " << BinMax << endl;
+    cout << "binMin: " << BinMin << endl;
 
     HistArea = hist_uncut->Integral();
-    
+    //cout << "total no. of bins is: " << Bin
     for (int ibin = BinMin; ibin <= BinMax; ibin++){
-      GaussArea += hist_uncut->GetBinContent(ibin);   
+      GaussArea += hist_uncut->GetBinContent(ibin);
+      //cout << "bin Content is: " << hist_uncut->GetBinContent(ibin) << endl;
     }
 
     Efficiency = GaussArea/HistArea;
 
-    cout << "Integral in 1st bin" << hist_uncut->Integral() << endl;
+    //cout << "Integral in 1st bin" << hist_uncut->Integral() << endl;
 
     cout << "\nGaussian Area is: " << GaussArea << endl;
     cout << "Hist Area is: " << HistArea << endl;
@@ -346,7 +358,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     // Create a canvas to draw on
     TCanvas* c1 = new TCanvas("c1", "Resolution fit Overlay", 800, 600);
     
-    funcs[0]->SetMinimum(0.012); // set lower Y bound
+    funcs[0]->SetMinimum(0.07); // set lower Y bound
     //funcs[0]->SetMaximum(0.045);  // set upper Y bound
  
     // Create functions and store in array
@@ -356,6 +368,12 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
 	//funcs[i]->SetParameter(0, 3);          // Offset to distinguish
         funcs[i]->SetLineColor(i + 1);         // Different color
         funcs[i]->SetLineWidth(2);             // Thicker lines for visibility
+	funcs[i]->GetXaxis()->SetTitleSize(0.05);
+	funcs[i]->GetXaxis()->SetTitleOffset(0.86);
+
+	funcs[i]->GetYaxis()->SetTitleOffset(0.96);
+	funcs[i]->GetYaxis()->SetTitleSize(0.05);
+	//funcs[i]->GetYaxis()->SetTitle("Resolution");
     }
 
     
@@ -594,7 +612,8 @@ void data_plot() {
       // Filename.ReplaceAll(".txt", "");  
       fit_func->SetLineColor(kRed);
       //fit_func->SetTitle("Resolution_PbWO4; E_{inc}; \\frac{\\sigma}{\\mu}");
-      fit_func->SetTitle("Resolution_BGO; E_{inc}; \\frac{\\sigma}{\\mu}");
+      //fit_func->SetTitle("Resolution_BGO; E_{inc}; \\frac{\\sigma}{\\mu}");
+      fit_func->SetTitle("Resolution_PbWO4; E_{inc}; Resolution");
       
       fit_func->Draw("same");
       
@@ -695,6 +714,7 @@ void FitFunc(string pathname)
 
   //filling all the root files in an array f
   //string FileFolder = "BGO_out_root_files";
+  //string FileFolder = "Check_BGO_eff";
   string FileFolder = "PbWO4_out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
   //TSystemDirectory dir("out_root_files", "out_root_files");
@@ -737,8 +757,10 @@ void FitFunc(string pathname)
   }
 
   string Width;
+ 
   //starting looping over the files
   for(int iFile=0; iFile < f.size(); iFile++){
+    
     TFile *root_file = new TFile(f[iFile].c_str());
     vector<TH1F> HistList;
     TH1F* hist = (TH1F*)root_file->Get(hist_name);
@@ -795,7 +817,8 @@ void FitFunc(string pathname)
       if(Width == "5cm") {
 	if (Energy == "100keV" || Energy == "150keV") {xmin = 600; xmax = 1500;}
 	if (Energy == "300keV") {xmin = 1500; xmax = 3000;}
-	if (Energy == "450keV" || Energy == "511keV") {xmin = 3000; xmax = 4500;}
+	if (Energy == "450keV" ) {xmin = 3000; xmax = 4500;}
+	if (Energy == "511keV" ) {xmin = 3600; xmax = 4500;}
 	if (Energy == "600keV") {xmin = 4000; xmax = 6500;}
 	if (Energy == "800keV") {xmin = 6000 ; xmax = 8000;}
 	if (Energy == "1000keV") {xmin = 7200; xmax=9000;}
@@ -865,6 +888,8 @@ void FitFunc(string pathname)
     cout << "\n\nWidth is: " << WidthId << endl;
     sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), "nOpticalPhotns_ItrFit", Energy.c_str());
 
+
+    
     vector<double> params;
     params = generate_1Dplot(hist_list,full_path,xmax,xmin,leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin);
 

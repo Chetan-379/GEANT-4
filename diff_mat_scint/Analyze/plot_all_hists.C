@@ -354,7 +354,7 @@ void plot_all_hists(string pathname)
    std::vector<std::string> rootFiles;
 
    string FileFolder;
-   FileFolder = "PbWO4_out_root_files";
+   FileFolder = "BGO_out_root_files";
    TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
    TList* files = dir.GetListOfFiles();
    if (!files) return;
@@ -455,6 +455,7 @@ void plot_all_hists(string pathname)
 	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/BGO/10cm"; Width = "10cm";}
 
 	filetag = "BGO_" + Energy + "_" + Width;
+	
       }
       
       if(FileId.Contains("PbWO4")){
@@ -463,6 +464,8 @@ void plot_all_hists(string pathname)
 	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/PbWO4/10cm"; Width = "10cm";}
 
 	filetag = "PbWO4_" + Energy + "_" + Width;
+
+	if (histId.Contains("nOptical_Photons")) xmax[0] = 750;
       }
       
       if(FileId.Contains("Plastic")){

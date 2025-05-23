@@ -176,9 +176,11 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
     }
     else {
       hist.at(i)->GetYaxis()->SetTitle("Entries");
+      //hist.at(i)->GetYaxis()->SetOffset(0.055);
        }
     //hist.at(i)->GetXaxis()->SetRangeUser(xmin,xmax); //to be given while calling this function
-    hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax); //to be given while calling this function
+    hist.at(i)->Rebin(rebin);
+    hist.at(i)->GetXaxis()->SetRangeUser(0, 250); //to be given while calling this function
     hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
     hist.at(i)->SetLineStyle(line_style[i]);
     hist.at(i)->SetLineColor(line_color[i]);
@@ -189,7 +191,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
     hist.at(i)->GetXaxis()->SetLabelSize(x_label_size);
     hist.at(i)->GetXaxis()->SetLabelSize(0.0450);
     //    hist.at(i)->GetXaxis()->SetRange(0,1500);
-    hist.at(i)->GetYaxis()->SetTitleSize(0.05);
+    hist.at(i)->GetYaxis()->SetTitleSize(0.055);
     hist.at(i)->GetYaxis()->SetLabelSize(0.05);
     hist.at(i)->GetYaxis()->SetTitleOffset(1.2);
     hist.at(i)->GetYaxis()->SetLabelSize(x_label_size);
@@ -210,14 +212,15 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
   textOnTop->DrawLatexNDC(0.79,0.96,lhead);
   char* en_lat = new char[500];
   textOnTop->SetTextSize(0.035);
-    if(DoRebin) { //if rebin flag is on - this will reduce the bin size by half
-     hist.at(i)->Rebin(rebin);
-    }
+  //if(DoRebin) { //if rebin flag is on - this will reduce the bin size by half
+  //hist.at(i)->Rebin(rebin);
+     //}
     //setting up the legend style and all
        vector <string> Intg;
     char final_label[100];    
     float Integral = hist.at(i)->Integral();
     sprintf(final_label,"%s (%.1f)",legend_text[i].Data(), Integral);
+    //sprintf(final_label,"%.0f events", Integral);
    
     legName.push_back(hist.at(i)->GetName());
     leg_entry[i] = legend->AddEntry(hist.at(i), final_label, "l");
@@ -229,7 +232,10 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", float energy=-
   if(ymin == 0.0) ymin = 1e-3;
   if(ymin<0.0) ymin = 1e-4;
   for(int i = 0; i < (int)hist.size(); i++) {
-    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax*10);
+    //if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax*10);
+    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/7));
+    //if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax);
+    
     else
       hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
     //    p1->SetGrid();
@@ -311,7 +317,17 @@ void overlay(string pathname)
   
   vector<string> f;
   //f = {"out_root_files/Gamma_Interaction_PbWO4_PPT_PbWO4_out.root", "out_root_files/Gamma_Interaction_Si_PPT_Si_out.root", "out_root_files/Gamma_Interaction_BGO_PPT_BGO_out.root"};
+
   f= {"PbWO4_out_root_files/PbWO4_2.5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_10cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root"};
+
+  //f= {"BGO_out_root_files/BGO_5cm_ScintON_100keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root", "BGO_out_root_files/BGO_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root", "BGO_out_root_files/BGO_5cm_ScintON_1000keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root"};
+
+
+  //f= {"BGO_out_root_files/BGO_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root"};
+  //f= {"PbWO4_out_root_files/PbWO4_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root"};
+
+  // f= {"BGO_out_root_files/BGO_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root"};
+  //f = {"PbWO4_out_root_files/PbWO4_2.5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root"};
   
   //define your histograms to be read from here
   int n_files=f.size(); //you have n files in this example
@@ -346,8 +362,10 @@ void overlay(string pathname)
   // baseline3.push_back(histname3[i]); 
   //}
 
-  //variables = {"Total_Edep", "Compton_Edep", "Photo_Edep"};   //put the names of variables here
-  variables = {"ComptVsPho"};   //put the names of variables here
+  //variables = {"Compton_Edep"};//, "Compton_Edep", "Total_Edep","Photo_Edep"};   //put the names of variables here
+  //variables = {"ComptVsPho"};   //put the names of variables here
+  //variables = {"OptPho_lmbda"};
+  variables = {"nOptical_Photons"};
   //baseline2 = 
   //string to be added to output file name - useful when you have different files and reading the same histograms from these
   vector<vector<string>> bigbaseline;
@@ -356,8 +374,8 @@ void overlay(string pathname)
   // for (int bigi=0; bigi<bigbaseline.size(); bigi++)
   //   {
       vector<string> filetag;
-      filetag={"E_inc = 511 keV","E_inc = 511 keV", "E_inc = 511 keV"};//, "WGJets_2018", "ZJetsToNuNu_2018", "ZNuNuGJets_2018", "QCD_2018","GJets_2018"};
-
+      //filetag={"BGO_5cm_511keV","E_inc = 511 keV", "E_inc = 511 keV"};//, "WGJets_2018", "ZJetsToNuNu_2018", "ZNuNuGJets_2018", "QCD_2018","GJets_2018"};
+      filetag={"PbWO4__511keV","E_inc = 511 keV", "E_inc = 511 keV"};//, "WGJets_2018", "ZJetsToNuNu_2018", "ZNuNuGJets_2018", "QCD_2018","GJets_2018"};
       //luminosity for each year - depends if you want to use it or - generate1Dplot uses this number and add it on the top
       vector<float>energyy;
       energyy={59.74,41.529};//,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,59.74,41.529,16.5,137.19,19.5,19.5,19.5,19.5,19.5,19.5,19.5,36.0,36.0,36.0,36.0,36.0,36.0,36.0};
@@ -393,7 +411,9 @@ void overlay(string pathname)
 
 	   //x axis title for all plots///
 	  vector<string>diff_title;
-	  diff_title = { "Total_Edep", "Compton_Edep", "Photo_Edep"}; // , "Pt_Miss", "NHadJets"};
+	  //diff_title = { "Compton_Edep"};//, "Compton_Edep", "Photo_Edep"}; // , "Pt_Miss", "NHadJets"};
+	  diff_title = { "nOptPhotons"};//, "Compton_Edep", "Photo_Edep"}; // , "Pt_Miss", "NHadJets"};
+	  //diff_title = { "OptPho_lmbda (nm)"};
 	  vector<string>xtitle;
 	  xtitle = {diff_title[iVar], diff_title[iVar], diff_title[iVar]}; //, diff_title[bigi], diff_title[bigi], diff_title[bigi], diff_title[bigi], diff_title[bigi],diff_title[bigi],diff_title[bigi],diff_title[bigi]};
 	 
@@ -401,16 +421,15 @@ void overlay(string pathname)
 	  vector<string> folder;
 	  //folder = {"plots/PPT/", "plots/PPT/", "plots/PPT/"};
 	  folder = {"Overlay_plots/", "Overlay_plots/", "Overlay_plots/"};
-	  sprintf(full_path,"%s/%s%s_Overlay_%s",pathname.c_str(),folder[iVar].c_str(),diff_title[iVar].c_str(),filetag[iVar].c_str());
+	  sprintf(full_path,"%s/%simage",pathname.c_str(),folder[iVar].c_str());
 	 	    
 	  //calling generate_1Dplot which will take this vector of histograms and 
-	  generate_1Dplot(hist_list,full_path,energy,xmax[iVar],xmin[iVar],leg_head,false,true,false,true,filetag[iVar].c_str(),xtitle[iVar].c_str(),rebin[iVar]);
+	  generate_1Dplot(hist_list,full_path,energy,xmax[iVar],xmin[iVar],leg_head,false,false,false,true,filetag[iVar].c_str(),xtitle[iVar].c_str(),rebin[iVar]);
       
 	  //}
 
       }
     }
-
 
 
 
