@@ -8,7 +8,7 @@ for id in "${materials[@]}"; do
 
     for f in src_root_files/*.root; do
 	#> "$txt_file"
-      [[ -e "$f" ]] || continue
+      #[[ -e "$f" ]] || continue
       if [[ "$f" == *"$id"* ]]; then
 	  #printf '%s\n' "$f" >> "$output_file"
 	  echo "$f" > "$txt_file"
