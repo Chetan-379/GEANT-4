@@ -58,6 +58,8 @@ TH1F* DrawOverflow(TH1F* h,int xmin, int xrange){
 
   return htmp;
 }
+
+
 void setLastBinAsOverFlow(TH1F* h_hist){
   double lastBinCt =h_hist->GetBinContent(h_hist->GetNbinsX()),overflCt =h_hist->GetBinContent(h_hist->GetNbinsX()+1);
   double lastBinErr=h_hist->GetBinError(h_hist->GetNbinsX()),  overflErr=h_hist->GetBinError(h_hist->GetNbinsX()+1);
@@ -83,12 +85,11 @@ void setLastBinAsOverFlow(TH1F* h_hist){
 
 // Define the Gaussian function
 double Gauss(double *x, double *par) {
-
   double A = par[0];   // Amplitude
   double mu = par[1];  // Mean
   double sigma = par[2]; // Std. deviation
   double arg = ((x[0] - mu) * (x[0] - mu)) / (sigma*sigma);
-
+  
   return A * TMath::Exp(-0.5 * arg);
 }
 
@@ -122,32 +123,30 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 
     if(hist.at(i)->GetMaximum() > MaxY){MaxY=hist.at(i)->GetMaximum();}
   }
-
   
   vector<vector<TLatex>> latexVec(hist.size(),vector<TLatex>(3));
   vector<TF1*> Fit_func(hist.size());
   vector<double> results;
   
-  for(int i = 0; i < (int)hist.size(); i++) {
-   
-    
-  
+  for(int i = 0; i < (int)hist.size(); i++) {         
     if(normalize) {
-      //hist.at(i)->Scale(1.0 / hist.at(i)->Integral());
+      hist.at(i)->Scale(1.0 / hist.at(i)->Integral());
       hist.at(i)->GetYaxis()->SetTitle("Normalized");
-    } else {
+    }
+
+    else {
       hist.at(i)->GetYaxis()->SetTitle("Entries");
     }
 
     hist.at(i)->GetXaxis()->SetTitle("nOpticalPhotons");
 
+    // Skiping the peak at 0
     int maxBin = -1;
     double maxContent = -1;
     for (int j = 1; j <= hist.at(i)->GetNbinsX(); ++j) {
       double center = hist.at(i)->GetBinCenter(j);
       double content = hist.at(i)->GetBinContent(j);
 
-      // Skip the peak at 0
       if (center >= -0.5 && center <= +0.5) continue;
 
       if (content > maxContent) {
@@ -156,80 +155,43 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
       }
     }
 
-    // Iterative fitting
-    //int peakBin = hist.at(i)->GetMaximumBin();
     int peakBin = maxBin;
     double peakValue = hist.at(i)->GetXaxis()->GetBinCenter(peakBin);
-
-    cout << "peakValue: " << peakValue << endl;
     
-    double totalIntegral = hist.at(i)->Integral();
-    double targetIntegral = 0.95 * totalIntegral;
+    // double fitMin = hist.at(i)->GetXaxis()->GetBinCenter(binLeft);
+    // double fitMax = hist.at(i)->GetXaxis()->GetBinCenter(binRight);
 
-    int binLeft = peakBin, binRight = peakBin;
-    double cumulativeSum = hist.at(i)->GetBinContent(peakBin);
-
-    while (cumulativeSum < targetIntegral) {
-      if (binLeft > 1) cumulativeSum += hist.at(i)->GetBinContent(--binLeft);
-      if (binRight < hist.at(i)->GetNbinsX()) cumulativeSum += hist.at(i)->GetBinContent(++binRight);
-      if (binLeft == 1 && binRight == hist.at(i)->GetNbinsX()) break;
-    }
-
-    double fitMin = hist.at(i)->GetXaxis()->GetBinCenter(binLeft);
-    double fitMax = hist.at(i)->GetXaxis()->GetBinCenter(binRight);
-
-    //        fitMin=xmin;
-    // fitMin=xmin;
-    // fitMax=xmax;
-
-    // fitMin=peakValue - 2* hi;
-    // fitMax=xmax;
-
-    
+    double fitMin = 0, fitMax = 0;
     double old_mean=hist.at(i)->GetMean();
     double old_sigma = hist.at(i)->GetRMS();
-
-    // fitMin = peakValue - 3*old_sigma;
-    // fitMax= peakValue + 3*old_sigma;
 
     fitMin = old_mean - 3*old_sigma;
     fitMax = old_mean + 3*old_sigma;
 
-    // cout << "\nsigma is: " << old_sigma << endl;
 
+    //Doing Iterative Fitting
     for (int itr = 0; itr < 400; ++itr) {
-      //hist.at(i)->Fit(Fit_func[i], "RE");
-      //cout << "Sigma is: " << old_sigma << endl;
       Fit_func[i] = new TF1("GaussFit", Gauss, fitMin, fitMax, 3);
       Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
-      //else Fit_func[i]->SetParameters(peakValue, old_mean, old_sigma);
       hist.at(i)->Fit(Fit_func[i], "ERQ");
 
       double mu = Fit_func[i]->GetParameter(1);
       double sigma = Fit_func[i]->GetParameter(2);
       double chi2byNDF = Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF();
 
-      // double rangeMin = peakValue - 2.0 * abs(sigma);
-      // double rangeMax = peakValue + 2.0 * abs(sigma);
-
       double rangeMin = mu - 2.0 * abs(sigma);
       double rangeMax = mu + 2.0 * abs(sigma);
 
-
       if (fabs(fitMin-rangeMin)/rangeMin <= 0.0002) break;
-
       fitMin = rangeMin;
       fitMax = rangeMax;
 
-      //Fit_func[i]->SetRange(rangeMin, rangeMax);
       Fit_func[i]->SetRange(fitMin, fitMax);
 
       old_mean = mu;
       old_sigma = abs(sigma);
     }
 
-    
-    //hist.at(i)->GetXaxis()->SetRangeUser(fitMin, fitMax);
     hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax);
     hist.at(i)->Draw("hist");
     Fit_func[i]->Draw("SAME");
@@ -240,7 +202,6 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     Mu = Fit_func[i]->GetParameter(1);
     Sigma = Fit_func[i]->GetParameter(2);
 
-
     TLatex *latex = new TLatex();
     latex->SetTextSize(0.03);
 
@@ -249,32 +210,17 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     char* param3 = new char[50];
     char* chisqrNDF = new char[50];
 
-
-    // sprintf(param1, "A: %0.2e #pm %0.4f", Fit_func[i]->GetParameter(0), Fit_func[i]->GetParError(0));
-    // sprintf(param2, "\\mu: %0.3f \\pm %0.4f", Fit_func[i]->GetParameter(1), Fit_func[i]->GetParError(1));
-    // sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", Fit_func[i]->GetParameter(2), Fit_func[i]->GetParError(2));
-    // sprintf(chisqrNDF, "\\chi^{2}/NDF: %.4f", Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF());
-
     sprintf(param1, "A: %0.2e #pm %0.4f", A, Fit_func[i]->GetParError(0));
     sprintf(param2, "\\mu: %0.3f \\pm %0.4f", Mu, Fit_func[i]->GetParError(1));
     sprintf(param3, "\\sigma: %0.4f \\pm %0.4f", abs(Sigma), Fit_func[i]->GetParError(2));
     sprintf(chisqrNDF, "\\chi^{2}/NDF: %.4f", Fit_func[i]->GetChisquare()/Fit_func[i]->GetNDF());
 
-    // latex->DrawLatexNDC(0.70,0.80, param1);
-    // latex->DrawLatexNDC(0.70,0.75, param2);
-    // latex->DrawLatexNDC(0.70,0.70, param3);
-    // latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
-
     latex->DrawLatexNDC(0.70,0.80, param1);
     latex->DrawLatexNDC(0.70,0.75, param2);
     latex->DrawLatexNDC(0.70,0.70, param3);
     latex->DrawLatexNDC(0.70,0.65, chisqrNDF);
-    
-    // results.push_back(Mu);
-    // results.push_back(Fit_func[i]->GetParError(1));
-    // results.push_back(Sigma);
-    // results.push_back(Fit_func[i]->GetParError(2));
 
+    
     //calculating the efficiency
     int BinMax=0, BinMin=0;
     double MAX=0, MIN=0;
@@ -294,16 +240,14 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     cout << "binMin: " << BinMin << endl;
 
     HistArea = hist_uncut->Integral();
-    //cout << "total no. of bins is: " << Bin
+
+    //calculating the integral under Gaussian from mu-3sigma to mu+3sigma
     for (int ibin = BinMin; ibin <= BinMax; ibin++){
       GaussArea += hist_uncut->GetBinContent(ibin);
-      //cout << "bin Content is: " << hist_uncut->GetBinContent(ibin) << endl;
     }
 
     Efficiency = GaussArea/HistArea;
-
-    //cout << "Integral in 1st bin" << hist_uncut->Integral() << endl;
-
+ 
     cout << "\nGaussian Area is: " << GaussArea << endl;
     cout << "Hist Area is: " << HistArea << endl;
     cout << "Efficiency is: " << Efficiency << endl;
@@ -313,7 +257,6 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     results.push_back(Sigma);
     results.push_back(Fit_func[i]->GetParError(2));
     results.push_back(Efficiency);
-
     
   }  //overlay hist loop end
 
@@ -321,9 +264,7 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
   gPad->Modified();
   gPad->Update();
 
-  if (save_canvas) {
-    canvas_n1->SaveAs(Form("%s.png", tag_name));
-  }
+  if (save_canvas) canvas_n1->SaveAs(Form("%s.png", tag_name));  
   
   return results;
 }
@@ -331,100 +272,95 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
 // Defining the fit function
 double sqrtE(double *x, double *par) {
 
-  double a = par[0];   // coefficient
-  double b = par[1];  // any constant
-  double c = par[2];
+  double a = par[0];   // coefficient of 1/sqrtE term
+  double b = par[1];   // coefficient of 1/E term
+  double c = par[2];   // constant term
 
-  //return (sqrt((pow(a/sqrt(x[0]), 2)) + (pow(b,2))));
   return (sqrt((pow(a/sqrt(x[0]), 2)) + (pow(b/x[0],2)) + (pow(c,2))));
-
-  // double a = par[0];   // coefficient
-  // double n = par[1];  //power
-  // double b = par[2];  // any constant
-  // return (sqrt((pow(a/pow(x[0],n), 2)) + (pow(b,2))));
 }
 
 double Linear(double *x, double *par) {
-
-  double a = par[0];   // slope
-  
+  double a = par[0];   // slope  
   return a*x[0];
 }
 
 void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
-  //const int nFuncs = 5;
-  //;
-
-    // Create a canvas to draw on
-    TCanvas* c1 = new TCanvas("c1", "Resolution fit Overlay", 800, 600);
+  TCanvas* c1 = new TCanvas("c1", "Resolution fit Overlay", 800, 600);
     
-    funcs[0]->SetMinimum(0.07); // set lower Y bound
-    //funcs[0]->SetMaximum(0.045);  // set upper Y bound
+  funcs[0]->SetMinimum(0.07); // set lower Y bound
+  //funcs[0]->SetMaximum(0.045);  // set upper Y bound
  
-    // Create functions and store in array
-    for (int i = 0; i < funcs.size(); ++i) {
-        TString name = Form("f%d", i);
+  for (int i = 0; i < funcs.size(); ++i) {
+    TString name = Form("f%d", i);
+    funcs[i]->SetLineColor(i + 1);
+    funcs[i]->SetLineWidth(2);
+    funcs[i]->GetXaxis()->SetTitleSize(0.05);
+    funcs[i]->GetXaxis()->SetTitleOffset(0.86);
 
-	//funcs[i]->SetParameter(0, 3);          // Offset to distinguish
-        funcs[i]->SetLineColor(i + 1);         // Different color
-        funcs[i]->SetLineWidth(2);             // Thicker lines for visibility
-	funcs[i]->GetXaxis()->SetTitleSize(0.05);
-	funcs[i]->GetXaxis()->SetTitleOffset(0.86);
+    funcs[i]->GetYaxis()->SetTitleOffset(0.96);
+    funcs[i]->GetYaxis()->SetTitleSize(0.05);   
+  }
 
-	funcs[i]->GetYaxis()->SetTitleOffset(0.96);
-	funcs[i]->GetYaxis()->SetTitleSize(0.05);
-	//funcs[i]->GetYaxis()->SetTitle("Resolution");
-    }
+  funcs[0]->Draw();
+  
+  for (int i = 1; i < funcs.size(); ++i) {
+    funcs[i]->Draw("SAME");
+  }
+  
+  TH1* func_hist = funcs[2]->GetHistogram();
+  func_hist->GetXaxis()->SetTitleSize(0.07);
+  func_hist->GetYaxis()->SetTitleSize(0.07);
 
-    
+  c1->Update();
 
-    // Draw first function
-    funcs[0]->Draw();
+  auto legend = new TLegend(0.7, 0.7, 0.9, 0.9);
+  for (int i = 0; i < funcs.size(); ++i) {
+    legend->AddEntry(funcs[i], funcs[i]->GetName(), "l");
+  }
 
-    // Draw remaining functions on same canvas
-    for (int i = 1; i < funcs.size(); ++i) {
-      funcs[i]->Draw("SAME");
-    }
+  legend->Draw();
 
-    TH1* func_hist = funcs[2]->GetHistogram();
-    func_hist->GetXaxis()->SetTitleSize(0.07);  // X-axis title size
-    func_hist->GetYaxis()->SetTitleSize(0.07);  // Y-axis title size
+  c1->SaveAs("resolution_function_overlay_BGO.png");
+  c1->Close();
+   
+  TCanvas* c2 = new TCanvas("c2", "Resolution graphs Overlay", 800, 600);
 
-    c1->Update();
+  int colors[] = {kRed, kBlue, kGreen + 2};
+  for (int i = 0; i < graphs.size(); ++i)
+    {
+      graphs[i]->SetLineWidth(2);
+      graphs[i]->SetMarkerStyle(22+i);
+      graphs[i]->SetMarkerSize(1.5);
+      graphs[i]->SetMarkerColor(colors[i % 3]);
       
-    // Add legend
-    auto legend = new TLegend(0.7, 0.7, 0.9, 0.9);
-    for (int i = 0; i < funcs.size(); ++i) {
-        legend->AddEntry(funcs[i], funcs[i]->GetName(), "l");
+      graphs[i]->GetXaxis()->SetTitleSize(0.05);
+      graphs[i]->GetXaxis()->SetTitleOffset(0.86);
+      
+      graphs[i]->GetYaxis()->SetTitleOffset(0.055);
+      graphs[i]->GetYaxis()->SetTitleSize(0.05);   
     }
-    legend->Draw();
-    //gPad->Range(95, 0.075, 1005, 0.25);
-    // Save to file (choose your preferred format)
-    //c1->SaveAs("resolution_function_overlay_PbWO4.png");
-    c1->SaveAs("resolution_function_overlay_BGO.png");
-
-    TCanvas* c2 = new TCanvas("c2", "Resolution graphs Overlay", 800, 600);
-    graphs[0]->Draw("AP");
-    for (size_t i = 1; i < graphs.size(); ++i)
+  
+  graphs[0]->Draw("AP");
+  for (int i = 1; i < graphs.size(); ++i)
+    {
       graphs[i]->Draw("P SAME");
+    }
     
-    TLegend* leg2 = new TLegend(0.7, 0.7, 0.9, 0.9);
-    for (size_t i = 0; i < graphs.size(); ++i)
-      leg2->AddEntry(graphs[i], Form("graphs[%zu]", i), "AP");
-    leg2->Draw();
-    
-    
-    c2->SaveAs("Resolution_points_overlay.png");
+  TLegend* leg2 = new TLegend(0.7, 0.7, 0.9, 0.9);
+  for (size_t i = 0; i < graphs.size(); ++i)
+    leg2->AddEntry(graphs[i], graphs[i]->GetName(), "AP");
+  leg2->Draw();
+        
+  c2->SaveAs("Resolution_points_overlay.png");
 }
 
 vector<TF1*> Fit_array;
 vector<TGraphErrors*> Graph_array;
-//string WidthId;
+
 void data_plot() {
   vector<string> data_files;
   
-  //filling all the txt files in a loop
-
+  //filling all the txt files in an array
   TSystemDirectory dir("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
   TList* files = dir.GetListOfFiles();
   if (!files) return;
@@ -443,18 +379,16 @@ void data_plot() {
   cout << "\n\nSize of the files vector is: " << data_files.size() << endl;
 
   for (int i=0; i<data_files.size(); i++){
-    string xtitle, ytitle;
-    xtitle = "E_{incident}(keV)";
-
+    string xtitle, ytitle;    
     TString FileName = data_files[i];
-    string ImgId;
-    
+    string ImgId;    
     ifstream infile;
-
     vector<double> x_vals, y_vals, x_err_vals, y_err_vals;
     double x, y, y_err;
-
     string WidthId;
+
+    xtitle = "E_{incident}(keV)";
+    
     if (FileName.Contains("2.5cm")) WidthId = "2.5cm";
     if (FileName.Contains("_5cm")) WidthId = "5cm";
     if (FileName.Contains("_10cm")) WidthId = "10cm";
@@ -462,12 +396,12 @@ void data_plot() {
 
     // Create canvas
     data_files[i].resize(data_files[i].length() - 4);        //removing .txt part
+
     TCanvas *canvas = new TCanvas(data_files[i].c_str(), data_files[i].c_str(), 800, 600);
     canvas->SetLeftMargin(0.135);
     canvas->SetRightMargin(0.035);
     canvas->SetTopMargin(0.057);
     canvas->SetBottomMargin(0.11);
-
     
     TGraph *graph;
     if (FileName.Contains("Emeasured_vs_Einc") || FileName.Contains("Ngamma_vs_Einc")){
@@ -480,7 +414,7 @@ void data_plot() {
         y_vals.push_back(y);}
 
       if (x_vals.empty()) {
-        std::cerr << "No data found!" << std::endl;
+        cerr << "No data found!" << endl;
         return;}
 
       graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
@@ -500,33 +434,28 @@ void data_plot() {
       graph->GetYaxis()->SetTitleOffset(0.9);
       
 
-      // canvas->Update();
-
       TF1 *fit = new TF1("line_fit", Linear, 100, 1000,1);
       fit ->SetParameters(1.,1);
       fit ->SetRange(100.,1000.);
 
-      graph->Fit(fit, "EQ");  // "Q" = quiet, no print to stdout
+      graph->Fit(fit, "EQ");   
       fit->SetLineColor(kRed);
       fit->Draw("same");
       
-      // cout << "R2value: " << fit->GetR
-      double a = fit->GetParameter(0);  // intercept
+      double a = fit->GetParameter(0);  //slope
       
-      // Create equation string
       TString eq;
       if (ImgId == "Ngamma_vs_Einc") eq.Form("N_{\\gamma} = (%.2f \\pm %.1e)E_{inc}", a, fit->GetParError(0));
       else eq.Form("E_{Measured} = (%.2f \\pm %.1e)E_{inc}", a, fit->GetParError(0));
       
 
-      // Draw equation on canvas using TLatex
       TLatex latex;
       latex.SetNDC();         // Use normalized coordinates
       latex.SetTextSize(0.05);
       latex.DrawLatex(0.25, 0.85, eq);
 
       canvas->Update();          
-      }
+    }
 
     if (FileName.Contains("Response_vs_Einc")){
       ImgId = "Response_vs_Einc";
@@ -538,10 +467,9 @@ void data_plot() {
         y_vals.push_back(y);}
       
       if (x_vals.empty()) {
-        std::cerr << "No data found!" << std::endl;
+        cerr << "No data found!" << endl;
         return;}
       
-      //graph = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
       graph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
 
       graph->SetTitle(" ");
@@ -582,13 +510,13 @@ void data_plot() {
       }
 
       if (x_vals.empty()) {
-        std::cerr << "No data found!" << std::endl;
+        cerr << "No data found!" << endl;
         return;
       }
 
       auto EGraph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
-    
       EGraph->SetTitle(" ");
+      EGraph->SetName(WidthId.c_str());
       EGraph->SetMarkerStyle(20);
       EGraph->SetMarkerSize(1.0);
       EGraph->SetMarkerColor(kBlue);
@@ -601,23 +529,18 @@ void data_plot() {
       EGraph->GetYaxis()->SetTitle(ytitle.c_str());
       EGraph->GetYaxis()->SetTitleSize(0.055);
       EGraph->GetYaxis()->SetTitleOffset(0.9);
+
     
-      //string FitfcnName = Width + " cm";
       TF1 *fit_func = new TF1(WidthId.c_str(), sqrtE, 100, 1000,3);
-      fit_func->SetParameters(1,1/2,0);
-    
-      fit_func->SetRange(100, 1000);
-    
-      EGraph->Fit(fit_func, "EQ");
-      // Filename.ReplaceAll(".txt", "");  
-      fit_func->SetLineColor(kRed);
-      //fit_func->SetTitle("Resolution_PbWO4; E_{inc}; \\frac{\\sigma}{\\mu}");
-      //fit_func->SetTitle("Resolution_BGO; E_{inc}; \\frac{\\sigma}{\\mu}");
-      fit_func->SetTitle("Resolution_PbWO4; E_{inc}; Resolution");
+      fit_func->SetParameters(1,1/2,0);    
+      fit_func->SetRange(92, 1020);
       
+      EGraph->Fit(fit_func, "EQR0");     //0 is to store the fit function but not draw  
+      
+      fit_func->SetLineColor(kRed);
+      fit_func->SetTitle("Resolution_PbWO4; E_{inc}; Resolution");      
       fit_func->Draw("same");
       
-
       Fit_array.push_back(fit_func);
       Graph_array.push_back(EGraph);
 
@@ -625,14 +548,8 @@ void data_plot() {
       double b = fit_func->GetParameter(1);
       double c = fit_func->GetParameter(2);
         
-      // Create equation string
       TString eq;
-    
-      //eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2f", a, b);
       eq.Form("R = %.2fE^{-\\frac{1}{2}} \\oplus %.2fE^{-1} \\oplus %.2f", a, b, c);
-
-      //eq.Form("R = %.2fE^{-%.2f} \\oplus %.2f", a, n, b);
-
 
       char* chisqrNDF = new char[50];
       char *a_err = new char[50];
@@ -660,7 +577,6 @@ void data_plot() {
     infile.close();
 
     //Defining the folder names:
-
     string MainFolder, folder, ImgName;
     MainFolder = "plots/Scintillation/Fits/Resol_Resp";
     string Width, ImageId;
@@ -670,8 +586,7 @@ void data_plot() {
       if (FileName.Contains("_5cm")) {folder = MainFolder + "/BGO/5cm/"; Width = "5cm";}
       if (FileName.Contains("10cm")) {folder = MainFolder + "/BGO/10cm/"; Width = "10cm";}
       
-      ImgName = "BGO_" + Width + ImgId;
-      
+      ImgName = "BGO_" + Width + ImgId;      
     }
     
     if(FileName.Contains("PbWO4")){
@@ -710,15 +625,11 @@ void FitFunc(string pathname)
 
   double Mu_calib = 0, E_calib = 0;
 
-  std::vector<std::string> rootFiles;
+  vector<string> rootFiles;
 
-  //filling all the root files in an array f
   //string FileFolder = "BGO_out_root_files";
-  //string FileFolder = "Check_BGO_eff";
   string FileFolder = "PbWO4_out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
-  //TSystemDirectory dir("out_root_files", "out_root_files");
-  //TSystemDirectory dir("check_out_root_files", "check_out_root_files");
   TList* files = dir.GetListOfFiles();
   if (!files) return;
 
@@ -730,25 +641,16 @@ void FitFunc(string pathname)
     if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
     if (fname.EndsWith(".root")) {
       f.push_back(FileFolder + "/" + string(fname.Data()));
-      //f.push_back("check_out_root_files/" + string(fname.Data()));
     }
   }
 
   cout << "\n\nSize of the files vector is: " << f.size() << endl;
 
-
-  //vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
-
-  //vector<int>xmax = {2000,2000,16,16,2000,2000,2000,2000};
-  //vector<int>xmin = {-200,0,0,0,0,0,0,0};
-
-  
-  
   string name = "nOptical_Photons";
   sprintf(hist_name,"%s",name.c_str());
   
   //cleaning the contents of the txt files before starting
-  int result = system("./txtClean.sh");  // Ensure script is executable
+  int result = system("./txtClean.sh");  
   
   if (result != 0) {
     cerr << "Shell script failed with code: " << result << endl;
@@ -758,9 +660,7 @@ void FitFunc(string pathname)
 
   string Width;
  
-  //starting looping over the files
-  for(int iFile=0; iFile < f.size(); iFile++){
-    
+  for(int iFile=0; iFile < f.size(); iFile++){   
     TFile *root_file = new TFile(f[iFile].c_str());
     vector<TH1F> HistList;
     TH1F* hist = (TH1F*)root_file->Get(hist_name);
@@ -775,15 +675,11 @@ void FitFunc(string pathname)
     xtitle = hist->GetXaxis()->GetTitle();
     ytitle = hist->GetYaxis()->GetTitle();
 
-
-    //specifying the path of the folder etc
     string MainFolder;
-    //if(histId.Contains("Edep") || histId.Contains("Compt")) MainFolder = "Pho_Interact";
     MainFolder = "Scintillation/Fits/ItrFit";
     TString FileId = f[iFile];
     string Energy, Width, txtFileId;
-    //string Energy, txtFileId;
-    
+
     //making identifier for energy
     if (FileId.Contains("511keV")) Energy = "511keV";
     if (FileId.Contains("100keV")) Energy = "100keV";
@@ -803,17 +699,9 @@ void FitFunc(string pathname)
 
       filetag = "BGO_" + Energy + "_" + Width;
       txtFileId = "BGO_" + Width;
-      // xmax = 10000;
-      // xmin = 500;
-
       rebin =2;
-      //if(Width != "5cm") continue;
-      // if (Width == "5cm") {
-      // 	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 5; //rebin = 1; //xmax = 3000, xmin = 500};
-      // 	else if (Energy == "800keV") rebin = 5;
-      // 	//else rebin = 10;}
-      // 	else rebin = 2;}
 
+      //defininig the initial range for fitting
       if(Width == "5cm") {
 	if (Energy == "100keV" || Energy == "150keV") {xmin = 600; xmax = 1500;}
 	if (Energy == "300keV") {xmin = 1500; xmax = 3000;}
@@ -842,20 +730,7 @@ void FitFunc(string pathname)
 	if (Energy == "600keV") {xmin = 4500; xmax = 5100;}
 	if (Energy == "800keV") {xmin = 6000 ; xmax = 7000;}
 	if (Energy == "1000keV") {xmin = 7500; xmax=8500;}
-      }
-
-      
-      	// if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 5; //rebin = 1; //xmax = 3000, xmin = 500};
-      	// else if (Energy == "800keV") rebin = 1;
-      	//else rebin = 10;}
-      	//else rebin = 2;}
-
-
-      // if (Width == "10cm") {
-      // 	if (Energy == "100keV" || Energy == "150keV" || Energy == "300keV" || Energy == "450keV") rebin = 2;
-      // 	else rebin =2;}
-      
-	
+      }           	
     }
 
     if(FileId.Contains("PbWO4")){
@@ -884,11 +759,7 @@ void FitFunc(string pathname)
       txtFileId = "Plastic_" + Width;
     }
 
-    //WidthId = Width;
-    cout << "\n\nWidth is: " << WidthId << endl;
     sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), "nOpticalPhotns_ItrFit", Energy.c_str());
-
-
     
     vector<double> params;
     params = generate_1Dplot(hist_list,full_path,xmax,xmin,leg_head,false,false,false,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin);
@@ -898,7 +769,7 @@ void FitFunc(string pathname)
     ofstream outFile5("plots/Scintillation/Fits/txtFiles/Efficiency_vs_Einc_" + txtFileId + ".txt", ios::app);
     
     if (!outFile1 || !outFile2) {
-      std::cerr << "Error opening file!" << std::endl;
+      cerr << "Error opening file!" << endl;
       return 1;
     }
 
@@ -919,21 +790,15 @@ void FitFunc(string pathname)
     energy = Energy.erase(Energy.length() - 3);
     energy_val = stoi(energy);
   
-
     outFile1 << energy << fixed << setprecision(3)
     	     << setw(12) << Resol << fixed << setprecision(5)
     	     << setw(12) << Resol_err << endl;
-
-    // outFile2 << energy << fixed << setprecision(2)
-    // 	     << setw(12) << Mu << fixed << setprecision(5)
-    // 	     << setw(12) << Mu_err << endl;
 
     outFile2 << energy << fixed << setprecision(2)
 	     << setw(12) << Mu << endl;
 
     outFile5 << energy << fixed << setprecision(4)
 	     << setw(12) << eff << endl;
-
 
     outFile1.close();
     outFile2.close();
@@ -944,8 +809,9 @@ void FitFunc(string pathname)
   TxtArr = {"BGO_2.5cm", "BGO_5cm", "BGO_10cm", "PbWO4_2.5cm", "PbWO4_5cm", "PbWO4_10cm", "Plastic_5cm", "Plastic_10cm", "Plastic_20cm"};
 
   vector<string> data_files1;
+
   //storing the names of all txt files in the array:
-   TSystemDirectory dir1("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
+  TSystemDirectory dir1("plots/Scintillation/Fits/txtFiles", "plots/Scintillation/Fits/txtFiles");
   TList* files1 = dir1.GetListOfFiles();
   if (!files1) return;
 
@@ -973,9 +839,8 @@ void FitFunc(string pathname)
 	  if (x == 511) {E_calib = x; Mu_calib = y;}}
 
 	ChkFile.clear();                // Clear EOF flag
-	ChkFile.seekg(0, std::ios::beg); // Go back to beginning
+	ChkFile.seekg(0, ios::beg);     // Go back to beginning
 	
-
 	//now filling the values of the txt file for EMeaured and Response
 	while (ChkFile >> x >> y){
 	  EMeasured = (E_calib/Mu_calib)*y;
@@ -985,7 +850,6 @@ void FitFunc(string pathname)
 	  outFile4 << x << fixed << setprecision(2)
 		   << setw(12) << EMeasured/x << endl;}
 
-
 	ChkFile.close();
 	outFile3.close();
 	outFile4.close();			
@@ -994,13 +858,20 @@ void FitFunc(string pathname)
   }
 
   // fitting the datapoints
-
-  //cout << "\n\n width is:" << Width << endl; 
   data_plot();
 
   FitOverlay(Fit_array, Graph_array);
   cout << "number of fits in the array: " << Fit_array.size() << endl;
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1017,5 +888,4 @@ void FitFunc(string pathname)
 //      double double4;
 //      vector<string> str3;
 //  };
-
 
