@@ -320,7 +320,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
 
   legend->Draw();
 
-  c1->SaveAs("resolution_function_overlay_BGO.png");
+  c1->SaveAs("resolution_function_overlay.png");
   c1->Close();
    
   TCanvas* c2 = new TCanvas("c2", "Resolution graphs Overlay", 800, 600);
