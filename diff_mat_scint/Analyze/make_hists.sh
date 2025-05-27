@@ -14,7 +14,7 @@ for id in "${materials[@]}"; do
 	  echo "$f" > "$txt_file"
 
 	  initfile="${f#src_root_files/}"
-	  output_root_file="${id}_out_root_files/${initfile%.root}_out.root"
+	  output_root_file="$out_root_files/${initfile%.root}_out.root"
 
 	 echo $output_root_file
 
