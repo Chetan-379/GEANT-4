@@ -1,7 +1,7 @@
 #!/bin/bash
 
 make
-materials=("BGO")
+materials=("PbWO4" "BGO")
 
 txt_file="inputfile.txt"
 for id in "${materials[@]}"; do
