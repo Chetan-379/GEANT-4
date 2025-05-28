@@ -1,5 +1,4 @@
-mkdir -p plots/Pho_Interact/BGO/10cm && mkdir -p plots/Pho_Interact/BGO/5cm && mkdir -p plots/Pho_Interact/BGO/2.5cm && mkdir -p plots
-/Pho_Interact/PbWO4/10cm && mkdir -p plots/Pho_Interact/PbWO4/5cm && mkdir -p plots/Pho_Interact/PbWO4/2.5cm
+mkdir -p plots/Pho_Interact/BGO/10cm && mkdir -p plots/Pho_Interact/BGO/5cm && mkdir -p plots/Pho_Interact/BGO/2.5cm && mkdir -p plots/Pho_Interact/PbWO4/10cm && mkdir -p plots/Pho_Interact/PbWO4/5cm && mkdir -p plots/Pho_Interact/PbWO4/2.5cm
 
 mkdir -p plots/Scintillation/Opt_Pho_Ana/BGO/10cm && mkdir -p plots/Scintillation/Opt_Pho_Ana/BGO/5cm && mkdir -p plots/Scintillation/Opt_Pho_Ana/BGO/2.5cm && mkdir -p plots/Scintillation/Opt_Pho_Ana/PbWO4/10cm && mkdir -p plots/Scintillation/Opt_Pho_Ana/PbWO4/5cm && mkdir -p plots/Scintillation/Opt_Pho_Ana/PbWO4/2.5cm
 
