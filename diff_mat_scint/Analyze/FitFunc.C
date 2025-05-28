@@ -629,7 +629,7 @@ void FitFunc(string pathname)
 
   //string FileFolder = "BGO_out_root_files";
   //string FileFolder = "PbWO4_out_root_files";
-  string FileFolder = "PbWO4_out_root_files";
+  string FileFolder = "out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
   TList* files = dir.GetListOfFiles();
   if (!files) return;
