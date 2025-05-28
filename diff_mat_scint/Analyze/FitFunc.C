@@ -307,7 +307,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     funcs[i]->Draw("SAME");
   }
   
-  TH1* func_hist = funcs[2]->GetHistogram();
+  TH1* func_hist = funcs[0]->GetHistogram();
   func_hist->GetXaxis()->SetTitleSize(0.07);
   func_hist->GetYaxis()->SetTitleSize(0.07);
 
