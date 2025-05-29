@@ -23,39 +23,62 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
   mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
   worldMat->SetMaterialPropertiesTable(mptWorld);
-
-  //Detector Tile
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+ 
+//Defining the GAGG scintillator (Gd3Al2Ga3O12:Ce (Cerium is just activator which affects SY and decay timing. I am not adding it in the Material explicitly))
   
-  // std::vector<G4double> RIPhoEnergy = {2.58 * eV, 2.95 * eV, 4.00 * eV};
-  // std::vector<G4double> RefractiveIdxDet = {2.15, 2.2, 2.39};
+  G4Material *DetectorMat = new G4Material("GAGG", 6.63*g/cm3, 4);
+  
+  // G4Element *Gd = nist->FindOrBuildElement("G4_Gd");
+  // G4Element *Al = nist->FindOrBuildElement("G4_Al");
+  // G4Element *Ga = nist->FindOrBuildElement("G4_Ga");
+  // G4Element *O = nist->FindOrBuildElement("G4_O");
 
-  std::vector<G4double> RIPhoEnergy = {1.96 *eV, 2.41 *eV, 2.50 *eV, 2.54 *eV, 2.60 *eV, 2.71 *eV};
-  std::vector<G4double> RefractiveIdxDet = {2.24, 2.29, 2.3, 2.3, 2.31, 2.32};
+  G4Element *Gd = nist->FindOrBuildElement("Gd");
+  G4Element *Al = nist->FindOrBuildElement("Al");
+  G4Element *Ga = nist->FindOrBuildElement("Ga");
+  G4Element *O = nist->FindOrBuildElement("O");
+  
+  DetectorMat -> AddElement(Gd, 3);
+  DetectorMat -> AddElement(Al, 2);
+  DetectorMat -> AddElement(Ga, 3);
+  DetectorMat -> AddElement(O, 12);
+  //G4cout << "\n\nName of the Detector Material is: " << DetectorMat->GetBaseMaterial()->GetName() << G4endl;
+  
+ 
+
+  std::vector<G4double> RIPhoEnergy = {1.56 *eV, 2.19 *eV, 2.38 *eV, 3.47 *eV, 4.24 *eV, 4.65 *eV};
+  std::vector<G4double> RefractiveIdxDet = {1.872, 1.873, 1.870, 1.887, 1.914, 1.940};
 
   // std::vector<G4double> AbsPhoEnergy = {511 * keV};
   // std::vector<G4double> AbsLength = {10.4 * mm};
 
-  std::vector<G4double> ScintPhoEnergy = {2.40 *eV,  2.41 *eV,  2.42 *eV,  2.43 *eV,  2.44 *eV,  2.45 *eV,  2.46 *eV,  2.47 *eV,  2.48 *eV,  2.50 *eV,
-					  2.51 *eV,  2.52 *eV,  2.53 *eV,  2.54 *eV,  2.55 *eV,  2.56 *eV,  2.57 *eV,  2.58 *eV,  2.60 *eV,  2.61 *eV,
-					  2.62 *eV,  2.63 *eV,  2.64 *eV,  2.66 *eV,  2.67 *eV,  2.68 *eV,  2.69 *eV,  2.71 *eV,  2.72 *eV,  2.73 *eV,
-					  2.75 *eV,  2.76 *eV,  2.77 *eV,  2.79 *eV,  2.80 *eV,  2.81 *eV,  2.83 *eV,  2.84 *eV,  2.86 *eV,  2.87 *eV,
-					  2.88 *eV,  2.90 *eV,  2.91 *eV,  2.93 *eV,  2.94 *eV,  2.96 *eV,  2.97 *eV,  2.99 *eV,  3.01 *eV,  3.02 *eV};
+  std::vector<G4double> ScintPhoEnergy = {1.771 *eV, 1.791 *eV, 1.816 *eV, 1.834 *eV, 1.857 *eV, 1.878 *eV, 1.901 *eV, 1.916 *eV, 1.933 *eV, 1.951 *eV,
+					  1.970 *eV, 1.988 *eV, 2.010 *eV, 2.025 *eV, 2.040 *eV, 2.056 *eV, 2.074 *eV, 2.091 *eV, 2.106 *eV, 2.122 *eV,
+					  2.133 *eV, 2.143 *eV, 2.155 *eV, 2.164 *eV, 2.174 *eV, 2.181 *eV, 2.190 *eV, 2.196 *eV, 2.207 *eV, 2.217 *eV,
+					  2.230 *eV, 2.243 *eV, 2.254 *eV, 2.264 *eV, 2.274 *eV, 2.286 *eV, 2.296 *eV, 2.310 *eV, 2.319 *eV, 2.329 *eV,
+					  2.342 *eV, 2.354 *eV, 2.372 *eV, 2.389 *eV, 2.405 *eV, 2.421 *eV, 2.431 *eV, 2.444 *eV, 2.450 *eV, 2.453 *eV,
+					  2.460 *eV, 2.467 *eV, 2.471 *eV, 2.475 *eV, 2.479 *eV, 2.485 *eV, 2.491 *eV, 2.496 *eV, 2.499 *eV, 2.506 *eV,
+					  2.510 *eV, 2.515 *eV, 2.519 *eV, 2.522 *eV, 2.526 *eV, 2.531 *eV, 2.536 *eV, 2.539 *eV, 2.543 *eV, 2.548 *eV,
+					  2.557 *eV, 2.565 *eV, 2.571 *eV, 2.580 *eV, 2.589 *eV, 2.598 *eV, 2.613 *eV, 2.631 *eV, 2.645 *eV, 2.665 *eV};
 
-  std::vector<G4double> ScintFastArray = {0.059, 0.074, 0.065, 0.074, 0.074, 0.086, 0.083, 0.089, 0.098, 0.113,
-					  0.110, 0.127, 0.133, 0.142, 0.151, 0.160, 0.169, 0.172, 0.187, 0.207,
-					  0.216, 0.234, 0.243, 0.267, 0.276, 0.311, 0.341, 0.367, 0.409, 0.465,
-					  0.507, 0.533, 0.545, 0.551, 0.551, 0.560, 0.599, 0.640, 0.726, 0.779,
-					  0.761, 0.747, 0.687, 0.516, 0.320, 0.222, 0.136, 0.089, 0.059, 0.047};
+  std::vector<G4double> ScintFastArray = {0.032, 0.036, 0.039, 0.045, 0.051, 0.057, 0.063, 0.069, 0.073, 0.078,
+					  0.086, 0.093, 0.104, 0.112, 0.122, 0.128, 0.140, 0.157, 0.174, 0.191,
+					  0.201, 0.214, 0.225, 0.236, 0.244, 0.253, 0.261, 0.268, 0.278, 0.289,
+					  0.301, 0.313, 0.324, 0.334, 0.343, 0.353, 0.360, 0.366, 0.374, 0.381,
+					  0.385, 0.389, 0.392, 0.392, 0.391, 0.388, 0.381, 0.373, 0.364, 0.355,
+					  0.345, 0.335, 0.324, 0.314, 0.306, 0.292, 0.279, 0.266, 0.254, 0.236,
+					  0.218, 0.204, 0.193, 0.183, 0.170, 0.157, 0.145, 0.133, 0.121, 0.110,
+					  0.099, 0.087, 0.078, 0.065, 0.051, 0.039, 0.028, 0.017, 0.008, 0.002};
   
 
-  std::vector<G4double> ScintSlowArray = {0.015, 0.019, 0.016, 0.019, 0.019, 0.021, 0.021, 0.022, 0.024, 0.028,
-					  0.027, 0.032, 0.033, 0.036, 0.038, 0.040, 0.042, 0.043, 0.047, 0.052,
-					  0.054, 0.059, 0.061, 0.067, 0.069, 0.078, 0.085, 0.092, 0.102, 0.116,
-					  0.127, 0.133, 0.136, 0.138, 0.138, 0.140, 0.150, 0.160, 0.181, 0.195,
-					  0.190, 0.187, 0.172, 0.129, 0.080, 0.056, 0.034, 0.022, 0.015, 0.012};
+  std::vector<G4double> ScintSlowArray = {0.050, 0.055, 0.061, 0.069, 0.079, 0.088, 0.097, 0.107, 0.114, 0.122,
+					  0.134, 0.144, 0.161, 0.174, 0.189, 0.199, 0.217, 0.244, 0.270, 0.296,
+					  0.312, 0.332, 0.348, 0.365, 0.379, 0.392, 0.405, 0.416, 0.432, 0.448,
+					  0.466, 0.486, 0.502, 0.517, 0.533, 0.548, 0.558, 0.568, 0.579, 0.591,
+					  0.598, 0.603, 0.608, 0.608, 0.606, 0.602, 0.591, 0.578, 0.565, 0.551,
+					  0.535, 0.519, 0.503, 0.486, 0.474, 0.453, 0.433, 0.413, 0.394, 0.365,
+					  0.339, 0.317, 0.300, 0.284, 0.264, 0.244, 0.224, 0.207, 0.188, 0.171,
+					  0.153, 0.136, 0.121, 0.100, 0.079, 0.061, 0.044, 0.027, 0.013, 0.003};
 
   // std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 2.51 * eV, 3.66 * eV};
   // std::vector<G4double> ScintFastArray = {0.019, 0.097, 0.020};
@@ -64,7 +87,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // G4MaterialPropertyVector *MPVec;
   // MPVec->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintilSlowArray, false, true);
 
-  G4int lenArray = 10;
+  //G4int lenArray = 10;
   auto myMPT1 = new G4MaterialPropertiesTable();
   
   myMPT1->AddProperty("RINDEX", RIPhoEnergy, RefractiveIdxDet);
@@ -90,21 +113,20 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 200. / MeV);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 5. * ns);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 30. * ns); 
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.2);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.8);
-  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 10 * ps);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.392);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
+  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
 
   // Set the Birks Constant for scintillator
   DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
-  
   //==============================================
   DetectorMat->SetMaterialPropertiesTable(myMPT1);
   //==============================================
-    
+     
 
   //----------Volumes-------------
   //
@@ -121,7 +143,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   //Trapezoidal enclosure tiles                                                          
   G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
-  G4double rad_dz = 10 * cm;
+  G4double rad_dz = 10. * cm;
   G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
 
   G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
