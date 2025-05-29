@@ -1,0 +1,344 @@
+#include "construction.hh"
+#include "G4RotationMatrix.hh"
+#include <bits/stdc++.h>
+
+MyDetectorConstruction::MyDetectorConstruction()
+{}
+
+MyDetectorConstruction::~MyDetectorConstruction()
+{}
+
+G4VPhysicalVolume *MyDetectorConstruction::Construct()
+{
+  //-----------------Defining and Adding the Material Properties----------
+  //
+  
+  G4double energy[2] = {1.2398419*eV/0.9, 1.2398419*eV/0.2};
+  G4double rindexWorld[2] = {1.0, 1.0};
+
+  //World(Air)
+  G4NistManager *nist = G4NistManager::Instance();
+  G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+
+  G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
+  mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
+  worldMat->SetMaterialPropertiesTable(mptWorld);
+
+  G4double a, z, density;
+  G4int nelements;
+  
+//Defining the GAGG scintillator (Gd3Al2Ga3O12:Ce (Cerium is just activator which affects SY and decay timing. I am not adding it in the Material explicitly))
+  
+  G4Material *DetectorMat = new G4Material("GAGG", 6.63*g/cm3, 4);
+  
+  G4Element *Gd = nist->FindOrBuildElement("G4_Gd");
+  G4Element *Al = nist->FindOrBuildElement("G4_Al");
+  G4Element *Ga = nist->FindOrBuildElement("G4_Ga");
+  G4Element *O = nist->FindOrBuildElement("G4_O");
+  
+  DetectorMat -> AddElement(Gd, 3);
+  DetectorMat -> AddElement(Al, 2);
+  DetectorMat -> AddElement(Ga, 3);
+  DetectorMat -> AddElement(O, 12);
+  
+
+  std::vector<G4double> RIPhoEnergy = {1.56 *eV, 2.19 *eV, 2.38 *eV, 3.47 *eV, 4.24 *eV, 4.65 *eV};
+  std::vector<G4double> RefractiveIdxDet = {1.872, 1.873, 1.870, 1.887, 1.914, 1.940};
+
+  // std::vector<G4double> AbsPhoEnergy = {511 * keV};
+  // std::vector<G4double> AbsLength = {10.4 * mm};
+
+  std::vector<G4double> ScintPhoEnergy = {1.771 *eV, 1.791 *eV, 1.816 *eV, 1.834 *eV, 1.857 *eV, 1.878 *eV, 1.901 *eV, 1.916 *eV, 1.933 *eV, 1.951 *eV,
+					  1.970 *eV, 1.988 *eV, 2.010 *eV, 2.025 *eV, 2.040 *eV, 2.056 *eV, 2.074 *eV, 2.091 *eV, 2.106 *eV, 2.122 *eV,
+					  2.133 *eV, 2.143 *eV, 2.155 *eV, 2.164 *eV, 2.174 *eV, 2.181 *eV, 2.190 *eV, 2.196 *eV, 2.207 *eV, 2.217 *eV,
+					  2.230 *eV, 2.243 *eV, 2.254 *eV, 2.264 *eV, 2.274 *eV, 2.286 *eV, 2.296 *eV, 2.310 *eV, 2.319 *eV, 2.329 *eV,
+					  2.342 *eV, 2.354 *eV, 2.372 *eV, 2.389 *eV, 2.405 *eV, 2.421 *eV, 2.431 *eV, 2.444 *eV, 2.450 *eV, 2.453 *eV,
+					  2.460 *eV, 2.467 *eV, 2.471 *eV, 2.475 *eV, 2.479 *eV, 2.485 *eV, 2.491 *eV, 2.496 *eV, 2.499 *eV, 2.506 *eV,
+					  2.506 *eV, 2.510 *eV, 2.515 *eV, 2.519 *eV, 2.522 *eV, 2.526 *eV, 2.531 *eV, 2.536 *eV, 2.539 *eV, 2.543 *eV,
+					  2.548 *eV, 2.557 *eV, 2.565 *eV, 2.571 *eV, 2.580 *eV, 2.589 *eV, 2.598 *eV, 2.613 *eV, 2.631 *eV, 2.645 *eV};
+
+  std::vector<G4double> ScintFastArray = {0.032, 0.036, 0.039, 0.045, 0.051, 0.057, 0.063, 0.069, 0.073, 0.078,
+					  0.086, 0.093, 0.104, 0.112, 0.122, 0.128, 0.140, 0.157, 0.174, 0.191,
+					  0.201, 0.214, 0.225, 0.236, 0.244, 0.253, 0.261, 0.268, 0.278, 0.289,
+					  0.301, 0.313, 0.324, 0.334, 0.343, 0.353, 0.360, 0.366, 0.374, 0.381,
+					  0.385, 0.389, 0.392, 0.392, 0.391, 0.388, 0.381, 0.373, 0.364, 0.355,
+					  0.345, 0.335, 0.324, 0.314, 0.306, 0.292, 0.279, 0.266, 0.254, 0.231,
+					  0.236, 0.218, 0.204, 0.193, 0.183, 0.170, 0.157, 0.145, 0.133, 0.121,
+					  0.110, 0.099, 0.087, 0.078, 0.065, 0.051, 0.039, 0.028, 0.017, 0.008};
+  
+
+  std::vector<G4double> ScintSlowArray = {0.050, 0.055, 0.061, 0.069, 0.079, 0.088, 0.097, 0.107, 0.114, 0.122,
+					  0.134, 0.144, 0.161, 0.174, 0.189, 0.199, 0.217, 0.244, 0.270, 0.296,
+					  0.312, 0.332, 0.348, 0.365, 0.379, 0.392, 0.405, 0.416, 0.432, 0.448,
+					  0.466, 0.486, 0.502, 0.517, 0.533, 0.548, 0.558, 0.568, 0.579, 0.591,
+					  0.598, 0.603, 0.608, 0.608, 0.606, 0.602, 0.591, 0.578, 0.565, 0.551,
+					  0.535, 0.519, 0.503, 0.486, 0.474, 0.453, 0.433, 0.413, 0.394, 0.358,
+					  0.365, 0.339, 0.317, 0.300, 0.284, 0.264, 0.244, 0.224, 0.207, 0.188,
+					  0.171, 0.153, 0.136, 0.121, 0.100, 0.079, 0.061, 0.044, 0.027, 0.013};
+
+  // std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 2.51 * eV, 3.66 * eV};
+  // std::vector<G4double> ScintFastArray = {0.019, 0.097, 0.020};
+  // std::vector<G4double> ScintSlowArray = {0.171, 0.876, 0.183};
+
+  // G4MaterialPropertyVector *MPVec;
+  // MPVec->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintilSlowArray, false, true);
+
+  //G4int lenArray = 10;
+  auto myMPT1 = new G4MaterialPropertiesTable();
+  
+  myMPT1->AddProperty("RINDEX", RIPhoEnergy, RefractiveIdxDet);
+
+  // Check that group velocity is calculated from RINDEX
+  if (myMPT1->GetProperty("RINDEX")->GetVectorLength()
+      != myMPT1->GetProperty("GROUPVEL")->GetVectorLength())
+  {
+    G4ExceptionDescription ed;
+    ed << "Error calculating group velocities. Incorrect number of entries "
+          "in group velocity material property vector.";
+    G4Exception("OpNovice::OpNoviceDetectorConstruction", "OpNovice001", FatalException, ed);
+  }
+
+    // Adding a property from two std::vectors. Argument createNewKey is false
+  // and spline is true.
+
+    
+  //myMPT1->AddProperty("ABSLENGTH", AbsPhoEnergy, AbsLength, false, true);
+
+
+  //G4cout << "\n\ndatatype is: " <<typeid( myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true)).name() << G4endl;
+
+  myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
+  myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 28244. / MeV);
+  myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns); 
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.392);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
+  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
+
+  // Set the Birks Constant for scintillator
+  DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
+  
+  //==============================================
+  DetectorMat->SetMaterialPropertiesTable(myMPT1);
+  //==============================================
+    
+
+  //----------Volumes-------------
+  //
+  // The world
+  G4Box *solidWorld = new G4Box("solidWorld", 0.5*m, 0.5*m, 0.5*m);
+  G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
+  G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "physWorld", 0, false, 0, true);
+
+  // The enclosure
+  G4Box *solidEncVol = new G4Box("EncVol", 10*cm, 10*cm, 10*cm);
+  G4LogicalVolume *logicEncVol = new G4LogicalVolume(solidEncVol, worldMat, "logicalEncVol");
+  G4VPhysicalVolume *physEncVol = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicEncVol, "physEncVol", logicWorld, false, 0, true);
+
+  
+  //Trapezoidal enclosure tiles                                                          
+  G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
+  G4double rad_dz = 5 * cm;
+  G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
+
+  G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
+  G4int Pos[2] = {-1,1};
+  new_rotmX.rotateX(90 * deg);
+  new_rotmY.rotateY(90 * deg);  
+  new_rotmZ.rotateZ(90 * deg);
+  
+  G4ThreeVector position;
+  
+  G4Trd *solidDetector = new G4Trd("solidDetector",  // its name
+				   0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
+				   0.5 * rad_dz);  // its size	      
+
+  logicDetector = new G4LogicalVolume(solidDetector,  // its solid
+				      DetectorMat, // its material
+				      "logicalDetector");  // its name
+
+  // G4cout << "\n\n=====================working====================================\n\n" << G4endl;
+  //Loops to place the tiles
+  for (G4int i=0; i<3; i++){     
+    for (G4int j=0; j<2; j++){
+      std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
+
+      if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
+      if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
+      if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
+      
+      G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+      if (i==0) new_rotmX.rotateX(180 * deg);
+      if (i==1) new_rotmY.rotateY(180 * deg);    
+      if (i==2) new_rotmZ.rotateX(180 * deg);
+      
+      G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
+
+    }
+  }
+  
+  fScoringVolume = logicDetector;
+  return physWorld;
+  
+}
+
+void MyDetectorConstruction::ConstructSDandField()
+{
+  sensDet = new MySensitiveDetector("SensitiveDetector");
+  logicDetector->SetSensitiveDetector(sensDet);  
+}
+
+
+
+
+//==================BACK UP===================================
+
+//-----------MAking CZT Material---------------
+//G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
+  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+
+   // G4Element *Cd = nist->FindOrBuildElement("G4_Cd");
+   // G4Element *Zn = nist->FindOrBuildElement("G4_Zn");
+   // G4Element *Te = nist->FindOrBuildElement("G4_Te");
+
+  //  G4Material *DetectorMat = new G4Material("CdZnTe", 5.76*g/cm3, 3);
+  // G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Cd, 40*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Zn, 10*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+  //  DetectorMat->AddElement(Te, 50*perCent);
+  //   G4cout << "\n\nworking till here\n\n" << G4endl;
+
+
+  // ============================ Working for adding the grid (Don't edit or remove)===================================================================================================
+  // G4Box *solidDetector = new G4Box("solidDetector", 2.5* cm, 2.5* cm, 2.5* cm);
+  // G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
+
+  // DetectorMat->SetMaterialPropertiesTable(mptWorld);
+  
+  // logicDetector = new G4LogicalVolume(solidDetector, DetectorMat, "logicalDetector");
+  
+  // //G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
+     
+  // G4int Pos[2] = {-1,1};
+
+  // // new_rotmX.rotateX(90 * deg);
+  // // new_rotmY.rotateY(90 * deg);  
+  // // new_rotmZ.rotateZ(90 * deg);
+
+  // //std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
+  // G4ThreeVector position;
+  
+  // for (G4int s=0; s<3; s++){     
+  //   for (G4int i=0; i<2; i++){
+  //     for (G4int j=0; j<4; j++){
+  // 	for (G4int k=0; k<4; k++){
+  // 	  if(s==0) position = G4ThreeVector((-10 + (2.5*((2*j)+1))) * cm, Pos[i]*12.5 * cm, (-10 + (2.5*((2*k)+1))) * cm);
+  // 	  if(s==1) position = G4ThreeVector(Pos[i]*12.5 * cm, (-10 + (2.5*((2*j)+1))) * cm, (-10 + (2.5*((2*k)+1))) * cm);
+  // 	  if(s==2) position = G4ThreeVector((-10 + (2.5*((2*j)+1))) * cm, (-10 + (2.5*((2*k)+1))) * cm, Pos[i]*12.5 * cm);
+  // 	  // if (i==1) position = G4ThreeVector(Pos[j]*0.125*m,0.0, 0.0);
+  // 	  // if (i ==2) position = G4ThreeVector(0.0, 0.0, Pos[j]*0.125*m);
+	
+  // 	  //G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+  // 	  G4VPhysicalVolume *physDetector = new G4PVPlacement(0, position, logicDetector, "physDetector", logicWorld, false, (j+1)*(k+1), true);
+  // 	}
+  //     }
+  //   }
+  // }
+  
+  
+
+ // ============================Working for cuboidal volumes Don't Edit===================================================================================================
+  // G4Box *solidRadiator = new G4Box("solidRadiator", 0.1*m, 0.1*m, 0.025*m);
+  // G4Material *RadiatorMat = nist->FindOrBuildMaterial("G4_Si");
+
+  // RadiatorMat->SetMaterialPropertiesTable(mptWorld);
+  
+  // G4LogicalVolume *logicRadiator = new G4LogicalVolume(solidRadiator, RadiatorMat, "logicalRadiator");
+  
+  // G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
+     
+  // G4int Pos[2] = {-1,1};
+
+  // new_rotmX.rotateX(90 * deg);
+  // new_rotmY.rotateY(90 * deg);  
+  // new_rotmZ.rotateZ(90 * deg);
+
+  // std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
+  // G4ThreeVector position;
+  
+  // for (G4int i=0; i<3; i++){     
+  //   for (G4int j=0; j<2; j++){
+      
+  //     if (i==0) position = G4ThreeVector(0.0,Pos[j]*0.125*m, 0.0);
+  //     if (i==1) position = G4ThreeVector(Pos[j]*0.125*m,0.0, 0.0);
+  //     if (i ==2) position = G4ThreeVector(0.0, 0.0, Pos[j]*0.125*m);
+     
+  //     G4Transform3D transform = G4Transform3D(new_rotm[i], position);
+  //     G4VPhysicalVolume *physRadiator = new G4PVPlacement(transform, logicRadiator, "physRadiator", logicWorld, false, (i+1)*(j+1), true);
+  //   }
+    
+  // }
+  
+  //===============================================================================================================================================
+
+
+//-------------------Definining Radioactive Source Volume------------
+ // //spherical Radioactive source
+  // G4double sourceRadius = 1. * mm;
+  
+  // G4Sphere *solidSource = new G4Sphere("solidSource", 0.0, sourceRadius, 0.0, 360. * deg, 0.0, 180. * deg);
+  // G4LogicalVolume *logicSource = new G4LogicalVolume(solidSource, matNa22, "logicSource");
+  // G4VPhysicalVolume * physSource = new G4PVPlacement(0, G4ThreeVector(0., 0., 0. * cm), logicSource, "physSource", logicWorld, false, 0, true);
+
+  // G4VisAttributes *sourceVisAtt = new G4VisAttributes(G4Color(1.0, 0.0, 1.0, 0.5));
+  // sourceVisAtt->SetForceSolid(true);
+  // logicSource->SetVisAttributes(sourceVisAtt);
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
