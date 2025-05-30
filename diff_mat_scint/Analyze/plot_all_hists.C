@@ -467,6 +467,26 @@ void plot_all_hists(string pathname)
 
 	if (histId.Contains("nOptical_Photons")) xmax[0] = 750;
       }
+
+      if(FileId.Contains("GAGG")){
+	if (FileId.Contains("1cm")) {folder = "plots/" + MainFolder + "/GAGG/1cm"; Width = "1cm";}
+	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/GAGG/2.5cm"; Width = "2.5cm";}
+	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/GAGG/5cm"; Width = "5cm";}
+	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/GAGG/10cm"; Width = "10cm";}
+
+	filetag = "GAGG_" + Energy + "_" + Width;
+	//if (histId.Contains("nOptical_Photons")) xmax[0] = 750;
+      }
+
+      if(FileId.Contains("LaBr3")){
+	if (FileId.Contains("1cm")) {folder = "plots/" + MainFolder + "/LaBr3/1cm"; Width = "1cm";}
+	if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/LaBr3/2.5cm"; Width = "2.5cm";}
+	if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/LaBr3/5cm"; Width = "5cm";}
+	if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/LaBr3/10cm"; Width = "10cm";}
+	
+	filetag = "LaBr3_" + Energy + "_" + Width;
+	//if (histId.Contains("nOptical_Photons")) xmax[0] = 750;
+      }
       
       if(FileId.Contains("Plastic")){
 	filetag = "Plastic_" + Energy + "_" + Width;

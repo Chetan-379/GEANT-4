@@ -26,59 +26,50 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
  
 //Defining the GAGG scintillator (Gd3Al2Ga3O12:Ce (Cerium is just activator which affects SY and decay timing. I am not adding it in the Material explicitly))
   
-  G4Material *DetectorMat = new G4Material("GAGG", 6.63*g/cm3, 4);
+  G4Material *DetectorMat = new G4Material("LaBr3", 5.29*g/cm3, 2);
   
   // G4Element *Gd = nist->FindOrBuildElement("G4_Gd");
   // G4Element *Al = nist->FindOrBuildElement("G4_Al");
   // G4Element *Ga = nist->FindOrBuildElement("G4_Ga");
   // G4Element *O = nist->FindOrBuildElement("G4_O");
 
-  G4Element *Gd = nist->FindOrBuildElement("Gd");
-  G4Element *Al = nist->FindOrBuildElement("Al");
-  G4Element *Ga = nist->FindOrBuildElement("Ga");
-  G4Element *O = nist->FindOrBuildElement("O");
+  G4Element *La = nist->FindOrBuildElement("La");
+  G4Element *Br = nist->FindOrBuildElement("Br");
+  // G4Element *Ga = nist->FindOrBuildElement("Ga");
+  // G4Element *O = nist->FindOrBuildElement("O");
   
-  DetectorMat -> AddElement(Gd, 3);
-  DetectorMat -> AddElement(Al, 2);
-  DetectorMat -> AddElement(Ga, 3);
-  DetectorMat -> AddElement(O, 12);
+  DetectorMat -> AddElement(La, 1);
+  DetectorMat -> AddElement(Br, 3);
+  // DetectorMat -> AddElement(Ga, 3);
+  // DetectorMat -> AddElement(O, 12);
   //G4cout << "\n\nName of the Detector Material is: " << DetectorMat->GetBaseMaterial()->GetName() << G4endl;
   
  
 
-  std::vector<G4double> RIPhoEnergy = {1.56 *eV, 2.19 *eV, 2.38 *eV, 3.47 *eV, 4.24 *eV, 4.65 *eV};
-  std::vector<G4double> RefractiveIdxDet = {1.872, 1.873, 1.870, 1.887, 1.914, 1.940};
+  std::vector<G4double> RIPhoEnergy = {1.772 *eV, 1.908 *eV, 2.066 *eV, 2.255 *eV, 2.481 *eV, 2.757 *eV, 2.919 *eV, 3.102 *eV, 3.305 *eV, 3.545 *eV};
+  std::vector<G4double> RefractiveIdxDet = {2.025, 2.039, 2.057, 2.080, 2.113, 2.162, 2.195, 2.237, 2.291, 2.371};
 
   // std::vector<G4double> AbsPhoEnergy = {511 * keV};
   // std::vector<G4double> AbsLength = {10.4 * mm};
 
-  std::vector<G4double> ScintPhoEnergy = {1.771 *eV, 1.791 *eV, 1.816 *eV, 1.834 *eV, 1.857 *eV, 1.878 *eV, 1.901 *eV, 1.916 *eV, 1.933 *eV, 1.951 *eV,
-					  1.970 *eV, 1.988 *eV, 2.010 *eV, 2.025 *eV, 2.040 *eV, 2.056 *eV, 2.074 *eV, 2.091 *eV, 2.106 *eV, 2.122 *eV,
-					  2.133 *eV, 2.143 *eV, 2.155 *eV, 2.164 *eV, 2.174 *eV, 2.181 *eV, 2.190 *eV, 2.196 *eV, 2.207 *eV, 2.217 *eV,
-					  2.230 *eV, 2.243 *eV, 2.254 *eV, 2.264 *eV, 2.274 *eV, 2.286 *eV, 2.296 *eV, 2.310 *eV, 2.319 *eV, 2.329 *eV,
-					  2.342 *eV, 2.354 *eV, 2.372 *eV, 2.389 *eV, 2.405 *eV, 2.421 *eV, 2.431 *eV, 2.444 *eV, 2.450 *eV, 2.453 *eV,
-					  2.460 *eV, 2.467 *eV, 2.471 *eV, 2.475 *eV, 2.479 *eV, 2.485 *eV, 2.491 *eV, 2.496 *eV, 2.499 *eV, 2.506 *eV,
-					  2.510 *eV, 2.515 *eV, 2.519 *eV, 2.522 *eV, 2.526 *eV, 2.531 *eV, 2.536 *eV, 2.539 *eV, 2.543 *eV, 2.548 *eV,
-					  2.557 *eV, 2.565 *eV, 2.571 *eV, 2.580 *eV, 2.589 *eV, 2.598 *eV, 2.613 *eV, 2.631 *eV, 2.645 *eV, 2.665 *eV};
+  std::vector<G4double> ScintPhoEnergy = {2.813 *eV, 2.863 *eV, 2.891 *eV, 2.919 *eV, 2.948 *eV, 2.982 *eV, 2.997 *eV, 3.010 *eV, 3.020 *eV, 3.028 *eV,
+					  3.038 *eV, 3.044 *eV, 3.049 *eV, 3.060 *eV, 3.067 *eV, 3.077 *eV, 3.085 *eV, 3.093 *eV, 3.103 *eV, 3.113 *eV,
+					  3.121 *eV, 3.131 *eV, 3.145 *eV, 3.160 *eV, 3.188 *eV, 3.236 *eV, 3.272 *eV, 3.302 *eV, 3.350 *eV, 3.400 *eV,
+					  3.436 *eV, 3.483 *eV, 3.504 *eV, 3.520 *eV, 3.529 *eV, 3.531 *eV, 3.536 *eV, 3.544 *eV, 3.553 *eV, 3.559 *eV,
+					  3.563 *eV, 3.574 *eV, 3.587 *eV, 3.596 *eV, 3.613 *eV, 3.635 *eV, 3.663 *eV, 3.713 *eV, 3.829 *eV, 3.906 *eV};
 
-  std::vector<G4double> ScintFastArray = {0.032, 0.036, 0.039, 0.045, 0.051, 0.057, 0.063, 0.069, 0.073, 0.078,
-					  0.086, 0.093, 0.104, 0.112, 0.122, 0.128, 0.140, 0.157, 0.174, 0.191,
-					  0.201, 0.214, 0.225, 0.236, 0.244, 0.253, 0.261, 0.268, 0.278, 0.289,
-					  0.301, 0.313, 0.324, 0.334, 0.343, 0.353, 0.360, 0.366, 0.374, 0.381,
-					  0.385, 0.389, 0.392, 0.392, 0.391, 0.388, 0.381, 0.373, 0.364, 0.355,
-					  0.345, 0.335, 0.324, 0.314, 0.306, 0.292, 0.279, 0.266, 0.254, 0.236,
-					  0.218, 0.204, 0.193, 0.183, 0.170, 0.157, 0.145, 0.133, 0.121, 0.110,
-					  0.099, 0.087, 0.078, 0.065, 0.051, 0.039, 0.028, 0.017, 0.008, 0.002};
+  std::vector<G4double> ScintFastArray = {0.002, 0.023, 0.046, 0.090, 0.131, 0.183, 0.212, 0.246, 0.282, 0.327,
+					  0.376, 0.409, 0.448, 0.481, 0.508, 0.546, 0.582, 0.628, 0.665, 0.731,
+					  0.763, 0.790, 0.819, 0.853, 0.878, 0.890, 0.879, 0.886, 0.898, 0.885,
+					  0.871, 0.840, 0.798, 0.763, 0.731, 0.699, 0.649, 0.591, 0.531, 0.466,
+					  0.412, 0.333, 0.298, 0.258, 0.198, 0.145, 0.094, 0.045, 0.018, 0.002};
   
 
-  std::vector<G4double> ScintSlowArray = {0.050, 0.055, 0.061, 0.069, 0.079, 0.088, 0.097, 0.107, 0.114, 0.122,
-					  0.134, 0.144, 0.161, 0.174, 0.189, 0.199, 0.217, 0.244, 0.270, 0.296,
-					  0.312, 0.332, 0.348, 0.365, 0.379, 0.392, 0.405, 0.416, 0.432, 0.448,
-					  0.466, 0.486, 0.502, 0.517, 0.533, 0.548, 0.558, 0.568, 0.579, 0.591,
-					  0.598, 0.603, 0.608, 0.608, 0.606, 0.602, 0.591, 0.578, 0.565, 0.551,
-					  0.535, 0.519, 0.503, 0.486, 0.474, 0.453, 0.433, 0.413, 0.394, 0.365,
-					  0.339, 0.317, 0.300, 0.284, 0.264, 0.244, 0.224, 0.207, 0.188, 0.171,
-					  0.153, 0.136, 0.121, 0.100, 0.079, 0.061, 0.044, 0.027, 0.013, 0.003};
+  std::vector<G4double> ScintSlowArray = {0.000, 0.003, 0.005, 0.010, 0.015, 0.020, 0.024, 0.027, 0.031, 0.036,
+					  0.042, 0.045, 0.050, 0.053, 0.056, 0.061, 0.065, 0.070, 0.074, 0.081,
+					  0.085, 0.088, 0.091, 0.095, 0.098, 0.099, 0.098, 0.098, 0.100, 0.098,
+					  0.097, 0.093, 0.089, 0.085, 0.081, 0.078, 0.072, 0.066, 0.059, 0.052,
+					  0.046, 0.037, 0.033, 0.029, 0.022, 0.016, 0.010, 0.005, 0.002, 0.000};
 
   // std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 2.51 * eV, 3.66 * eV};
   // std::vector<G4double> ScintFastArray = {0.019, 0.097, 0.020};
@@ -113,13 +104,13 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
   myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 61000 / MeV);
   myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.392);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
-  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 30. * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 300. * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.9);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.1);
+  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 5.7 * ns);
 
   // Set the Birks Constant for scintillator
   DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);

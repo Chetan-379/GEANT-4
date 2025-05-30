@@ -156,11 +156,12 @@ vector<double> generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int x
     }
 
     int peakBin = maxBin;
-    double peakValue = hist.at(i)->GetXaxis()->GetBinCenter(peakBin);
+    //double peakValue = hist.at(i)->GetXaxis()->GetBinCenter(peakBin);
+    double peakValue = hist.at(i)->GetBinContent(hist.at(i)->GetMaximumBin());
     
     // double fitMin = hist.at(i)->GetXaxis()->GetBinCenter(binLeft);
     // double fitMax = hist.at(i)->GetXaxis()->GetBinCenter(binRight);
-
+    
     double fitMin = 0, fitMax = 0;
     double old_mean=hist.at(i)->GetMean();
     double old_sigma = hist.at(i)->GetRMS();
@@ -297,7 +298,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     funcs[i]->GetXaxis()->SetTitleSize(0.05);
     funcs[i]->GetXaxis()->SetTitleOffset(0.86);
 
-    funcs[i]->GetYaxis()->SetTitleOffset(0.96);
+    funcs[i]->GetYaxis()->SetTitleOffset(1.2);
     funcs[i]->GetYaxis()->SetTitleSize(0.05);   
   }
 
@@ -320,23 +321,25 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
 
   legend->Draw();
 
-  c1->SaveAs("resolution_function_overlay.png");
+  c1->SaveAs("GAGG_resolution_function_overlay.png");
   c1->Close();
    
   TCanvas* c2 = new TCanvas("c2", "Resolution graphs Overlay", 800, 600);
+  c2->SetLeftMargin(0.15); 
+  c2->SetRightMargin(0.05);
 
-  int colors[] = {kRed, kBlue, kGreen + 2};
+  int colors[] = {kRed, kBlue, kGreen + 2, kBlack};
   for (int i = 0; i < graphs.size(); ++i)
     {
       graphs[i]->SetLineWidth(2);
       graphs[i]->SetMarkerStyle(22+i);
       graphs[i]->SetMarkerSize(1.5);
-      graphs[i]->SetMarkerColor(colors[i % 3]);
+      graphs[i]->SetMarkerColor(colors[i % 4]);
       
       graphs[i]->GetXaxis()->SetTitleSize(0.05);
       graphs[i]->GetXaxis()->SetTitleOffset(0.86);
       
-      graphs[i]->GetYaxis()->SetTitleOffset(0.055);
+      graphs[i]->GetYaxis()->SetTitleOffset(1.1);
       graphs[i]->GetYaxis()->SetTitleSize(0.05);   
     }
   
@@ -351,7 +354,7 @@ void FitOverlay(vector<TF1*> funcs, vector<TGraphErrors*> graphs) {
     leg2->AddEntry(graphs[i], graphs[i]->GetName(), "AP");
   leg2->Draw();
         
-  c2->SaveAs("Resolution_points_overlay.png");
+  c2->SaveAs("GAGG_resolution_points_overlay.png");
 }
 
 vector<TF1*> Fit_array;
@@ -389,6 +392,7 @@ void data_plot() {
 
     xtitle = "E_{incident}(keV)";
     
+    if (FileName.Contains("1cm")) WidthId = "1cm";
     if (FileName.Contains("2.5cm")) WidthId = "2.5cm";
     if (FileName.Contains("_5cm")) WidthId = "5cm";
     if (FileName.Contains("_10cm")) WidthId = "10cm";
@@ -528,7 +532,7 @@ void data_plot() {
 
       EGraph->GetYaxis()->SetTitle(ytitle.c_str());
       EGraph->GetYaxis()->SetTitleSize(0.055);
-      EGraph->GetYaxis()->SetTitleOffset(0.9);
+      EGraph->GetYaxis()->SetTitleOffset(1.0);
 
     
       TF1 *fit_func = new TF1(WidthId.c_str(), sqrtE, 100, 1000,3);
@@ -574,6 +578,41 @@ void data_plot() {
       canvas->Update();
     }
 
+     if (FileName.Contains("Efficiency_vs_Einc")){
+      ImgId = "Efficiency_vs_Einc";
+      ytitle = "Efficiency";
+
+      infile.open(FileName);
+      while (infile >> x >> y){
+        x_vals.push_back(x);
+        y_vals.push_back(y);}
+      
+      if (x_vals.empty()) {
+        cerr << "No data found!" << endl;
+        return;}
+      
+      graph = new TGraphErrors(x_vals.size(), &x_vals[0], &y_vals[0], &x_err_vals[0], &y_err_vals[0]);
+
+      graph->SetTitle(" ");
+      graph->SetMarkerStyle(20);
+      graph->SetMarkerSize(1.0);
+      graph->SetMarkerColor(kBlue);
+      graph->Draw("AP");
+          
+      graph->GetXaxis()->SetTitle(xtitle.c_str());
+      graph->GetXaxis()->SetTitleSize(0.055);
+      graph->GetXaxis()->SetTitleOffset(0.8);
+      
+      graph->GetYaxis()->SetTitle(ytitle.c_str());
+      graph->GetYaxis()->SetTitleSize(0.055);
+      graph->GetYaxis()->SetTitleOffset(0.9);
+
+      graph->GetYaxis()->SetRangeUser(0.1,1.1);
+      
+      canvas->Update();
+    }
+
+
     infile.close();
 
     //Defining the folder names:
@@ -604,6 +643,24 @@ void data_plot() {
       
       ImgName = "Plastic_" + Width + "_"  + ImgId;
     }
+
+    if(FileName.Contains("GAGG")){
+      if (FileName.Contains("1cm")) {folder = MainFolder + "/GAGG/1cm/"; Width = "1cm";}
+      if (FileName.Contains("2.5cm")) {folder = MainFolder + "/GAGG/2.5cm/"; Width = "2.5cm";}
+      if (FileName.Contains("_5cm")) {folder = MainFolder + "/GAGG/5cm/"; Width = "5cm";}
+      if (FileName.Contains("10cm")) {folder = MainFolder + "/GAGG/10cm/"; Width = "10cm";}
+      
+      ImgName = "GAGG_" + Width + ImgId;      
+    }
+
+    if(FileName.Contains("LaBr3")){
+      if (FileName.Contains("1cm")) {folder = MainFolder + "/LaBr3/1cm/"; Width = "1cm";}
+      if (FileName.Contains("2.5cm")) {folder = MainFolder + "/LaBr3/2.5cm/"; Width = "2.5cm";}
+      if (FileName.Contains("_5cm")) {folder = MainFolder + "/LaBr3/5cm/"; Width = "5cm";}
+      if (FileName.Contains("10cm")) {folder = MainFolder + "/LaBr3/10cm/"; Width = "10cm";}
+      
+      ImgName = "LaBr3_" + Width + ImgId;      
+    }
     
     //saving the canvas
     string image_name = folder + ImgName + ".png";
@@ -629,7 +686,9 @@ void FitFunc(string pathname)
 
   //string FileFolder = "BGO_out_root_files";
   //string FileFolder = "PbWO4_out_root_files";
-  string FileFolder = "out_root_files";
+  //string FileFolder = "GAGG_out_root_files";
+  string FileFolder = "LaBr3_out_root_files";
+  //string FileFolder = "out_root_files";
   TSystemDirectory dir(FileFolder.c_str(), FileFolder.c_str());
   TList* files = dir.GetListOfFiles();
   if (!files) return;
@@ -760,6 +819,121 @@ void FitFunc(string pathname)
       txtFileId = "Plastic_" + Width;
     }
 
+
+    if(FileId.Contains("GAGG")){
+      if (FileId.Contains("1cm")) {folder = "plots/" + MainFolder + "/GAGG/1cm"; Width = "1cm";}
+      if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/GAGG/2.5cm"; Width = "2.5cm";}
+      if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/GAGG/5cm"; Width = "5cm";}
+      if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/GAGG/10cm"; Width = "10cm";}
+      
+      filetag = "GAGG_" + Energy + "_" + Width;
+      txtFileId = "GAGG_" + Width;
+      rebin = 5;
+
+      //defininig the initial range for fitting
+      if(Width == "5cm") {
+	if (Energy == "100keV") {xmin = 2400; xmax = 3200;}
+	if (Energy == "150keV") {xmin = 3500; xmax = 5000;}
+	if (Energy == "300keV") {xmin = 7500; xmax = 9500;}
+	if (Energy == "450keV") {xmin = 11000; xmax = 14000;}
+	if (Energy == "511keV") {xmin = 13500; xmax = 15500;}
+	if (Energy == "600keV") {xmin = 15500; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }
+
+      if(Width == "10cm") {
+	if (Energy == "100keV") {xmin = 2500; xmax = 3500;}
+	if (Energy == "150keV") {xmin = 3500; xmax = 5000;}
+	if (Energy == "300keV") {xmin = 7500; xmax = 9500;}
+	if (Energy == "450keV") {xmin = 12000; xmax = 13500;}
+	if (Energy == "511keV") {xmin = 13800; xmax = 15000;}
+	if (Energy == "600keV") {xmin = 16000; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }
+
+      if(Width == "2.5cm") {
+	if (Energy == "100keV") {xmin = 2000; xmax = 3500;}
+	if (Energy == "150keV") {xmin = 3500; xmax = 5000;}
+	if (Energy == "300keV") {xmin = 7500; xmax = 9500;}
+	if (Energy == "450keV") {xmin = 12000; xmax = 14000;}
+	if (Energy == "511keV") {xmin = 13500; xmax = 15500;}
+	if (Energy == "600keV") {xmin = 15000; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }
+
+      if(Width == "1cm") {
+	if (Energy == "100keV") {xmin = 2000; xmax = 3500;}
+	if (Energy == "150keV") {xmin = 3500; xmax = 5000;}
+	if (Energy == "300keV") {xmin = 7500; xmax = 9500;}
+	if (Energy == "450keV") {xmin = 12000; xmax = 13500;}
+	if (Energy == "511keV") {xmin = 13500; xmax = 15500;}
+	if (Energy == "600keV") {xmin = 16000; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }           	
+    }
+
+    //Fitting ranges for LaBr3
+    if(FileId.Contains("LaBr3")){
+      if (FileId.Contains("1cm")) {folder = "plots/" + MainFolder + "/LaBr3/1cm"; Width = "1cm";}
+      if (FileId.Contains("2.5cm")) {folder = "plots/" + MainFolder + "/LaBr3/2.5cm"; Width = "2.5cm";}
+      if (FileId.Contains("_5cm")) {folder = "plots/" + MainFolder + "/LaBr3/5cm"; Width = "5cm";}
+      if (FileId.Contains("10cm")) {folder = "plots/" + MainFolder + "/LaBr3/10cm"; Width = "10cm";}
+      
+      filetag = "LaBr3_" + Energy + "_" + Width;
+      txtFileId = "LaBr3_" + Width;
+      rebin = 5;
+
+      //defininig the initial range for fitting
+      if(Width == "5cm") {
+	if (Energy == "100keV") {xmin = 5000; xmax = 7000;}
+	if (Energy == "150keV") {xmin = 8000; xmax = 10000;}
+	if (Energy == "300keV") {xmin = 16000; xmax = 20000;}
+	if (Energy == "450keV") {xmin = 26000; xmax = 30000;}
+	if (Energy == "511keV") {xmin = 29000; xmax = 34000;}
+	if (Energy == "600keV") {xmin = 15500; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }
+
+      if(Width == "10cm") {
+	if (Energy == "100keV") {xmin = 2500; xmax = 3500;}
+	if (Energy == "150keV") {xmin = 3500; xmax = 5000;}
+	if (Energy == "300keV") {xmin = 7500; xmax = 9500;}
+	if (Energy == "450keV") {xmin = 12000; xmax = 13500;}
+	if (Energy == "511keV") {xmin = 13800; xmax = 15000;}
+	if (Energy == "600keV") {xmin = 16000; xmax = 18000;}
+	if (Energy == "800keV") {xmin = 21000 ; xmax = 24000;}
+	if (Energy == "1000keV") {xmin = 26000; xmax = 30000;}
+      }
+
+      if(Width == "2.5cm") {
+	if (Energy == "100keV") {xmin = 45000; xmax = 7000;}
+	if (Energy == "150keV") {xmin = 8000; xmax = 10000;}
+	if (Energy == "300keV") {xmin = 16000; xmax = 20000;}
+	if (Energy == "450keV") {xmin = 26000; xmax = 30000;}
+	if (Energy == "511keV") {xmin = 29000; xmax = 34000;}
+	if (Energy == "600keV") {xmin = 34000; xmax = 38000;}
+	if (Energy == "800keV") {xmin = 46000 ; xmax = 52000;}
+	if (Energy == "1000keV") {xmin = 58000; xmax = 65000;}
+      }
+
+      if(Width == "1cm") {
+	if (Energy == "100keV") {xmin = 5000; xmax = 7000;}
+	if (Energy == "150keV") {xmin = 8500; xmax = 10000;}
+	if (Energy == "300keV") {xmin = 15000; xmax = 25000;}
+	if (Energy == "450keV") {xmin = 26000; xmax = 30000;}
+	if (Energy == "511keV") {xmin = 29000; xmax = 34000;}
+	if (Energy == "600keV") {xmin = 34000; xmax = 38000;}
+	if (Energy == "800keV") {xmin = 39000 ; xmax = 55000;}
+	if (Energy == "1000keV") {xmin = 58000; xmax = 65000;}
+      }           	
+    }
+
+    
     sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), "nOpticalPhotns_ItrFit", Energy.c_str());
     
     vector<double> params;
@@ -807,7 +981,7 @@ void FitFunc(string pathname)
 
   vector<string> TxtArr;
   double x, y, EMeasured;
-  TxtArr = {"BGO_2.5cm", "BGO_5cm", "BGO_10cm", "PbWO4_2.5cm", "PbWO4_5cm", "PbWO4_10cm", "Plastic_5cm", "Plastic_10cm", "Plastic_20cm"};
+  TxtArr = {"BGO_2.5cm", "BGO_5cm", "BGO_10cm", "PbWO4_2.5cm", "PbWO4_5cm", "PbWO4_10cm", "Plastic_5cm", "Plastic_10cm", "Plastic_20cm", "GAGG_1cm", "GAGG_2.5cm", "GAGG_5cm", "GAGG_10cm"};
 
   vector<string> data_files1;
 
@@ -862,7 +1036,7 @@ void FitFunc(string pathname)
   data_plot();
 
   FitOverlay(Fit_array, Graph_array);
-  cout << "number of fits in the array: " << Fit_array.size() << endl;
+  //cout << "number of fits in the array: " << Fit_array.size() << endl;
 }
 
 

@@ -1,13 +1,13 @@
 void Overlay_txt() {
   string folder;
   
-  vector<string> filenames = {"plots/Scintillation/Fits/txtFiles/PbWO4/Efficiency_vs_Einc_PbWO4_2.5cm.txt", "plots/Scintillation/Fits/txtFiles/PbWO4/Efficiency_vs_Einc_PbWO4_5cm.txt", "plots/Scintillation/Fits/txtFiles/PbWO4/Efficiency_vs_Einc_PbWO4_10cm.txt"};
+  vector<string> filenames = {"plots/Scintillation/Fits/txtFiles/GAGG/Resolution_vs_Einc_GAGG_1cm.txt", "plots/Scintillation/Fits/txtFiles/GAGG/Resolution_vs_Einc_GAGG_2.5cm.txt", "plots/Scintillation/Fits/txtFiles/GAGG/Resolution_vs_Einc_GAGG_5cm.txt", "plots/Scintillation/Fits/txtFiles/GAGG/Resolution_vs_Einc_GAGG_10cm.txt"};
 
   for (int i = 0; i< filenames.size(); i++){
     cout << "plotting the files: " << filenames[i] << endl;}
 
   vector<TGraph*> graphs;
-  int colors[] = {kRed, kBlue, kGreen + 2};
+  int colors[] = {kRed, kBlue, kGreen + 2, kBlack};
 
   for (size_t i = 0; i < filenames.size(); ++i) {
         ifstream infile(filenames[i]);
@@ -27,8 +27,8 @@ void Overlay_txt() {
 
         TGraph* g = new TGraph(x_vals.size(), &x_vals[0], &y_vals[0]);
         g->SetTitle(filenames[i].c_str());
-        g->SetLineColor(colors[i % 3]);
-        g->SetMarkerColor(colors[i % 3]);
+        g->SetLineColor(colors[i % 4]);
+        g->SetMarkerColor(colors[i % 4]);
 
         graphs.push_back(g);
     }
@@ -50,19 +50,24 @@ void Overlay_txt() {
     graphs[2]->SetLineWidth(10);
     graphs[2]->SetMarkerSize(1.5);
 
+    graphs[3]->SetMarkerStyle(25);
+    graphs[3]->SetLineWidth(10);
+    graphs[3]->SetMarkerSize(1.8);
+
+
 
     for (int i = 0; i < graphs.size(); ++i) {
       if (i==0){
-	graphs[i]->SetTitle("Efficiency_PbWO4");
-	graphs[i]->SetMinimum(0.55);
-	graphs[i]->SetMaximum(1.1);                 
+	graphs[i]->SetTitle("Resolution_GAGG");
+	graphs[i]->SetMinimum(0);
+	graphs[i]->SetMaximum(0.05);                 
 
 	graphs[i]->GetXaxis()->SetTitle("E_{inc}");
 	graphs[i]->GetXaxis()->SetTitleSize(0.05);
 	graphs[i]->GetXaxis()->SetTitleOffset(0.9);
 	graphs[i]->GetXaxis()->SetTitleFont(42);
 
-	graphs[i]->GetYaxis()->SetTitle("Efficiency");
+	graphs[i]->GetYaxis()->SetTitle("Resolution");
 	graphs[i]->GetYaxis()->SetTitleSize(0.05);
 	graphs[i]->GetYaxis()->SetTitleOffset(0.9);    
 	graphs[i]->GetYaxis()->SetTitleFont(42);
@@ -75,7 +80,7 @@ void Overlay_txt() {
       }
     }
 
-    vector<string> legtxt = {"2.5cm", "5cm", "10cm"};
+    vector<string> legtxt = {"1cm", "2.5cm", "5cm", "10cm"};
     
     TLegend* legend = new TLegend(0.7, 0.7, 0.9, 0.9);
     for (size_t i = 0; i < graphs.size(); ++i) {
