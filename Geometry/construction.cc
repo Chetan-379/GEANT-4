@@ -162,26 +162,15 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   // fScoringVolume = logicDetector;
 
-  //importing a GDML
+  //writing to GDML
   G4GDMLParser parser;
+  //parser.Write("myDetector_PbWO4.gdml", physWorld);
   parser.Read("myDetector_PbWO4.gdml");
-
   G4VPhysicalVolume* physWorld = parser.GetWorldVolume();
 
   G4LogicalVolume* logicWorld = physWorld->GetLogicalVolume();
-  logicWorld->SetVisAttributes(nullptr);
 
-  return physWorld;
-  
-  //parser.Write("myDetector_PbWO4.gdml", physWorld);
-
-  //parser.Read("myDetector_PbWO4.gdml");
-  
-
-
-  //pworldLogical->SetVisAttributes(nullptr);
-
-  
+  logicWorld->SetVisAttributes(nullptr); //making the world volume visible
 
   G4cout << physWorld->GetTranslation() << G4endl << G4endl;
   if (true) {
@@ -201,7 +190,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   //G4RunManager::GetRunManager()->DefineWorldVolume(physWorld);
   
-  
+  return physWorld;
  
 }
 
