@@ -14,6 +14,10 @@
 #include "G4OpticalSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 
+#include "G4GDMLParser.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4PhysicalVolumeStore.hh"
+
 #include "detector.hh"
 #include "globals.hh"
 
