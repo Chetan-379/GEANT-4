@@ -1,1 +1,1 @@
-src_root_files/LaBr3_1cm_ScintON_450keV_Birk0_NoAbs_NoCeren_DerEmis_spline.root
+src_root_files/LaBr3_2.5cm_ScintON_150keV_Birk0_NoAbs_NoCeren_DerEmis_spline.root
