@@ -174,7 +174,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G4int nb_grid = 8;
   G4int nb_cryst = 10;
-  G4int nb_rings = 9;
+  //G4int nb_rings = 9;
 
   
   G4double grid_dX = cryst_dX/nb_grid, grid_dY = cryst_dY/nb_grid, grid_dZ = cryst_dZ;
@@ -185,8 +185,12 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   //
   G4double ring_R1 = 0.5 * cryst_dY / tandPhi;
   G4double ring_R2 = (ring_R1 + cryst_dZ) / cosdPhi;
+
+  G4cout << "inner radius is: " << ring_R1 << G4endl;
+  G4cout << "outer radius is: " << ring_R2 << G4endl;
+  
   //
-  G4double detector_dZ = nb_rings * cryst_dX;
+  //G4double detector_dZ = nb_rings * cryst_dX;
   //
   //G4NistManager* nist = G4NistManager::Instance();
   G4Material* default_mat = nist->FindOrBuildMaterial("G4_AIR");
