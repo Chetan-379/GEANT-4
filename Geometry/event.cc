@@ -10,7 +10,31 @@ MyEventAction::MyEventAction(MyRunAction* runAction)
 MyEventAction::~MyEventAction()
 {}
 
- void MyEventAction::BeginOfEventAction(const G4Event*)
+CellHitsCollection* MyEventAction::GetHitsCollection(G4int hcID, const G4Event* event) const
+{
+  auto hitsCollection = static_cast<CellHitsCollection*>(event->GetHCofThisEvent()->GetHC(hcID));
+
+  if (!hitsCollection) {
+    G4ExceptionDescription msg;
+    msg << "Cannot access hitsCollection ID " << hcID;
+    G4Exception("EventAction::GetHitsCollection()", "MyCode0003", FatalException, msg);
+  }
+
+  return hitsCollection;
+}
+
+void MyEventAction::PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const
+{
+  // print event statistics
+  G4cout << "   Cell: total energy: " << std::setw(7) << G4BestUnit(CellEdep, "Energy")
+         << "       total track length: " << std::setw(7) << G4BestUnit(CellTrackLength, "Length")
+         << G4endl;
+}
+
+
+
+
+ void MyEventAction::BeginOfEventAction(const G4Event* event)
 {
   fX = 0.;
   fEdep = 0.;
@@ -36,7 +60,7 @@ MyEventAction::~MyEventAction()
 
 }
 
-void MyEventAction::EndOfEventAction(const G4Event*)
+void MyEventAction::EndOfEventAction(const G4Event* event)
 {
   if (Photo_edep.size() < 1) Photo_edep.push_back(0);
   
@@ -71,6 +95,38 @@ void MyEventAction::EndOfEventAction(const G4Event*)
     }
   }
 
+
+  if (fCellHCID == -1) {
+    fCellHCID = G4SDManager::GetSDMpointer()->GetCollectionID("CellHitsCollection");
+    
+    //fGapHCID = G4SDManager::GetSDMpointer()->GetCollectionID("GapHitsCollection");
+  }
+
+  //cout << 
+  
+  // Get hits collections
+  //G4cout << "fCellHCID: " << fCellHCID << G4endl;
+  auto CellHC = GetHitsCollection(G4int(fCellHCID), event);
+  
+  //auto gapHC = GetHitsCollection(fGapHCID, event);
+  
+  // Get hit with total values
+  auto CellHit = (*CellHC)[CellHC->entries() - 1];
+  //auto gapHit = (*gapHC)[gapHC->entries() - 1];
+
+  
+  // Print per event (modulo n)
+  //
+  auto eventID = event->GetEventID();
+  auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
+  //if ((printModulo > 0) && (eventID % printModulo == 0)) {
+    PrintEventStatistics(CellHit->GetEdep(), CellHit->GetTrackLength());
+    G4cout << "--> End of event: " << eventID << "\n" << G4endl;
+    //}
+
+  
+  
+  
   ievent++;
   // G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
 }

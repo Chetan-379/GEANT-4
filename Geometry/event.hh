@@ -6,7 +6,15 @@
 #include "G4EventManager.hh"
 #include "G4AnalysisManager.hh"
 
+#include "G4HCofThisEvent.hh"
+#include "G4RunManager.hh"
+#include "G4SDManager.hh"
+#include "G4UnitsTable.hh"
+
 #include "run.hh"
+#include "CellHit.hh"
+#include "globals.hh"
+
 
 class MyEventAction : public G4UserEventAction
 {
@@ -14,8 +22,8 @@ public:
   MyEventAction(MyRunAction*);
   ~MyEventAction();
 
-  virtual void BeginOfEventAction(const G4Event*);
-  virtual void EndOfEventAction(const G4Event*);
+  virtual void BeginOfEventAction(const G4Event* event);
+  virtual void EndOfEventAction(const G4Event* event);
   bool Compt_Before_Photo = false;
   G4int nCompt_Before_Photo;
   std::vector<G4double> Compt_edep, Photo_edep;  
@@ -42,8 +50,13 @@ private:
   G4int ievent=1;
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
-  
-  
+
+  CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
+  void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
+
+
+  G4int fCellHCID = -1;
+  //G4int fGapHCID = -1;
 };
 
 #endif

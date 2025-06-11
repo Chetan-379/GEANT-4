@@ -21,6 +21,10 @@
 #include "detector.hh"
 #include "globals.hh"
 
+
+#include "CellSD.hh"
+
+
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {
 public:

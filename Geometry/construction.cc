@@ -282,6 +282,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 		    true);  // checking overlaps
 
   logicRing->SetVisAttributes(G4VisAttributes::GetInvisible());
+  logicCryst->SetVisAttributes(G4VisAttributes::GetInvisible());
+  //logicGrid->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
 
   
   //fScoringVolume = logicDetector;
@@ -323,11 +325,40 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
 
+// void MyDetectorConstruction::ConstructSDandField()
+// {
+//   sensDet = new MySensitiveDetector("SensitiveDetector");
+//   //logicDetector->SetSensitiveDetector(sensDet);
+  
+// }
+
 void MyDetectorConstruction::ConstructSDandField()
 {
-  sensDet = new MySensitiveDetector("SensitiveDetector");
-  //logicDetector->SetSensitiveDetector(sensDet);
-  
+  // G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+
+  //
+  // Sensitive detectors
+  //
+  auto cellSD = new CellSD("CellSD", "CellHitsCollection", 641);
+  G4SDManager::GetSDMpointer()->AddNewDetector(cellSD);
+  SetSensitiveDetector("Grid", cellSD);
+
+  // auto gapSD = new CalorimeterSD("GapSD", "GapHitsCollection", fNofLayers);
+  // G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);
+  // SetSensitiveDetector("GapLV", gapSD);
+
+  //
+  // Magnetic field
+  //
+  // Create global magnetic field messenger.
+  // Uniform magnetic field is then created automatically if
+  // the field value is not zero.
+  // G4ThreeVector fieldValue;
+  // fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
+  // fMagFieldMessenger->SetVerboseLevel(1);
+
+  // // Register the field messenger for deleting
+  // G4AutoDelete::Register(fMagFieldMessenger);
 }
 
 
