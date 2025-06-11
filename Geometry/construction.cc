@@ -339,7 +339,7 @@ void MyDetectorConstruction::ConstructSDandField()
   //
   // Sensitive detectors
   //
-  auto cellSD = new CellSD("CellSD", "CellHitsCollection", 641);
+  auto cellSD = new CellSD("CellSD", "CellHitsCollection", 640);
   G4SDManager::GetSDMpointer()->AddNewDetector(cellSD);
   SetSensitiveDetector("Grid", cellSD);
 

@@ -4,7 +4,9 @@
 #include "CellHit.hh"
 
 #include "G4VSensitiveDetector.hh"
+#include "G4SDManager.hh"
 #include "globals.hh"
+
 
 class G4Step;
 class G4HCofThisEvent;

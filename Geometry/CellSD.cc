@@ -1,13 +1,13 @@
 #include "CellSD.hh"
 
-#include "G4HCofThisEvent.hh"
-#include "G4SDManager.hh"
-#include "G4Step.hh"
+// #include "G4HCofThisEvent.hh"
+// #include "G4SDManager.hh"
+// #include "G4Step.hh"
 
-//namespace B4c
-//{
+// //namespace B4c
+// //{
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 CellSD::CellSD(const G4String& name, const G4String& hitsCollectionName,
                              G4int nofCells)
@@ -16,7 +16,7 @@ CellSD::CellSD(const G4String& name, const G4String& hitsCollectionName,
   collectionName.insert(hitsCollectionName);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+// //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void CellSD::Initialize(G4HCofThisEvent* hce)
 {
