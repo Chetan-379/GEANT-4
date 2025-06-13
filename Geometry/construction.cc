@@ -10,321 +10,82 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
-  //-----------------Defining and Adding the Material Properties----------
-  //
-  
-  G4double energy[2] = {1.2398419*eV/0.9, 1.2398419*eV/0.2};
-  G4double rindexWorld[2] = {1.0, 1.0};
+ auto nist = G4NistManager::Instance();
+    auto air = nist->FindOrBuildMaterial("G4_AIR");
+    auto plastic = nist->FindOrBuildMaterial("G4_POLYSTYRENE");  // EJ-230 approx.
 
-  //World(Air)
-  G4NistManager *nist = G4NistManager::Instance();
-  G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+    // World
+    G4double worldSize = 1.5 * m;
+    auto solidWorld = new G4Box("World", worldSize, worldSize, worldSize);
+    auto logicWorld = new G4LogicalVolume(solidWorld, air, "World");
+    auto physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, 0);
 
-  G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
-  mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
-  worldMat->SetMaterialPropertiesTable(mptWorld);
+    // Scintillator strip (long axis along Z)
+    G4double stripLength = 500.0 * mm;
+    G4double stripWidth  = 19.0 * mm;
+    G4double stripThick  = 7.0 * mm;
 
-  //Detector Tile
-  G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_PbWO4");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
-  //G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
-  
-  // std::vector<G4double> RIPhoEnergy = {2.58 * eV, 2.95 * eV, 4.00 * eV};
-  // std::vector<G4double> RefractiveIdxDet = {2.15, 2.2, 2.39};
+    auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
+    auto logicStrip = new G4LogicalVolume(solidStrip, plastic, "Strip");
 
-  std::vector<G4double> RIPhoEnergy = {1.96 *eV, 2.41 *eV, 2.50 *eV, 2.54 *eV, 2.60 *eV, 2.71 *eV};
-  std::vector<G4double> RefractiveIdxDet = {2.24, 2.29, 2.3, 2.3, 2.31, 2.32};
+    // J-PET three-layer geometry parameters
+    struct Layer { G4int nStrips; G4double radius; };
+    std::vector<Layer> layers = {
+	{48, 362.0 * mm},
+	{48, 425.0 * mm},
+        {48, 467.5 * mm},
+        {96, 575.0 * mm}
+    };
 
-  // std::vector<G4double> AbsPhoEnergy = {511 * keV};
-  // std::vector<G4double> AbsLength = {10.4 * mm};
+    for (size_t i = 0; i < layers.size(); ++i) {
+        auto layer = layers[i];
+        G4double dPhi = 2.0 * CLHEP::pi / layer.nStrips;
 
-  std::vector<G4double> ScintPhoEnergy = {2.40 *eV,  2.41 *eV,  2.42 *eV,  2.43 *eV,  2.44 *eV,  2.45 *eV,  2.46 *eV,  2.47 *eV,  2.48 *eV,  2.50 *eV,
-  					  2.51 *eV,  2.52 *eV,  2.53 *eV,  2.54 *eV,  2.55 *eV,  2.56 *eV,  2.57 *eV,  2.58 *eV,  2.60 *eV,  2.61 *eV,
-  					  2.62 *eV,  2.63 *eV,  2.64 *eV,  2.66 *eV,  2.67 *eV,  2.68 *eV,  2.69 *eV,  2.71 *eV,  2.72 *eV,  2.73 *eV,
-  					  2.75 *eV,  2.76 *eV,  2.77 *eV,  2.79 *eV,  2.80 *eV,  2.81 *eV,  2.83 *eV,  2.84 *eV,  2.86 *eV,  2.87 *eV,
-  					  2.88 *eV,  2.90 *eV,  2.91 *eV,  2.93 *eV,  2.94 *eV,  2.96 *eV,  2.97 *eV,  2.99 *eV,  3.01 *eV,  3.02 *eV};
+        for (G4int j = 0; j < layer.nStrips; ++j) {
+            G4double phi = j * dPhi;
+            G4double x = layer.radius * std::cos(phi);
+            G4double y = layer.radius * std::sin(phi);
 
-  std::vector<G4double> ScintFastArray = {0.059, 0.074, 0.065, 0.074, 0.074, 0.086, 0.083, 0.089, 0.098, 0.113,
-  					  0.110, 0.127, 0.133, 0.142, 0.151, 0.160, 0.169, 0.172, 0.187, 0.207,
-  					  0.216, 0.234, 0.243, 0.267, 0.276, 0.311, 0.341, 0.367, 0.409, 0.465,
-  					  0.507, 0.533, 0.545, 0.551, 0.551, 0.560, 0.599, 0.640, 0.726, 0.779,
-  					  0.761, 0.747, 0.687, 0.516, 0.320, 0.222, 0.136, 0.089, 0.059, 0.047};
-  
+            // // Rotation: tangential to ring â rotate around Z
+            // auto rot = new G4RotationMatrix();
+            // rot->rotateZ(phi);
 
-  std::vector<G4double> ScintSlowArray = {0.015, 0.019, 0.016, 0.019, 0.019, 0.021, 0.021, 0.022, 0.024, 0.028,
-  					  0.027, 0.032, 0.033, 0.036, 0.038, 0.040, 0.042, 0.043, 0.047, 0.052,
-  					  0.054, 0.059, 0.061, 0.067, 0.069, 0.078, 0.085, 0.092, 0.102, 0.116,
-  					  0.127, 0.133, 0.136, 0.138, 0.138, 0.140, 0.150, 0.160, 0.181, 0.195,
-  					  0.190, 0.187, 0.172, 0.129, 0.080, 0.056, 0.034, 0.022, 0.015, 0.012};
+	    // Translation: place on circle in XY, centered at origin
+            //G4ThreeVector pos(x, y, 0);
 
-  // std::vector<G4double> ScintPhoEnergy = {1.94 * eV, 2.51 * eV, 3.66 * eV};
-  // std::vector<G4double> ScintFastArray = {0.019, 0.097, 0.020};
-  // std::vector<G4double> ScintSlowArray = {0.171, 0.876, 0.183};
-
-  // G4MaterialPropertyVector *MPVec;
-  // MPVec->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintilSlowArray, false, true);
-
-  G4int lenArray = 10;
-  auto myMPT1 = new G4MaterialPropertiesTable();
-  
-  myMPT1->AddProperty("RINDEX", RIPhoEnergy, RefractiveIdxDet);
-
-  // Check that group velocity is calculated from RINDEX
-  if (myMPT1->GetProperty("RINDEX")->GetVectorLength()
-      != myMPT1->GetProperty("GROUPVEL")->GetVectorLength())
-  {
-    G4ExceptionDescription ed;
-    ed << "Error calculating group velocities. Incorrect number of entries "
-          "in group velocity material property vector.";
-    G4Exception("OpNovice::OpNoviceDetectorConstruction", "OpNovice001", FatalException, ed);
-  }
-
-    // Adding a property from two std::vectors. Argument createNewKey is false
-  // and spline is true.
-
-    
-  //myMPT1->AddProperty("ABSLENGTH", AbsPhoEnergy, AbsLength, false, true);
+	      // new G4PVPlacement(rot,
+              //                 pos,
+              //                 logicStrip,
+              //                 "Strip",
+              //                 logicWorld,
+              //                 false,
+              //                 i * 1000 + j,
+              //                 true);
 
 
-  //G4cout << "\n\ndatatype is: " <<typeid( myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true)).name() << G4endl;
+	    //G4double phi = icrys * dPhi;
+	    G4RotationMatrix rot = G4RotationMatrix();
+	    //rot.rotateX(0 * deg);
+	    rot.rotateZ(phi);
+	    if (i == 0) rot.rotateZ(90 * deg);
 
-  myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
-  myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 200. / MeV);
-  myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 5. * ns);
-  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 30. * ns); 
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.2);
-  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.8);
-  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 10 * ps);
-
-  // Set the Birks Constant for scintillator
-  DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
-  
-  //==============================================
-  DetectorMat->SetMaterialPropertiesTable(myMPT1);
-  //==============================================
-    
-
-  //----------Volumes-------------
-  //
-  // The world
-  G4Box *solidWorld = new G4Box("solidWorld", 0.5*m, 0.5*m, 0.5*m);
-  G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicalWorld");
-  G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicWorld, "physWorld", 0, false, 0, true);
-  
-  //==============================================================================================================================================================================================================
-  // // The enclosure
-  // G4Box *solidEncVol = new G4Box("EncVol", 10*cm, 10*cm, 10*cm);
-  // G4LogicalVolume *logicEncVol = new G4LogicalVolume(solidEncVol, worldMat, "logicalEncVol");
-  // G4VPhysicalVolume *physEncVol = new G4PVPlacement(0, G4ThreeVector(0.0, 0.0, 0.0), logicEncVol, "physEncVol", logicWorld, false, 0, true);
-
-  
-  // //Trapezoidal enclosure tiles                                                          
-  // G4double rad_dxa = 20 * cm, rad_dxb = 20 * cm;  
-  // G4double rad_dz = 5 * cm;
-  // G4double rad_dya = (rad_dxa+2*rad_dz), rad_dyb = (rad_dxa + 2 * rad_dz);
-
-  // G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
-  // G4int Pos[2] = {-1,1};
-  // new_rotmX.rotateX(90 * deg);
-  // new_rotmY.rotateY(90 * deg);  
-  // new_rotmZ.rotateZ(90 * deg);
-  
-  // G4ThreeVector position;
-  
-  // G4Trd *solidDetector = new G4Trd("solidDetector",  // its name
-  // 				   0.5 * rad_dxa, 0.5 * rad_dya, 0.5 * rad_dxb, 0.5 * rad_dyb,
-  // 				   0.5 * rad_dz);  // its size	      
-
-  // logicDetector = new G4LogicalVolume(solidDetector,  // its solid
-  // 				      DetectorMat, // its material
-  // 				      "logicalDetector");  // its name
-
-  // // G4cout << "\n\n=====================working====================================\n\n" << G4endl;
-  // //Loops to place the tiles
-  // for (G4int i=0; i<3; i++){     
-  //   for (G4int j=0; j<2; j++){
-  //     std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
-
-  //     if (i==0) position = G4ThreeVector(0.0, Pos[j]*((rad_dxa+rad_dz)/2), 0.0);
-  //     if (i==1) position = G4ThreeVector(-1*Pos[j]*((rad_dxa+rad_dz)/2), 0.0, 0.0);      
-  //     if (i==2) position = G4ThreeVector(0.0, 0.0, -1*Pos[j]*((rad_dxa+rad_dz)/2));
-      
-  //     G4Transform3D transform = G4Transform3D(new_rotm[i], position);
-  //     if (i==0) new_rotmX.rotateX(180 * deg);
-  //     if (i==1) new_rotmY.rotateY(180 * deg);    
-  //     if (i==2) new_rotmZ.rotateX(180 * deg);
-      
-  //     G4VPhysicalVolume *physDetector = new G4PVPlacement(transform, logicDetector, "physDetector", logicWorld, false, (i+1)*(j+1), true);
-
-  //   }
-  // }
-  //==============================================================================================================================================================================================================
-    //
-
-    // Gamma detector Parameters
-  //
-  //G4double cryst_dX = 6 * cm, cryst_dY = 6 * cm, cryst_dZ = 3 * cm;
-  
-  //G4double grid_dX = 3 *mm, grid_dY = 3 *mm, grid_dZ = 3 *mm;
-  
-  //G4double cryst_dX = 6 * cm, cryst_dY = 6 * cm, cryst_dZ = 3 * cm;
-  G4double cryst_dX = 2.4 * cm, cryst_dY = 2.4 * cm, cryst_dZ = 3 * mm;
-
-  G4int nb_grid = 8;
-  G4int nb_cryst = 10;
-  //G4int nb_rings = 9;
-
-  
-  G4double grid_dX = cryst_dX/nb_grid, grid_dY = cryst_dY/nb_grid, grid_dZ = cryst_dZ;
-  //
-  G4double dPhi = CLHEP::twopi / nb_cryst, half_dPhi = 0.5 * dPhi;
-  G4double cosdPhi = std::cos(half_dPhi);
-  G4double tandPhi = std::tan(half_dPhi);
-  //
-  G4double ring_R1 = 0.5 * cryst_dY / tandPhi;
-  G4double ring_R2 = (ring_R1 + cryst_dZ) / cosdPhi;
-
-  G4cout << "inner radius is: " << ring_R1 << G4endl;
-  G4cout << "outer radius is: " << ring_R2 << G4endl;
-  
-  //
-  //G4double detector_dZ = nb_rings * cryst_dX;
-  //
-  //G4NistManager* nist = G4NistManager::Instance();
-  G4Material* default_mat = nist->FindOrBuildMaterial("G4_AIR");
-  G4Material* cryst_mat = nist->FindOrBuildMaterial("G4_AIR");
-
-  
-  // ring
-  //
-  auto solidRing = new G4Tubs("Ring", ring_R1, ring_R2, 0.5 * cryst_dX, 0., CLHEP::twopi);
-
-  auto logicRing = new G4LogicalVolume(solidRing,  // its solid
-                                       default_mat,  // its material
-				       //DetectorMat,  // its material
-                                       "Ring");  // its name
-    
-  //
-  // define crystal
-  //
-  //G4double gap = 0.5 * mm;  // a gap for wrapping
-  G4double gap = 0. * mm;  // a gap for wrapping
-  G4double dX = cryst_dX - gap, dY = cryst_dY - gap;
-  auto solidCryst = new G4Box("crystal", dX / 2, dY / 2, cryst_dZ / 2);
-
-  // auto logicCryst = new G4LogicalVolume(solidCryst,  // its solid
-  //                                       crystal_mat,  // its material
-  //                                       "CrystalLV");  // its name
-
-  auto logicCryst = new G4LogicalVolume(solidCryst,  // its solid
-                                        default_mat,  // its material
-                                        "CrystalLV");  // its name
-
-  //define grid
-  auto solidGrid = new G4Box("grid", grid_dX/2, grid_dY/2, grid_dZ/2);
-
-  auto logicGrid = new G4LogicalVolume(solidGrid,
-				       DetectorMat,
-				       "Grid");
-
-
-  //place 8 * 8 grid in a crystal
-  for (G4int igrid = 0; igrid < nb_grid; igrid++) {
-    for (G4int jgrid = 0; jgrid < nb_grid; jgrid++) {
-    //G4ThreeVector uz = G4ThreeVector(std::cos(phi), std::sin(phi), 0.);
-    //G4ThreeVector position = (ring_R1 + 0.5 * cryst_dZ) * uz;
-    //G4ThreeVector position = (0,0,ring_R1 + 0.5 * grid_dZ);
-    G4ThreeVector position = G4ThreeVector(-dX/2 + (((dX/nb_grid)/2)*((2*igrid)+1)) * mm, -dY/2 + (((dY/nb_grid)/2)*((2*jgrid)+1)) * mm,0.*mm);
-    
-    //G4Transform3D transform = G4Transform3D(rotm, position);
-    
-    new G4PVPlacement(nullptr,  // rotation,position
-		      position,
-                      logicGrid,  // its logical volume
-                      "grid",  // its name
-                      logicCryst,  // its mother  volume
-                      false,  // no boolean operation
-                      (igrid+1)*(jgrid+1),  // copy number		      
-                      true);  // checking overlaps
+	    G4ThreeVector uz = G4ThreeVector(std::cos(phi), std::sin(phi), 0.);
+	    //G4ThreeVector position = (layer.radius + 0.5 * cryst_dZ) * uz;
+	    G4ThreeVector position = (layer.radius + 0.5 * stripWidth) * uz;
+	    G4Transform3D transform = G4Transform3D(rot, position);
+	    
+            new G4PVPlacement(transform,
+                              logicStrip,
+                              "Strip",
+                              logicWorld,
+                              false,
+                              i * 1000 + j,
+                              true);
+        }
     }
-  }
-  
 
-  // place crystals within a ring
-  //
-  for (G4int icrys = 0; icrys < nb_cryst; icrys++) {
-    G4double phi = icrys * dPhi;
-    G4RotationMatrix rotm = G4RotationMatrix();
-    rotm.rotateY(90 * deg);
-    rotm.rotateZ(phi);
-    G4ThreeVector uz = G4ThreeVector(std::cos(phi), std::sin(phi), 0.);
-    G4ThreeVector position = (ring_R1 + 0.5 * cryst_dZ) * uz;
-    G4Transform3D transform = G4Transform3D(rotm, position);
-
-    new G4PVPlacement(transform,  // rotation,position
-                      logicCryst,  // its logical volume
-                      "crystal",  // its name
-                      logicRing,  // its mother  volume
-                      false,  // no boolean operation
-                      icrys,  // copy number
-                      true);  // checking overlaps
-  }
-
-  new G4PVPlacement(nullptr,  // no rotation
-		    G4ThreeVector(0, 0,0),  // position
-		    logicRing,  // its logical volume
-		    "ring",  // its name
-		    logicWorld,  // its mother  volume
-		    false,  // no boolean operation
-		    0,  // copy number
-		    true);  // checking overlaps
-
-  logicRing->SetVisAttributes(G4VisAttributes::GetInvisible());
-  logicCryst->SetVisAttributes(G4VisAttributes::GetInvisible());
-  //logicGrid->SetVisAttributes(G4VisAttributes(G4Colour::Blue()));
-
-  
-  //fScoringVolume = logicDetector;
-
-
-  //====================================================================================================================
-  // //Reading/writing GDML
-  // G4GDMLParser parser;
-  // //parser.Write("myDetector_PbWO4.gdml", physWorld);
-  // parser.Read("myDetector_PbWO4.gdml");
-  // G4VPhysicalVolume* physWorld = parser.GetWorldVolume();
-
-  // G4LogicalVolume* logicWorld = physWorld->GetLogicalVolume();
-
-  // logicWorld->SetVisAttributes(nullptr); //making the world volume visible
-
-  // G4cout << physWorld->GetTranslation() << G4endl << G4endl;
-  // if (true) {
-  //   G4cout << "Found world:  " << physWorld->GetName() << G4endl;
-  //   G4cout << "world LV:  " << physWorld->GetLogicalVolume()->GetName() << G4endl;
-  // }
-
-  // G4LogicalVolumeStore* pLVStore = G4LogicalVolumeStore::GetInstance();
-  // if (true) {
-  //   G4cout << "Found " << pLVStore->size() << " logical volumes." << G4endl << G4endl;
-  // }
-
-  // G4PhysicalVolumeStore* pPVStore = G4PhysicalVolumeStore::GetInstance();
-  // if (true) {
-  //   G4cout << "Found " << pPVStore->size() << " physical volumes." << G4endl << G4endl;
-  // }
-
-  //===================================================================================================================
-
-  
-  return physWorld;
- 
+    return physWorld;
 }
-
-
-
 // void MyDetectorConstruction::ConstructSDandField()
 // {
 //   sensDet = new MySensitiveDetector("SensitiveDetector");
@@ -339,9 +100,9 @@ void MyDetectorConstruction::ConstructSDandField()
   //
   // Sensitive detectors
   //
-  auto cellSD = new CellSD("CellSD", "CellHitsCollection", 640);
-  G4SDManager::GetSDMpointer()->AddNewDetector(cellSD);
-  SetSensitiveDetector("Grid", cellSD);
+  // auto cellSD = new CellSD("CellSD", "CellHitsCollection", 640);
+  //G4SDManager::GetSDMpointer()->AddNewDetector(cellSD);
+  //SetSensitiveDetector("Grid", cellSD);
 
   // auto gapSD = new CalorimeterSD("GapSD", "GapHitsCollection", fNofLayers);
   // G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);
