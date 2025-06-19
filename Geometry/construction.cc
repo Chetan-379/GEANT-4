@@ -25,26 +25,84 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4double stripWidth  = 19.0 * mm;
     G4double stripThick  = 7.0 * mm;
 
+    G4double InstripLength = 500.0 * mm;
+    G4double InstripWidth  = 24.0 * mm;
+    G4double InstripThick  = 6.0 * mm;
+        
     auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
     auto logicStrip = new G4LogicalVolume(solidStrip, plastic, "Strip");
 
+    auto solidInStrip = new G4Box("InStrip", InstripWidth / 2, InstripThick / 2, InstripLength / 2);
+    auto logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStrip");
+
+    G4int nstrips_block = 13;
+
+    // G4Box* solidStrip;
+    // auto logicStrip = new G4LogicalVolume(solidStrip, plastic, "Strip");
+    //G4LogicalVolume* logicStrip;
+
+    // //placing the scintillator strips in each block of the inner layer
+    //     for (G4int jgrid = 0; jgrid < nstrips_block; jgrid++) {
+    // //G4ThreeVector uz = G4ThreeVector(std::cos(phi), std::sin(phi), 0.);
+    // //G4ThreeVector position = (ring_R1 + 0.5 * cryst_dZ) * uz;
+    // //G4ThreeVector position = (0,0,ring_R1 + 0.5 * grid_dZ);
+    // //G4ThreeVector position = G4ThreeVector(layer.radius + 0.5 * InstripWidth);
+    
+    // //G4Transform3D transform = G4Transform3D(rotm, position);
+    
+    // new G4PVPlacement(nullptr,  // rotation,position
+    // 		      position,
+    //                   logicGrid,  // its logical volume
+    //                   "grid",  // its name
+    //                   logicCryst,  // its mother  volume
+    //                   false,  // no boolean operation
+    //                   (igrid+1)*(jgrid+1),  // copy number		      
+    //                   true);  // checking overlaps
+    // }
+
+    
     // J-PET three-layer geometry parameters
     struct Layer { G4int nStrips; G4double radius; };
     std::vector<Layer> layers = {
-	{48, 362.0 * mm},
+	{312, 362.0 * mm},				 
 	{48, 425.0 * mm},
         {48, 467.5 * mm},
         {96, 575.0 * mm}
     };
 
+    G4double phi_shift = 0;
     for (size_t i = 0; i < layers.size(); ++i) {
         auto layer = layers[i];
         G4double dPhi = 2.0 * CLHEP::pi / layer.nStrips;
 
+	// if (i == 3) {
+	//   //stripLength = 500 * mm;
+	//   //stripWidth = 24 * mm;
+	//   // 78 * mm;
+	//   solidStrip->SetZHalfLength(500/2);
+	//   solidStrip->SetXHalfLength(24/2);
+	//   solidStrip->SetYHalfLength(78/2);
+	// }
+
+	// else {
+	//   //stripLength = 500 * mm;
+	//   //stripWidth = 24 * mm;
+	//   // 78 * mm;
+	//   solidStrip->SetZHalfLength(stripLength/2);
+	//   solidStrip->SetXHalfLength(stripWidth/2);
+	//   solidStrip->SetYHalfLength(stripThick/2);
+	// }
+
+	//solidStrip = G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
+	//logicStrip = G4LogicalVolume(solidStrip, plastic, "Strip");
+	
         for (G4int j = 0; j < layer.nStrips; ++j) {
-            G4double phi = j * dPhi;
-            G4double x = layer.radius * std::cos(phi);
-            G4double y = layer.radius * std::sin(phi);
+	  G4double phi = j * dPhi;
+	  //G4double phi = j * (dPhi + phi_shift);
+	  //phi = j * dPhi;
+	  G4double x = layer.radius * std::cos(phi);
+	  G4double y = layer.radius * std::sin(phi);
+	
 
             // // Rotation: tangential to ring â rotate around Z
             // auto rot = new G4RotationMatrix();
@@ -66,24 +124,50 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	    //G4double phi = icrys * dPhi;
 	    G4RotationMatrix rot = G4RotationMatrix();
 	    //rot.rotateX(0 * deg);
-	    rot.rotateZ(phi);
-	    if (i == 0) rot.rotateZ(90 * deg);
+	    rot.rotateZ(phi+phi_shift);
+	    //if (i == 0) rot.rotateZ(90 * deg);
 
-	    G4ThreeVector uz = G4ThreeVector(std::cos(phi), std::sin(phi), 0.);
+	    G4ThreeVector uz = G4ThreeVector(std::cos(phi+phi_shift), std::sin(phi+phi_shift), 0.);
 	    //G4ThreeVector position = (layer.radius + 0.5 * cryst_dZ) * uz;
-	    G4ThreeVector position = (layer.radius + 0.5 * stripWidth) * uz;
-	    G4Transform3D transform = G4Transform3D(rot, position);
-	    
-            new G4PVPlacement(transform,
-                              logicStrip,
-                              "Strip",
-                              logicWorld,
-                              false,
-                              i * 1000 + j,
-                              true);
-        }
+	    if (i == 0){
+	      G4ThreeVector position = (layer.radius + 0.5 * InstripWidth) * uz;
+	      G4Transform3D transform = G4Transform3D(rot, position);	      
+	      new G4PVPlacement(transform,
+				logicInStrip,
+				"InStrip",
+				logicWorld,
+				false,
+				i * 1000 + j,
+				true);
+	    }
+
+	    else{
+	      G4ThreeVector position = (layer.radius + 0.5 * stripWidth) * uz;
+	      G4Transform3D transform = G4Transform3D(rot, position);	      
+	      new G4PVPlacement(transform,
+				logicStrip,
+				"Strip",
+				logicWorld,
+				false,
+				i * 1000 + j,
+				true);
+	    }	      
+	}
+	
+	phi_shift = phi_shift + (dPhi/2);
     }
 
+    //   //Reading/writing GDML
+    //G4GDMLParser parser;
+  //parser.Write("JPET_Geometry.gdml", physWorld);
+  //parser.Read("JPET_Geometry.gdml");
+  //G4VPhysicalVolume* physWorld = parser.GetWorldVolume();
+
+  //G4LogicalVolume* logicWorld = physWorld->GetLogicalVolume();
+
+  //logicWorld->SetVisAttributes(nullptr); //making the world volume visible
+
+    
     return physWorld;
 }
 // void MyDetectorConstruction::ConstructSDandField()
@@ -95,14 +179,23 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-  // G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
-
+  //G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+  //G4SDManager::GetSDMpointer()->
   //
   // Sensitive detectors
   //
-  // auto cellSD = new CellSD("CellSD", "CellHitsCollection", 640);
-  //G4SDManager::GetSDMpointer()->AddNewDetector(cellSD);
-  //SetSensitiveDetector("Grid", cellSD);
+  auto InStripSD = new CellSD("InStripSD", "InStripHitsCollection", 312);
+  G4SDManager::GetSDMpointer()->AddNewDetector(InStripSD);
+  SetSensitiveDetector("InStrip", InStripSD);
+
+  auto StripSD = new CellSD("StripSD", "StripHitsCollection", 192);
+  G4SDManager::GetSDMpointer()->AddNewDetector(StripSD);
+  SetSensitiveDetector("Strip", StripSD);
+
+
+  //G4cout << "Number of Collection" << cellSD->GetNumberOfCollections() << G4endl;
+  //if (cellSD->isActive()) G4cout << "Sensitive detector Active!!" << G4endl;
+  //cellSD->PrintAll();
 
   // auto gapSD = new CalorimeterSD("GapSD", "GapHitsCollection", fNofLayers);
   // G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);

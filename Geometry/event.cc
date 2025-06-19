@@ -26,9 +26,13 @@ CellHitsCollection* MyEventAction::GetHitsCollection(G4int hcID, const G4Event* 
 void MyEventAction::PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const
 {
   // print event statistics
-  G4cout << "   Cell: total energy: " << std::setw(7) << G4BestUnit(CellEdep, "Energy")
-         << "       total track length: " << std::setw(7) << G4BestUnit(CellTrackLength, "Length")
+  G4cout << "   InStrip: total energy: " << std::setw(7) << G4BestUnit(CellEdep, "Energy")
+         << "       InStrip total track length: " << std::setw(7) << G4BestUnit(CellTrackLength, "Length") << G4endl;
+  G4cout << "   Strip: total energy: " << std::setw(7) << G4BestUnit(CellEdep, "Energy")
+         << "   Strip total track length: " << std::setw(7) << G4BestUnit(CellTrackLength, "Length")
          << G4endl;
+
+  //G4cout << "Printing Hits!!" << G4endl; 
 }
 
 
@@ -55,6 +59,12 @@ void MyEventAction::PrintEventStatistics(G4double CellEdep, G4double CellTrackLe
   OptPho_time.clear();
   
   TrkOnDet = 0;
+
+  InHitEdep_vec.clear();
+  InHitPos_vec.clear();
+  InHitTime_vec.clear();
+  InHitDetId_vec.clear();
+  InHitTrkLen_vec.clear();
   
   //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
 
@@ -95,24 +105,51 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     }
   }
 
-
-  if (fCellHCID == -1) {
-    fCellHCID = G4SDManager::GetSDMpointer()->GetCollectionID("CellHitsCollection");
-    
-    //fGapHCID = G4SDManager::GetSDMpointer()->GetCollectionID("GapHitsCollection");
+  //========================================================making hit collection=================================================================================================================================
+  // Get hits collections IDs (only once)
+  if (fInStripHCID == -1) {
+    fInStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("InStripHitsCollection");
+    fStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("StripHitsCollection");   
   }
 
   //cout << 
   
   // Get hits collections
   //G4cout << "fCellHCID: " << fCellHCID << G4endl;
-  auto CellHC = GetHitsCollection(G4int(fCellHCID), event);
+  auto InStripHC = GetHitsCollection(G4int(fInStripHCID), event);
+  auto StripHC = GetHitsCollection(G4int(fStripHCID), event);
+
+  G4cout << "type of InStripHC: " << typeid(InStripHC).name() << G4endl;
+  G4cout << "type of StripHC: " << typeid(StripHC).name() << G4endl;
+  //G4cout << "size CellHC: " << CellHC->entries() << G4endl;
+  //G4cout << "size CellHC: " << event->GetHCofThisEvent()->GetNumberOfCollections() << G4endl;
+  //G4cout << "size CellHC: " << event->GetHCofThisEvent()->GetHC(0)->GetSize() << G4endl;
+  // std::vector<G4AttValue> *HitVars = event->GetHCofThisEvent()->GetHC(0)->GetHit(0)->CreateAttValues();
+  // G4cout << "Total variables stored in the hit: " << HitVars->size() << G4endl;
+  //G4cout << "Cell Hit: " << (event->GetHCofThisEvent()->GetHC(0)->GetHit(0)->CreateAttValues())[0].GetName() << G4endl;
   
   //auto gapHC = GetHitsCollection(fGapHCID, event);
   
+  for (int i =0; i< StripHC->entries(); i++){
+    //auto test_Hit = InStripHC->GetHit(i);
+    auto ScintHit = (*StripHC)[i];
+    //auto Strip_Hit = (*StripHC) 
+    //G4cout << "type of test_Hit is: " << typeid(test_Hit).name() << G4endl;
+    //G4cout << "energy stored in Hit is: " << test_Hit->GetEdep() << G4endl;
+    
+    //ScintHit->Print();
+    if(ScintHit->GetTrackLength() > 0){
+    InHitEdep_vec.push_back(ScintHit->GetEdep());
+    InHitPos_vec.push_back(ScintHit->GetPosition());
+    InHitTime_vec.push_back(ScintHit->GetTime());
+    InHitDetId_vec.push_back(ScintHit->GetDetID());
+    InHitTrkLen_vec.push_back(ScintHit->GetTrackLength());
+    }
+  }
+  
   // Get hit with total values
-  auto CellHit = (*CellHC)[CellHC->entries() - 1];
-  //auto gapHit = (*gapHC)[gapHC->entries() - 1];
+  auto InStripHit = (*InStripHC)[InStripHC->entries() - 1];
+  auto StripHit = (*StripHC)[StripHC->entries() - 1];
 
   
   // Print per event (modulo n)
@@ -120,11 +157,38 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   auto eventID = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   //if ((printModulo > 0) && (eventID % printModulo == 0)) {
-    PrintEventStatistics(CellHit->GetEdep(), CellHit->GetTrackLength());
+    PrintEventStatistics(InStripHit->GetEdep(), InStripHit->GetTrackLength());
+    PrintEventStatistics(StripHit->GetEdep(), StripHit->GetTrackLength());
     G4cout << "--> End of event: " << eventID << "\n" << G4endl;
     //}
+    //==========================================================================================================================================================================================================
 
-  
+//     // Fill histograms, ntuple
+//   //
+
+//   // get analysis manager
+//   auto analysisManager = G4AnalysisManager::Instance();
+
+//   // fill histograms
+//   analysisManager->FillH1(0, absoHit->GetEdep());
+//   analysisManager->FillH1(1, gapHit->GetEdep());
+//   analysisManager->FillH1(2, absoHit->GetTrackLength());
+//   analysisManager->FillH1(3, gapHit->GetTrackLength());
+
+//   // fill ntuple
+//   analysisManager->FillNtupleDColumn(0, absoHit->GetEdep());
+//   analysisManager->FillNtupleDColumn(1, gapHit->GetEdep());
+//   analysisManager->FillNtupleDColumn(2, absoHit->GetTrackLength());
+//   analysisManager->FillNtupleDColumn(3, gapHit->GetTrackLength());
+//   analysisManager->AddNtupleRow();
+// }
+
+    runObject->InHitEdep = InHitEdep_vec;
+    runObject->InHitPos = InHitPos_vec;
+    runObject->InHitTime = InHitTime_vec;
+    runObject->InHitTrklen = InHitTrkLen_vec;
+    runObject->InHitDetId = InHitDetId_vec;
+    
   
   
   ievent++;

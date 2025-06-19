@@ -25,6 +25,11 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("OptPho_PosZ", &Opt_Photon_PosZ);
   tree->Branch("OptPho_Energy", &Opt_Photon_Energy);
   tree->Branch("OptPho_Time", &Opt_Photon_Time);
+  tree->Branch("Hit_Edep", &InHitEdep);
+  tree->Branch("Hit_Position", &InHitPos);
+  tree->Branch("Hit_Time", &InHitTime);
+  tree->Branch("Hit_TrkLen", &InHitTrklen);
+  tree->Branch("Hit_DetId", &InHitDetId);
 
   hfile = hfile = TFile::Open("test.root","RECREATE");
 }

@@ -223,7 +223,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
                                         default_mat,  // its material
                                         "CrystalLV");  // its name
 
-  //define grid
+
+
+//define grid
   auto solidGrid = new G4Box("grid", grid_dX/2, grid_dY/2, grid_dZ/2);
 
   auto logicGrid = new G4LogicalVolume(solidGrid,

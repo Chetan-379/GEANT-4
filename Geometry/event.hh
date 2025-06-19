@@ -5,6 +5,7 @@
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 #include "G4AnalysisManager.hh"
+#include "G4AttValue.hh"
 
 #include "G4HCofThisEvent.hh"
 #include "G4RunManager.hh"
@@ -54,9 +55,12 @@ private:
   CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
   void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
 
+  G4int fInStripHCID = -1;
+  G4int fStripHCID = -1;
 
-  G4int fCellHCID = -1;
-  //G4int fGapHCID = -1;
+  std::vector<G4double> InHitEdep_vec, InHitTime_vec, InHitTrkLen_vec;
+  std::vector<G4ThreeVector> InHitPos_vec;
+  std::vector<G4int> InHitDetId_vec;
 };
 
 #endif

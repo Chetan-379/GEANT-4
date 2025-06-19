@@ -41,6 +41,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   // energy deposit
   auto edep = step->GetTotalEnergyDeposit();
 
+  G4cout << "Energy Deposited in the step: " << edep << G4endl;
   // step length
   G4double stepLength = 0.;
   if (step->GetTrack()->GetDefinition()->GetPDGCharge() != 0.) {
@@ -50,6 +51,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   if (edep == 0. && stepLength == 0.) return false;
 
   auto touchable = (step->GetPreStepPoint()->GetTouchable());
+  G4cout << "detector pos: " << touchable->GetVolume()->GetTranslation() << G4endl;
 
   // Get calorimeter cell id
   auto layerNumber = touchable->GetReplicaNumber(1);
@@ -69,6 +71,15 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   hit->Add(edep, stepLength);
   hitTotal->Add(edep, stepLength);
 
+  //set position and time
+  G4ThreeVector DetPos = touchable->GetVolume()->GetTranslation();
+  G4double currentTime = step->GetPreStepPoint()->GetGlobalTime();
+  G4int DetId = touchable->GetVolume()->GetCopyNo();
+
+  hit->SetPosition(DetPos);
+  hit->SetTime(currentTime);
+  hit->SetDetectorID(DetId);
+  
   return true;
 }
 
@@ -77,6 +88,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
   if (verboseLevel > 1) {
+  //if(true){
     auto nofHits = fHitsCollection->entries();
     G4cout << G4endl << "-------->Hits Collection: in this event they are " << nofHits
            << " hits in the tracker chambers: " << G4endl;

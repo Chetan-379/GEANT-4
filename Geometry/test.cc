@@ -19,11 +19,19 @@ int main(int argc, char** argv)
   runManager->Initialize();
 
   G4UIExecutive *ui = 0;
-
+  G4String gdmlFile = "";
   if(argc ==1)
     {
      ui = new G4UIExecutive(argc, argv);
     }
+
+  // if(argc == 2)
+  //   {
+  //     ui = new G4UIExecutive(argc, argv);
+  //     //gdmlFile = argv[1];
+  //   }
+
+  // gdmlFile = argv[1];
   
   G4VisManager *visManager = new G4VisExecutive();
   visManager->Initialize();
