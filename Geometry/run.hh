@@ -26,7 +26,8 @@ public:
   G4int nOpticalPhotons, nOptPhoOnDetEnd;
   std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy, Opt_Photon_Time;
   std::vector<G4double> InHitEdep, InHitTime, InHitTrklen;
-  std::vector<G4ThreeVector> InHitPos;
+  //std::vector<G4ThreeVector> InHitPos;
+  std::vector<G4double> InHitPosX, InHitPosY, InHitPosZ;
   std::vector<G4int> InHitDetId;
  
 private:

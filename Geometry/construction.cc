@@ -188,9 +188,12 @@ void MyDetectorConstruction::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(InStripSD);
   SetSensitiveDetector("InStrip", InStripSD);
 
+  //InStripSD->Activate(false);
+
   auto StripSD = new CellSD("StripSD", "StripHitsCollection", 192);
   G4SDManager::GetSDMpointer()->AddNewDetector(StripSD);
   SetSensitiveDetector("Strip", StripSD);
+  
 
 
   //G4cout << "Number of Collection" << cellSD->GetNumberOfCollections() << G4endl;

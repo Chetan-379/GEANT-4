@@ -61,7 +61,9 @@ void MyEventAction::PrintEventStatistics(G4double CellEdep, G4double CellTrackLe
   TrkOnDet = 0;
 
   InHitEdep_vec.clear();
-  InHitPos_vec.clear();
+  InHitPosX_vec.clear();
+  InHitPosY_vec.clear();
+  InHitPosZ_vec.clear();
   InHitTime_vec.clear();
   InHitDetId_vec.clear();
   InHitTrkLen_vec.clear();
@@ -98,7 +100,7 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->Opt_Photon_PosZ = OptPho_PosZ;
   runObject->Opt_Photon_Energy = OptPho_Energy;
   runObject->Opt_Photon_Time = OptPho_time;
-  runObject->tree->Fill();  
+  //runObject->tree->Fill();  
 
   for (G4int i =0; i < OptPho_PosZ.size(); i++){
     if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
@@ -119,8 +121,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   auto InStripHC = GetHitsCollection(G4int(fInStripHCID), event);
   auto StripHC = GetHitsCollection(G4int(fStripHCID), event);
 
-  G4cout << "type of InStripHC: " << typeid(InStripHC).name() << G4endl;
-  G4cout << "type of StripHC: " << typeid(StripHC).name() << G4endl;
+  //G4cout << "type of InStripHC: " << typeid(InStripHC).name() << G4endl;
+  //G4cout << "type of StripHC: " << typeid(StripHC).name() << G4endl;
   //G4cout << "size CellHC: " << CellHC->entries() << G4endl;
   //G4cout << "size CellHC: " << event->GetHCofThisEvent()->GetNumberOfCollections() << G4endl;
   //G4cout << "size CellHC: " << event->GetHCofThisEvent()->GetHC(0)->GetSize() << G4endl;
@@ -129,21 +131,28 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   //G4cout << "Cell Hit: " << (event->GetHCofThisEvent()->GetHC(0)->GetHit(0)->CreateAttValues())[0].GetName() << G4endl;
   
   //auto gapHC = GetHitsCollection(fGapHCID, event);
-  
+  G4cout << "size of strip hits: " << StripHC->entries() << G4endl;
   for (int i =0; i< StripHC->entries(); i++){
     //auto test_Hit = InStripHC->GetHit(i);
     auto ScintHit = (*StripHC)[i];
     //auto Strip_Hit = (*StripHC) 
     //G4cout << "type of test_Hit is: " << typeid(test_Hit).name() << G4endl;
     //G4cout << "energy stored in Hit is: " << test_Hit->GetEdep() << G4endl;
-    
+    // G4ThreeVector position = ScintHit->GetPosition();
+    // std::vector<double> position_stl = {position.x(), position.y(), position.z()};
     //ScintHit->Print();
-    if(ScintHit->GetTrackLength() > 0){
-    InHitEdep_vec.push_back(ScintHit->GetEdep());
-    InHitPos_vec.push_back(ScintHit->GetPosition());
-    InHitTime_vec.push_back(ScintHit->GetTime());
-    InHitDetId_vec.push_back(ScintHit->GetDetID());
-    InHitTrkLen_vec.push_back(ScintHit->GetTrackLength());
+    if(ScintHit->GetTrackLength() > 0 && ScintHit->GetTime() > 0){
+      G4cout << "Edep: " << ScintHit->GetEdep() << G4endl;
+      G4cout << "Time: " << ScintHit->GetTime() << G4endl;
+      G4cout << "DetId: " << ScintHit->GetDetID() << G4endl;
+      
+      InHitEdep_vec.push_back(ScintHit->GetEdep());
+      InHitPosX_vec.push_back((ScintHit->GetPosition())[0]);
+      InHitPosY_vec.push_back((ScintHit->GetPosition())[1]);
+      InHitPosZ_vec.push_back((ScintHit->GetPosition())[2]);
+      InHitTime_vec.push_back(ScintHit->GetTime());
+      InHitDetId_vec.push_back(ScintHit->GetDetID());
+      InHitTrkLen_vec.push_back(ScintHit->GetTrackLength());
     }
   }
   
@@ -163,32 +172,15 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     //}
     //==========================================================================================================================================================================================================
 
-//     // Fill histograms, ntuple
-//   //
-
-//   // get analysis manager
-//   auto analysisManager = G4AnalysisManager::Instance();
-
-//   // fill histograms
-//   analysisManager->FillH1(0, absoHit->GetEdep());
-//   analysisManager->FillH1(1, gapHit->GetEdep());
-//   analysisManager->FillH1(2, absoHit->GetTrackLength());
-//   analysisManager->FillH1(3, gapHit->GetTrackLength());
-
-//   // fill ntuple
-//   analysisManager->FillNtupleDColumn(0, absoHit->GetEdep());
-//   analysisManager->FillNtupleDColumn(1, gapHit->GetEdep());
-//   analysisManager->FillNtupleDColumn(2, absoHit->GetTrackLength());
-//   analysisManager->FillNtupleDColumn(3, gapHit->GetTrackLength());
-//   analysisManager->AddNtupleRow();
-// }
 
     runObject->InHitEdep = InHitEdep_vec;
-    runObject->InHitPos = InHitPos_vec;
+    runObject->InHitPosX = InHitPosX_vec;
+    runObject->InHitPosY = InHitPosY_vec;
+    runObject->InHitPosZ = InHitPosZ_vec;
     runObject->InHitTime = InHitTime_vec;
     runObject->InHitTrklen = InHitTrkLen_vec;
     runObject->InHitDetId = InHitDetId_vec;
-    
+    runObject->tree->Fill();  
   
   
   ievent++;

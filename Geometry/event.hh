@@ -59,7 +59,8 @@ private:
   G4int fStripHCID = -1;
 
   std::vector<G4double> InHitEdep_vec, InHitTime_vec, InHitTrkLen_vec;
-  std::vector<G4ThreeVector> InHitPos_vec;
+  //std::vector<G4ThreeVector> InHitPos_vec;
+  std::vector<double> InHitPosX_vec, InHitPosY_vec, InHitPosZ_vec;
   std::vector<G4int> InHitDetId_vec;
 };
 
