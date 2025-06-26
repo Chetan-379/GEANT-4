@@ -18,9 +18,7 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4PhysicalVolumeStore.hh"
 
-#include "detector.hh"
 #include "globals.hh"
-
 
 #include "CellSD.hh"
 
@@ -34,7 +32,6 @@ public:
   G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
   
   virtual G4VPhysicalVolume *Construct();
-  MySensitiveDetector *sensDet;
 
 private:
   G4LogicalVolume *logicDetector;

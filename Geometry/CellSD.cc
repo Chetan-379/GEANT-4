@@ -81,8 +81,7 @@ void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
   if (verboseLevel > 1) {
     auto nofHits = fHitsCollection->entries();
-    G4cout << G4endl << "-------->Hits Collection: in this event they are " << nofHits
-           << " hits: " << G4endl;
+    G4cout << "\n" << "-------->Hit summary of the Event: " << G4endl;
     for (std::size_t i = 0; i < nofHits; ++i)
       (*fHitsCollection)[i]->Print();
   }    

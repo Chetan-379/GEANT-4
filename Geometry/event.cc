@@ -113,16 +113,13 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   
   ///////////////////////////////
 
-  G4cout << "\n\nsize of the hit collection in this event: " << ScintHC->GetSize() << G4endl;
+  G4cout << "\ntotal size of the hit collection in this event: " << ScintHC->GetSize() << G4endl;
   
   G4int nHits = 0;
 
   for (int i =0; i< ScintHC->GetSize(); i++){
     CellHit* ScintHit =  dynamic_cast<CellHit*>(ScintHC->GetHit(i));
     nHits++;
-    G4cout << "Edep: " << ScintHit->GetEdep() << G4endl;
-    G4cout << "Time: " << ScintHit->GetTime() << G4endl;
-    G4cout << "DetId: " << ScintHit->GetDetID() << G4endl;
       
     HitEdep_vec.push_back(ScintHit->GetEdep());
     HitPosX_vec.push_back((ScintHit->GetPosition())[0]);
