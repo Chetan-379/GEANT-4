@@ -89,12 +89,19 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   // // Get hits collections IDs (only once)
   if (fInStripHCID == -1) {
     fInStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("InStripHitsCollection");
-    fStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("StripHitsCollection");   
+    fOutStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("StripHitsCollection");
+    fOuterMostStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("OuterMostStripHitsCollection");
   }
   
   // Get hits collections
   auto InStripHC = event->GetHCofThisEvent()->GetHC(0);
+  //G4cout << "name of HC0: " << InStripHC->GetName() << G4endl;
+  
   auto OutStripHC = event->GetHCofThisEvent()->GetHC(1);
+  //G4cout << "name of HC1: " << OutStripHC->GetName() << G4endl;
+  
+  auto OuterMostStripHC = event->GetHCofThisEvent()->GetHC(2);
+  //G4cout << "name of HC2: " << OuterMostStripHC->GetName() << G4endl;
 
   auto ScintHC = new G4THitsCollection<CellHit>;
 
@@ -110,7 +117,11 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     auto hit = dynamic_cast<CellHit*>(OutStripHC->GetHit(iHit));
     ScintHC->insert(hit); 
   }
-  
+
+  for (int iHit = 0; iHit < OuterMostStripHC->GetSize(); iHit++){
+    auto hit = dynamic_cast<CellHit*>(OuterMostStripHC->GetHit(iHit));
+    ScintHC->insert(hit); 
+  }
   ///////////////////////////////
 
   G4cout << "\ntotal size of the hit collection in this event: " << ScintHC->GetSize() << G4endl;

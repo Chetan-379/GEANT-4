@@ -61,13 +61,14 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double TrkLen = step->GetTrack()->GetTrackLength();
   G4int DetId = touchable->GetVolume()->GetCopyNo();
   
-  if (proc == "compt" && ParentID == 0) {
+  if ((proc == "compt" || proc == "phot") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
     G4cout << "Compton scattering point: " << compt_scat_point << G4endl;
     hit->SetPosition(compt_scat_point);
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
     hit->SetTrackLength(TrkLen);
+    hit->SetProcName(proc);
 
     fHitsCollection->insert(hit);
   }
@@ -81,7 +82,8 @@ void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
   if (verboseLevel > 1) {
     auto nofHits = fHitsCollection->entries();
-    G4cout << "\n" << "-------->Hit summary of the Event: " << G4endl;
+    
+    G4cout << "\n" << "-------->Hit summary of the SD "  << G4endl;
     for (std::size_t i = 0; i < nofHits; ++i)
       (*fHitsCollection)[i]->Print();
   }    

@@ -56,7 +56,8 @@ private:
   void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
 
   G4int fInStripHCID = -1;
-  G4int fStripHCID = -1;
+  G4int fOutStripHCID = -1;
+  G4int fOuterMostStripHCID = -1;
 
   std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec;
   std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;

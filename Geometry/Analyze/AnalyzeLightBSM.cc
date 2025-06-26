@@ -75,7 +75,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_ComptVsPhoto_Edep->Fill(Edep_Compt, Edep_Photo);
 	h_Total_Edep-> Fill(Total_Edep);
 
-	if(Hit_PositionX->size() >=1) Comp2_evts++; 
+	if(Hit_PositionX->size() >1) Comp2_evts++; 
 
 	//optical photon analysis
 	//h_Total_Edep_fine_binned->Fill(Total_Edep);

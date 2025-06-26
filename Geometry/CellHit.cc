@@ -35,6 +35,11 @@ void CellHit::SetTrackLength(G4double Trklen)
   fTrackLength = Trklen;
 }
 
+void CellHit::SetProcName(G4String procName)
+{
+  fProcName = procName;
+}
+
 
 void CellHit::Print()
 {
@@ -42,7 +47,8 @@ void CellHit::Print()
          << " track length: " << std::setw(7) << G4BestUnit(fTrackLength, "Length")
 	 << " position: " << std::setw(7) << G4BestUnit(fPosition, "Length")
 	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time")
-	 << " DetId: " << std::setw(7) << detId << G4endl;
+	 << " DetId: " << std::setw(7) << detId
+	 << " ProcessName: " << std::setw(7) << fProcName << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

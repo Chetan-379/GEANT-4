@@ -11,8 +11,10 @@ MyDetectorConstruction::~MyDetectorConstruction()
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   auto nist = G4NistManager::Instance();
-  auto air = nist->FindOrBuildMaterial("G4_AIR");
+  //auto air = nist->FindOrBuildMaterial("G4_AIR");
+  auto air = nist->FindOrBuildMaterial("G4_Galactic");
   auto plastic = nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+  auto BGO = nist->FindOrBuildMaterial("G4_BGO");
 
   // World
   G4double worldSize = 1.5 * m;
@@ -32,9 +34,12 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
   logicStrip = new G4LogicalVolume(solidStrip, plastic, "StripLV");
 
+  logicOuterMostStrip = new G4LogicalVolume(solidStrip, BGO, "OuterMostStripLV");
+
   auto solidInStrip = new G4Box("InStrip", InstripWidth / 2, InstripThick / 2, InstripLength / 2);
   logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStripLV");
 
+  
   G4int nstrips_block = 13;
 
     
@@ -68,7 +73,19 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 			  "InStrip",
 			  logicWorld,
 			  false,
-			  i * 1000 + j,
+			  (i+1) * 1000 + j,
+			  true);
+      }
+
+      else if (i == 3){
+	G4ThreeVector position = (layer.radius + 0.5 * InstripWidth) * uz;
+	G4Transform3D transform = G4Transform3D(rot, position);	      
+	new G4PVPlacement(transform,
+			  logicOuterMostStrip,
+			  "OuterMostStrip",
+			  logicWorld,
+			  false,
+			  (i+1) * 1000 + j,
 			  true);
       }
 
@@ -80,7 +97,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 			  "Strip",
 			  logicWorld,
 			  false,
-			  i * 1000 + j,
+			  (i+1) * 1000 + j,
 			  true);
       }	      
     }
@@ -112,10 +129,15 @@ void MyDetectorConstruction::ConstructSDandField()
   InStripSD->SetVerboseLevel(2);
   
 
-  auto StripSD = new CellSD("StripSD", "StripHitsCollection", 192);
+  auto StripSD = new CellSD("StripSD", "StripHitsCollection", 96);
   G4SDManager::GetSDMpointer()->AddNewDetector(StripSD);
   SetSensitiveDetector("StripLV", StripSD);
   StripSD->SetVerboseLevel(2);
+
+  auto OuterMostStripSD = new CellSD("OuterMostStripSD", "OuterMostStripHitsCollection", 96);
+  G4SDManager::GetSDMpointer()->AddNewDetector(OuterMostStripSD);
+  SetSensitiveDetector("OuterMostStripLV", OuterMostStripSD);
+  OuterMostStripSD->SetVerboseLevel(2);
   
   //
   // Magnetic field

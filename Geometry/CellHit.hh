@@ -33,6 +33,7 @@ public:
   void SetTime(G4double time);
   void SetDetectorID(G4int DetID);
   void SetTrackLength(G4double Trklen);
+  void SetProcName(G4String procName);
     
   
   // get methods
@@ -41,7 +42,7 @@ public:
   G4ThreeVector GetPosition() const;
   G4double GetTime() const;
   G4int GetDetID() const;
-  
+  G4String GetProcName() const;
 
   
 private:
@@ -50,6 +51,7 @@ private:
   G4ThreeVector fPosition;
   G4double fTime = 0;
   G4int detId = -1;
+  G4String fProcName = " ";
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -108,6 +110,12 @@ inline G4int CellHit::GetDetID() const
 {
   return detId;
 }
+
+inline G4String CellHit::GetProcName() const
+{
+  return fProcName;
+}
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

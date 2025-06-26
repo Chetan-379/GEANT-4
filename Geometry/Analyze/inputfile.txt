@@ -1,1 +1,1 @@
-src_root_files/Comp_theta_test.root
+src_root_files/JPET_4layers_outer_old_vaccum.root
