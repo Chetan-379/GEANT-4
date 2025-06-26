@@ -47,7 +47,6 @@ public:
   
 private:
   G4double fX;
-  //std::vector<G4double> Xarray, Yarray, Zarray, Earray;
   MyRunAction *runObject;
   G4int ievent=1;
   G4double fEdep;
@@ -60,7 +59,6 @@ private:
   G4int fStripHCID = -1;
 
   std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec;
-  //std::vector<G4ThreeVector> InHitPos_vec;
   std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
   std::vector<G4int> HitDetId_vec;
 };

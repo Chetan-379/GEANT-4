@@ -1,3 +1,4 @@
+//taken from G4 Example basic/B4/B4c
 #ifndef CELLSD_HH
 #define CELLSD_HH
 
@@ -8,15 +9,11 @@
 #include "G4VProcess.hh"
 #include "globals.hh"
 
-
 class G4Step;
 class G4HCofThisEvent;
 class G4TouchableHistory;
 
-//namespace cellSD
-//{
-
-/// Calorimeter sensitive detector class
+/// cell sensitive detector class
 ///
 /// In Initialize(), it creates one hit for each calorimeter layer and one more
 /// hit for accounting the total quantities in all layers.
@@ -38,10 +35,7 @@ class CellSD : public G4VSensitiveDetector
   private:
     CellHitsCollection* fHitsCollection = nullptr;
     G4int fNofCells = 0;
-  G4int nCompt = 0; 
 };
-
-//}  // namespace B4c
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

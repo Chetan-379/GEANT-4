@@ -1,5 +1,6 @@
-#ifndef B4cCalorHit_h
-#define B4cCalorHit_h 1
+//costum hit class taken from G4 Example basic/B4/B4c
+#ifndef CellHit_h
+#define CellHit_h 1
 
 #include "G4Allocator.hh"
 #include "G4THitsCollection.hh"
@@ -8,18 +9,9 @@
 #include "G4VHit.hh"
 #include "globals.hh"
 
-//namespace B4c
-//{
-
-/// Calorimeter hit class
-///
-/// It defines data members to store the the energy deposit and track lengths
-/// of charged particles in a selected volume:
-/// - fEdep, fTrackLength
-
 class CellHit : public G4VHit
 {
-  public:
+public:
   CellHit() = default;
   CellHit(const CellHit&) = default;
   ~CellHit() override = default;
@@ -52,7 +44,7 @@ class CellHit : public G4VHit
   
 
   
-  private:
+private:
   G4double fEdep = 0.;  ///< Energy deposit in the sensitive volume
   G4double fTrackLength = 0.;  ///< Track length in the  sensitive volume
   G4ThreeVector fPosition;
@@ -92,10 +84,6 @@ inline void CellHit::Add(G4double de, G4double dl)
   fTrackLength += dl;
 }
 
-//inline void CellHit::SetPosition(G4ThreeVector xyz);
-
-//inline void CellHit::SetDetectorID(G4int DetID);
-
 inline G4double CellHit::GetEdep() const
 {
   return fEdep;
@@ -120,9 +108,6 @@ inline G4int CellHit::GetDetID() const
 {
   return detId;
 }
-
-
-//}  // namespace B4c
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

@@ -8,5 +8,4 @@
 #/vis/scene/add/scale 10 cm
 /vis/scene/add/eventID
 #/vis/drawOnlyToBeKeptEvents
-/vis/scene/add/hits
-/vis/scene/endOfEventAction accumulate
+/vis/scene/endOfEventAction accumulate 

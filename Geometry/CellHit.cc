@@ -1,11 +1,8 @@
+//Custom Hit class taken from G4 Example basic/B4/B4c
 #include "CellHit.hh"
-
 #include "G4UnitsTable.hh"
-
 #include <iomanip>
 
-//namespace B4c
-//{
 
 G4ThreadLocal G4Allocator<CellHit>* CellHitAllocator = nullptr;
 
@@ -49,5 +46,3 @@ void CellHit::Print()
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-//}  // namespace B4c
