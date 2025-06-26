@@ -11,6 +11,7 @@
 #include "G4RunManager.hh"
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
+#include "G4UImanager.hh"
 
 #include "run.hh"
 #include "CellHit.hh"
@@ -58,10 +59,10 @@ private:
   G4int fInStripHCID = -1;
   G4int fStripHCID = -1;
 
-  std::vector<G4double> InHitEdep_vec, InHitTime_vec, InHitTrkLen_vec;
+  std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec;
   //std::vector<G4ThreeVector> InHitPos_vec;
-  std::vector<double> InHitPosX_vec, InHitPosY_vec, InHitPosZ_vec;
-  std::vector<G4int> InHitDetId_vec;
+  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
+  std::vector<G4int> HitDetId_vec;
 };
 
 #endif

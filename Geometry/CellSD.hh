@@ -5,6 +5,7 @@
 
 #include "G4VSensitiveDetector.hh"
 #include "G4SDManager.hh"
+#include "G4VProcess.hh"
 #include "globals.hh"
 
 
@@ -37,6 +38,7 @@ class CellSD : public G4VSensitiveDetector
   private:
     CellHitsCollection* fHitsCollection = nullptr;
     G4int fNofCells = 0;
+  G4int nCompt = 0; 
 };
 
 //}  // namespace B4c

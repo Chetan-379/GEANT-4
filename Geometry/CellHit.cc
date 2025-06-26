@@ -33,6 +33,11 @@ void CellHit::SetDetectorID(G4int DetID)
   detId = DetID;
 }
 
+void CellHit::SetTrackLength(G4double Trklen)
+{
+  fTrackLength = Trklen;
+}
+
 
 void CellHit::Print()
 {

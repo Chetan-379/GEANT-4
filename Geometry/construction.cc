@@ -12,7 +12,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
  auto nist = G4NistManager::Instance();
     auto air = nist->FindOrBuildMaterial("G4_AIR");
-    auto plastic = nist->FindOrBuildMaterial("G4_POLYSTYRENE");  // EJ-230 approx.
+    //auto plastic = nist->FindOrBuildMaterial("G4_POLYSTYRENE");  // EJ-230 approx.
+    auto plastic = nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
     // World
     G4double worldSize = 1.5 * m;
@@ -30,10 +31,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4double InstripThick  = 6.0 * mm;
         
     auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
-    auto logicStrip = new G4LogicalVolume(solidStrip, plastic, "Strip");
+    logicStrip = new G4LogicalVolume(solidStrip, plastic, "StripLV");
 
     auto solidInStrip = new G4Box("InStrip", InstripWidth / 2, InstripThick / 2, InstripLength / 2);
-    auto logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStrip");
+    logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStripLV");
 
     G4int nstrips_block = 13;
 
@@ -154,7 +155,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	    }	      
 	}
 	
-	phi_shift = phi_shift + (dPhi/2);
+	G4cout << "\n\nphi_shift: " << phi_shift << G4endl;
+	//phi_shift =  phi_shift + (dPhi/2);
+	if ( i==1) phi_shift =  phi_shift + (dPhi/2);
+	else if (i == 2) phi_shift = phi_shift + (dPhi/3); 
     }
 
     //   //Reading/writing GDML
@@ -184,15 +188,29 @@ void MyDetectorConstruction::ConstructSDandField()
   //
   // Sensitive detectors
   //
+  // auto InStripSD = new CellSD("InStripSD", "InStripHitsCollection", 312);
+  // G4SDManager::GetSDMpointer()->AddNewDetector(InStripSD);
+  // SetSensitiveDetector("InStrip", InStripSD);
+
+  //auto InStripSD = new CellSD("InStripSD");
   auto InStripSD = new CellSD("InStripSD", "InStripHitsCollection", 312);
   G4SDManager::GetSDMpointer()->AddNewDetector(InStripSD);
-  SetSensitiveDetector("InStrip", InStripSD);
+  //logicInStrip->SetSensitiveDetector(InStripSD);  
+  SetSensitiveDetector("InStripLV", InStripSD);
+  //G4cout << "InStripSD Details========================" << G4endl;
+  InStripSD->SetVerboseLevel(2);
+  //InStir
+  //G4cout << "\n\n===========GetNuberofcollection: " << InStripSD->GetNumberOfCollections() << G4endl;
+  //G4cout << "\n\n===========CollectionName: " << InStripSD->GetCollectionName(0) << G4endl;
+  
+  
 
   //InStripSD->Activate(false);
 
   auto StripSD = new CellSD("StripSD", "StripHitsCollection", 192);
   G4SDManager::GetSDMpointer()->AddNewDetector(StripSD);
-  SetSensitiveDetector("Strip", StripSD);
+  SetSensitiveDetector("StripLV", StripSD);
+  StripSD->SetVerboseLevel(2);
   
 
 

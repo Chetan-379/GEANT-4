@@ -40,7 +40,8 @@ private:
   G4LogicalVolume *logicDetector;
   virtual void ConstructSDandField();
 
-  G4LogicalVolume *fScoringVolume;
+  G4LogicalVolume *logicStrip, *logicInStrip, *fScoringVolume;
+  
  
 };
   

@@ -40,6 +40,7 @@ class CellHit : public G4VHit
   void SetPosition(G4ThreeVector xyz);
   void SetTime(G4double time);
   void SetDetectorID(G4int DetID);
+  void SetTrackLength(G4double Trklen);
     
   
   // get methods
@@ -55,8 +56,8 @@ class CellHit : public G4VHit
   G4double fEdep = 0.;  ///< Energy deposit in the sensitive volume
   G4double fTrackLength = 0.;  ///< Track length in the  sensitive volume
   G4ThreeVector fPosition;
-  G4double fTime;
-  G4int detId;
+  G4double fTime = 0;
+  G4int detId = -1;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

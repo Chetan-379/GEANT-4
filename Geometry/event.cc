@@ -60,16 +60,18 @@ void MyEventAction::PrintEventStatistics(G4double CellEdep, G4double CellTrackLe
   
   TrkOnDet = 0;
 
-  InHitEdep_vec.clear();
-  InHitPosX_vec.clear();
-  InHitPosY_vec.clear();
-  InHitPosZ_vec.clear();
-  InHitTime_vec.clear();
-  InHitDetId_vec.clear();
-  InHitTrkLen_vec.clear();
+  HitEdep_vec.clear();
+  HitPosX_vec.clear();
+  HitPosY_vec.clear();
+  HitPosZ_vec.clear();
+  HitTime_vec.clear();
+  HitDetId_vec.clear();
+  HitTrkLen_vec.clear();
   
-  //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
-
+ G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+ 
+ if (ievent == 54) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+ else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
 }
 
 void MyEventAction::EndOfEventAction(const G4Event* event)
@@ -108,19 +110,24 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   }
 
   //========================================================making hit collection=================================================================================================================================
-  // Get hits collections IDs (only once)
+
+  
+  // // Get hits collections IDs (only once)
   if (fInStripHCID == -1) {
-    fInStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("InStripHitsCollection");
-    fStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("StripHitsCollection");   
+  fInStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("InStripHitsCollection");
+  fStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("StripHitsCollection");   
   }
 
   //cout << 
   
   // Get hits collections
   //G4cout << "fCellHCID: " << fCellHCID << G4endl;
-  auto InStripHC = GetHitsCollection(G4int(fInStripHCID), event);
-  auto StripHC = GetHitsCollection(G4int(fStripHCID), event);
+  //auto InStripHC = GetHitsCollection(G4int(fInStripHCID), event);
 
+  //G4cout << "data type of InStripHC: " << typeid(InStripHC).name() << G4endl;
+  // auto StripHC = GetHitsCollection(G4int(fStripHCID), event);
+
+  
   //G4cout << "type of InStripHC: " << typeid(InStripHC).name() << G4endl;
   //G4cout << "type of StripHC: " << typeid(StripHC).name() << G4endl;
   //G4cout << "size CellHC: " << CellHC->entries() << G4endl;
@@ -131,58 +138,111 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   //G4cout << "Cell Hit: " << (event->GetHCofThisEvent()->GetHC(0)->GetHit(0)->CreateAttValues())[0].GetName() << G4endl;
   
   //auto gapHC = GetHitsCollection(fGapHCID, event);
-  G4cout << "size of strip hits: " << StripHC->entries() << G4endl;
-  for (int i =0; i< StripHC->entries(); i++){
+  //auto InStripHC = event->GetHCofThisEvent()->GetHC(0);
+  auto InStripHC = event->GetHCofThisEvent()->GetHC(0);
+  auto OutStripHC = event->GetHCofThisEvent()->GetHC(1);
+
+  //auto ScintHC = new G4VHitsCollection();
+  auto ScintHC = new G4THitsCollection<CellHit>;
+  //auto ScintHC = new G4HCofThisEvent();
+
+  // ScintHC->AddHitsCollection(fInStripHCID, InStripHC);
+  // ScintHC->AddHitsCollection(fStripHCID, OutStripHC);
+
+  for (int iHit = 0; iHit < InStripHC->GetSize(); iHit++){
+    //auto hit = InStripHC->GetHit(i);
+    auto hit = dynamic_cast<CellHit*>(InStripHC->GetHit(iHit));
+    ScintHC->insert(hit); 
+  }
+
+  for (int iHit = 0; iHit < OutStripHC->GetSize(); iHit++){
+    //auto hit = InStripHC->GetHit(i);
+    auto hit = dynamic_cast<CellHit*>(OutStripHC->GetHit(iHit));
+    ScintHC->insert(hit); 
+  }
+
+  // auto ScintHC = InStripHC + OutStripHC;
+  //G4cout << "size of the hits collection is: " << ScintHC->GetSize() << G4endl;
+
+  //auto ScintHC = event->GetHCofThisEvent();
+
+  G4cout << "\n\nsize of the hit collection in this event: " << ScintHC->GetSize() << G4endl;
+  
+  G4int nHits = 0;
+  //for (int i =0; i< InStripHC->entries(); i++){
+  for (int i =0; i< ScintHC->GetSize(); i++){
     //auto test_Hit = InStripHC->GetHit(i);
-    auto ScintHit = (*StripHC)[i];
+    // auto ScintHit = (*InStripHC)[i];
     //auto Strip_Hit = (*StripHC) 
     //G4cout << "type of test_Hit is: " << typeid(test_Hit).name() << G4endl;
     //G4cout << "energy stored in Hit is: " << test_Hit->GetEdep() << G4endl;
     // G4ThreeVector position = ScintHit->GetPosition();
     // std::vector<double> position_stl = {position.x(), position.y(), position.z()};
     //ScintHit->Print();
-    if(ScintHit->GetTrackLength() > 0 && ScintHit->GetTime() > 0){
+
+    //auto ScintHit = ScintHC->GetHit(i);
+    //auto ScintHit = (*ScintHC)[i];
+    CellHit* ScintHit =  dynamic_cast<CellHit*>(ScintHC->GetHit(i));
+    //if(ScintHit->GetTime() > 0){
+      nHits++;
       G4cout << "Edep: " << ScintHit->GetEdep() << G4endl;
       G4cout << "Time: " << ScintHit->GetTime() << G4endl;
       G4cout << "DetId: " << ScintHit->GetDetID() << G4endl;
       
-      InHitEdep_vec.push_back(ScintHit->GetEdep());
-      InHitPosX_vec.push_back((ScintHit->GetPosition())[0]);
-      InHitPosY_vec.push_back((ScintHit->GetPosition())[1]);
-      InHitPosZ_vec.push_back((ScintHit->GetPosition())[2]);
-      InHitTime_vec.push_back(ScintHit->GetTime());
-      InHitDetId_vec.push_back(ScintHit->GetDetID());
-      InHitTrkLen_vec.push_back(ScintHit->GetTrackLength());
-    }
+      HitEdep_vec.push_back(ScintHit->GetEdep());
+      HitPosX_vec.push_back((ScintHit->GetPosition())[0]);
+      HitPosY_vec.push_back((ScintHit->GetPosition())[1]);
+      HitPosZ_vec.push_back((ScintHit->GetPosition())[2]);
+      HitTime_vec.push_back(ScintHit->GetTime());
+      HitDetId_vec.push_back(ScintHit->GetDetID());
+      HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
+      //}
+    // if (ievent == 57) {
+    //  G4cout << "Edep: " << ScintHit->GetEdep() << G4endl;
+    //   G4cout << "Time: " << ScintHit->GetTime() << G4endl;
+    //   G4cout << "TrkLength: " << ScintHit->GetTrackLength() << G4endl;
+    //   G4cout << "DetId: " << ScintHit->GetDetID() << G4endl;
+    //   G4cout << "DetPos: " << ScintHit->GetPosition() << G4endl;
+    // }
   }
-  
-  // Get hit with total values
-  auto InStripHit = (*InStripHC)[InStripHC->entries() - 1];
-  auto StripHit = (*StripHC)[StripHC->entries() - 1];
 
   
-  // Print per event (modulo n)
-  //
-  auto eventID = event->GetEventID();
-  auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-  //if ((printModulo > 0) && (eventID % printModulo == 0)) {
-    PrintEventStatistics(InStripHit->GetEdep(), InStripHit->GetTrackLength());
-    PrintEventStatistics(StripHit->GetEdep(), StripHit->GetTrackLength());
-    G4cout << "--> End of event: " << eventID << "\n" << G4endl;
-    //}
+ 
+
+  //G4cout << "size of strip hits: " << InStripHC->entries() << G4endl;
+  
+  // // Get hit with total values
+  // //auto InStripHit = (*InStripHC)[InStripHC->entries() - 1];
+  // G4cout << "\n\nworking till here!!" << G4endl;
+  // auto StripHit = (*StripHC)[StripHC->entries() - 1];
+
+  
+  // // Print per event (modulo n)
+  // //
+  // auto eventID = event->GetEventID();
+  // auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
+  // //if ((printModulo > 0) && (eventID % printModulo == 0)) {
+  // //PrintEventStatistics(InStripHit->GetEdep(), InStripHit->GetTrackLength());
+  //   PrintEventStatistics(ScintHit->GetEdep(), ScintHit->GetTrackLength());
+  //   G4cout << "--> End of event: " << eventID << "\n" << G4endl;
+  //   //}
     //==========================================================================================================================================================================================================
 
 
-    runObject->InHitEdep = InHitEdep_vec;
-    runObject->InHitPosX = InHitPosX_vec;
-    runObject->InHitPosY = InHitPosY_vec;
-    runObject->InHitPosZ = InHitPosZ_vec;
-    runObject->InHitTime = InHitTime_vec;
-    runObject->InHitTrklen = InHitTrkLen_vec;
-    runObject->InHitDetId = InHitDetId_vec;
-    runObject->tree->Fill();  
+    runObject->InHitEdep = HitEdep_vec;
+    runObject->InHitPosX = HitPosX_vec;
+    runObject->InHitPosY = HitPosY_vec;
+    runObject->InHitPosZ = HitPosZ_vec;
+    runObject->InHitTime = HitTime_vec;
+    runObject->InHitTrklen = HitTrkLen_vec;
+    runObject->InHitDetId = HitDetId_vec;
+    runObject->tree->Fill();
+
+    if (ievent == 54) {
+      G4EventManager::GetEventManager()->KeepTheCurrentEvent();}
   
   
   ievent++;
-  // G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
+  // G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
+  
 }
