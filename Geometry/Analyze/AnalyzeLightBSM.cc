@@ -13,6 +13,8 @@
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
+#include "Math/Vector3D.h"
+
 #pragma link C++ class std::vector< std::vector >+; 
 #pragma link C++ class std::vector< TLorentzVector >+;
 #ifdef __CINT__
@@ -58,6 +60,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	if (k > decade)
 	  cout << 10 * k << " %" << endl;
 	decade = k;
+
+
 	
 	// ===============read this entry == == == == == == == == == == ==                                                                        
 	Long64_t ientry = LoadTree(jentry);
@@ -75,8 +79,45 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_ComptVsPhoto_Edep->Fill(Edep_Compt, Edep_Photo);
 	h_Total_Edep-> Fill(Total_Edep);
 
-	if(Hit_PositionX->size() >1) Comp2_evts++; 
+	//ROOT::Math::XYZVector v_inc(0,0,0);
+	if(Hit_Time->size() >1) {
+	  cout << "\n============Event: " << jentry << endl;
+	  Comp2_evts++;
 
+	   ROOT::Math::XYZVector v_comp, vin, vout, v1, v2;
+	   double scat_cos_theta; 
+  
+	  for (int iHit=0 ; iHit< (Hit_Time->size()-1); iHit++){
+	    v_comp.SetXYZ(0,0,0);
+	    vin.SetXYZ(0,0,0);
+	    vout.SetXYZ(0,0,0);
+	    v1.SetXYZ(0,0,0);
+	    v2.SetXYZ(0,0,0);
+
+	    v_comp.SetXYZ((*Hit_PositionX)[iHit], (*Hit_PositionY)[iHit], (*Hit_PositionZ)[iHit]);
+
+	    if (jentry == 3) cout << "hit pos: (" << v_comp.X() << ", " << v_comp.Y() << ", " << v_comp.Z() << ")" << endl;
+	    
+
+	    if(iHit == 0) v1.SetXYZ(0,0,0);
+	    else v1.SetXYZ((*Hit_PositionX)[iHit-1], (*Hit_PositionY)[iHit], (*Hit_PositionZ)[iHit]);
+
+	    v2.SetXYZ((*Hit_PositionX)[iHit+1], (*Hit_PositionY)[iHit+1], (*Hit_PositionZ)[iHit+1]);
+
+	    vin = v_comp - v1;
+	    vout = v_comp -v2;
+
+	    //cout << "vin: (" << vin.X() << ", " << vin.Y() << ", " << vin.Z() << ")" << endl;
+	    //cout << "Mag2: " << vin.R() << endl;
+	   	    
+	    //cout << "Hit Time: " << (*Hit_Time)[iHit] << endl;
+
+	    scat_cos_theta = vin.Dot(vout)/(vin.R()*vout.R());
+
+	    //cout << "scattering angle: " << acos(scat_cos_theta)*180.0 / TMath::Pi() << "\n\n";	    
+	    
+	  }
+	}
 	//optical photon analysis
 	//h_Total_Edep_fine_binned->Fill(Total_Edep);
 

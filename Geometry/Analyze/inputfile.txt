@@ -1,1 +1,1 @@
-src_root_files/JPET_4layers_outer_old_vaccum.root
+src_root_files/JPET_4layers_outer_new_BGO_96tiles_vaccum.root

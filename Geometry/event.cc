@@ -45,14 +45,14 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   compt_total_edep=0;
   photo_total_edep=0;
   nCompt_Before_Photo = 0;
-  nOptPho = 0;
-  OptPho_PosX.clear();
-  OptPho_PosY.clear();
-  OptPho_PosZ.clear();
-  OptPho_Energy.clear();
-  OptPho_time.clear();
+  // nOptPho = 0;
+  // OptPho_PosX.clear();
+  // OptPho_PosY.clear();
+  // OptPho_PosZ.clear();
+  // OptPho_Energy.clear();
+  // OptPho_time.clear();
   
-  TrkOnDet = 0;
+  // TrkOnDet = 0;
 
   HitEdep_vec.clear();
   HitPosX_vec.clear();
@@ -61,6 +61,8 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitTime_vec.clear();
   HitDetId_vec.clear();
   HitTrkLen_vec.clear();
+  HitProcName_vec.clear();
+  HitScatAngle_vec.clear();
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
@@ -80,10 +82,10 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   }
   
 
-  for (G4int i =0; i < OptPho_PosZ.size(); i++){
-    if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-    }
-  }
+  // for (G4int i =0; i < OptPho_PosZ.size(); i++){
+  //   if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+  //   }
+  // }
 
   //****************Processing Hit collection on the Event*******************************
   // // Get hits collections IDs (only once)
@@ -139,6 +141,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitTime_vec.push_back(ScintHit->GetTime());
     HitDetId_vec.push_back(ScintHit->GetDetID());
     HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
+    HitProcName_vec.push_back(ScintHit->GetProcName());
+    HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
   }
 
   
@@ -162,22 +166,17 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->Total_E = fEdep;
   runObject->Total_Compt_Edep = compt_total_edep;
   runObject->Photo_Edep = Photo_edep[0];
-  runObject->nOpticalPhotons = nOptPho;
-  runObject->nOptPhoOnDetEnd = TrkOnDet;
-  runObject->Opt_Photon_PosX = OptPho_PosX;
-  runObject->Opt_Photon_PosY = OptPho_PosY;
-  runObject->Opt_Photon_PosZ = OptPho_PosZ;
-  runObject->Opt_Photon_Energy = OptPho_Energy;
-  runObject->Opt_Photon_Time = OptPho_time;
 
   //filling hit information
-  runObject->InHitEdep = HitEdep_vec;
-  runObject->InHitPosX = HitPosX_vec;
-  runObject->InHitPosY = HitPosY_vec;
-  runObject->InHitPosZ = HitPosZ_vec;
-  runObject->InHitTime = HitTime_vec;
-  runObject->InHitTrklen = HitTrkLen_vec;
-  runObject->InHitDetId = HitDetId_vec;
+  runObject->HitEdep = HitEdep_vec;
+  runObject->HitPosX = HitPosX_vec;
+  runObject->HitPosY = HitPosY_vec;
+  runObject->HitPosZ = HitPosZ_vec;
+  runObject->HitTime = HitTime_vec;
+  runObject->HitTrklen = HitTrkLen_vec;
+  runObject->HitDetId = HitDetId_vec;
+  runObject->HitProcName = HitProcName_vec;
+  runObject->HitScatAngle = HitScatAngle_vec;
   runObject->tree->Fill();
     
   ievent++;

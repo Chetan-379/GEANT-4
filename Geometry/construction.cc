@@ -50,6 +50,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 			       {48, 425.0 * mm},
 			       {48, 467.5 * mm},
 			       {96, 575.0 * mm}
+			       //{192, 575.0 * mm}
+			      
   };
 
   G4double phi_shift = 0;
@@ -104,7 +106,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	
     G4cout << "\n\nphi_shift: " << phi_shift << G4endl;
     if ( i==1) phi_shift =  phi_shift + (dPhi/2);
-    else if (i == 2) phi_shift = phi_shift + (dPhi/3); 
+    else if (i == 2) phi_shift = phi_shift + (dPhi/3);
+    //else if (i == 2) phi_shift = phi_shift + (dPhi/4); 
   }
 
   //   //Reading/writing GDML

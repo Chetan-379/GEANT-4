@@ -8,6 +8,7 @@
 #include "G4ThreeVector.hh"
 #include "G4VHit.hh"
 #include "globals.hh"
+#include "CLHEP/Units/PhysicalConstants.h"
 
 class CellHit : public G4VHit
 {
@@ -34,6 +35,7 @@ public:
   void SetDetectorID(G4int DetID);
   void SetTrackLength(G4double Trklen);
   void SetProcName(G4String procName);
+  void SetScatAngle(G4double theta);
     
   
   // get methods
@@ -43,6 +45,7 @@ public:
   G4double GetTime() const;
   G4int GetDetID() const;
   G4String GetProcName() const;
+  G4double GetScatAngle() const;
 
   
 private:
@@ -52,6 +55,7 @@ private:
   G4double fTime = 0;
   G4int detId = -1;
   G4String fProcName = " ";
+  G4double fScat = 10000.;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -114,6 +118,11 @@ inline G4int CellHit::GetDetID() const
 inline G4String CellHit::GetProcName() const
 {
   return fProcName;
+}
+
+inline G4double CellHit::GetScatAngle() const
+{
+  return fScat;
 }
 
 

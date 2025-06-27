@@ -4,6 +4,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
   fParticleGun = new G4ParticleGun(1);
   G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
   G4ThreeVector mom(1.5, 2.5, 0.);
+  //G4ThreeVector mom(1.55, 2.5, 0.);
   
   fParticleGun->SetParticlePosition(pos);
   fParticleGun->SetParticleMomentumDirection(mom);

@@ -60,15 +60,30 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double currentTime = step->GetPreStepPoint()->GetGlobalTime();
   G4double TrkLen = step->GetTrack()->GetTrackLength();
   G4int DetId = touchable->GetVolume()->GetCopyNo();
-  
+  G4double scat_theta = -1;
+  G4ThreeVector vin = step->GetPreStepPoint()->GetMomentumDirection();
+  G4ThreeVector vout = step->GetPostStepPoint()->GetMomentumDirection();
+
+  // G4ThreeVector vin = step->GetPreStepPoint()->GetMomentum();
+  // G4ThreeVector vout = step->GetPostStepPoint()->GetMomentum();
+
+  // G4cout << "vin mag" << vin.mag() << G4endl;
   if ((proc == "compt" || proc == "phot") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
-    G4cout << "Compton scattering point: " << compt_scat_point << G4endl;
+
+    G4cout << "\nCompton Scat point: " << compt_scat_point << G4endl;
+    G4cout << "pre step momDir: " << vin << G4endl;
+    G4cout << "post step momDir: " << vout << "\n\n";
+
+    if (proc == "compt") scat_theta = acos(vin.dot(vout));
+    
+    
     hit->SetPosition(compt_scat_point);
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
     hit->SetTrackLength(TrkLen);
     hit->SetProcName(proc);
+    hit->SetScatAngle(scat_theta);
 
     fHitsCollection->insert(hit);
   }

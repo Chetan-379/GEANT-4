@@ -68,17 +68,17 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   
   if (particleName == "opticalphoton" && processName != "Cerenkov")
     {
-      fEventAction -> nOptPho++;
-      fEventAction -> OptPho_PosX.push_back(TrkPos[0]);
-      fEventAction -> OptPho_PosY.push_back(TrkPos[1]);
-      fEventAction -> OptPho_PosZ.push_back(TrkPos[2]);
+      // fEventAction -> nOptPho++;
+      // fEventAction -> OptPho_PosX.push_back(TrkPos[0]);
+      // fEventAction -> OptPho_PosY.push_back(TrkPos[1]);
+      // fEventAction -> OptPho_PosZ.push_back(TrkPos[2]);
       
-      OptPho_Energy = track->GetKineticEnergy();
-      fEventAction ->OptPho_Energy.push_back(OptPho_Energy);
+      // OptPho_Energy = track->GetKineticEnergy();
+      // fEventAction ->OptPho_Energy.push_back(OptPho_Energy);
 
-      OptPhot_time = track->GetGlobalTime();
-      fEventAction ->OptPho_time.push_back(OptPhot_time);
-      if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
+      // OptPhot_time = track->GetGlobalTime();
+      // fEventAction ->OptPho_time.push_back(OptPhot_time);
+      // if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
     }
 }  
    

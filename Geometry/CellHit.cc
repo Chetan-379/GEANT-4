@@ -2,7 +2,8 @@
 #include "CellHit.hh"
 #include "G4UnitsTable.hh"
 #include <iomanip>
-
+// #include <cmath>
+// #include <numbers>
 
 G4ThreadLocal G4Allocator<CellHit>* CellHitAllocator = nullptr;
 
@@ -40,6 +41,11 @@ void CellHit::SetProcName(G4String procName)
   fProcName = procName;
 }
 
+void CellHit::SetScatAngle(G4double theta)
+{
+  fScat = theta;
+}
+
 
 void CellHit::Print()
 {
@@ -48,7 +54,8 @@ void CellHit::Print()
 	 << " position: " << std::setw(7) << G4BestUnit(fPosition, "Length")
 	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time")
 	 << " DetId: " << std::setw(7) << detId
-	 << " ProcessName: " << std::setw(7) << fProcName << G4endl;
+	 << " ProcessName: " << std::setw(7) << fProcName
+	 << "ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

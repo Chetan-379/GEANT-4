@@ -23,12 +23,14 @@ public:
   TTree *tree;
   std::vector<double> X, Y, Z, E;
   G4double Total_E, Total_Compt_Edep, Photo_Edep;
-  G4int nOpticalPhotons, nOptPhoOnDetEnd;
-  std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy, Opt_Photon_Time;
-  std::vector<G4double> InHitEdep, InHitTime, InHitTrklen;
+  //G4int nOpticalPhotons, nOptPhoOnDetEnd;
+  //std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy, Opt_Photon_Time;
+
+  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle;
   //std::vector<G4ThreeVector> InHitPos;
-  std::vector<G4double> InHitPosX, InHitPosY, InHitPosZ;
-  std::vector<G4int> InHitDetId;
+  std::vector<G4double> HitPosX, HitPosY, HitPosZ;
+  std::vector<G4int> HitDetId;
+  std::vector<G4String> HitProcName;
  
 private:
   

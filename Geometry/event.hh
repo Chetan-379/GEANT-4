@@ -42,8 +42,8 @@ public:
   void AddEdep(G4double edep) {fEdep += edep;}
 
   std::vector<G4double> Xarray, Yarray, Zarray, Earray;
-  std::vector<G4double> OptPho_PosX, OptPho_PosY, OptPho_PosZ, OptPho_Energy, OptPho_time;
-  G4int nOptPho, TrkOnDet;
+  // std::vector<G4double> OptPho_PosX, OptPho_PosY, OptPho_PosZ, OptPho_Energy, OptPho_time;
+  // G4int nOptPho, TrkOnDet;
   
 private:
   G4double fX;
@@ -59,9 +59,10 @@ private:
   G4int fOutStripHCID = -1;
   G4int fOuterMostStripHCID = -1;
 
-  std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec;
+  std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec, HitScatAngle_vec;
   std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
   std::vector<G4int> HitDetId_vec;
+  std::vector<G4String> HitProcName_vec;
 };
 
 #endif
