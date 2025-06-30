@@ -66,7 +66,7 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
-  // if (ievent == 54) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+  //if (ievent == 52) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
   // else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
 }
 
@@ -145,6 +145,11 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
   }
 
+  if (ievent == 160) {
+    G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+
+    
+  }
   
   // // Print per event (modulo n)
   // //

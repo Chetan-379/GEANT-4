@@ -51,8 +51,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
    int decade = 0;
    bool Debug=false;
    int Full_edep_evts = 0;
-   int Comp2_evts =0;
-  
+   int Comp2_evts = 0;
+   int nDiffAngle = 0, nHits = -1;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
       {
 	double progress = 10.0 * jentry / (1.0 * nentries);
@@ -74,50 +74,130 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	  // do something with tree branches here
 
+	
 	h_Compt_Edep-> Fill(Edep_Compt);
 	h_Photo_Edep-> Fill(Edep_Photo);
 	h_ComptVsPhoto_Edep->Fill(Edep_Compt, Edep_Photo);
 	h_Total_Edep-> Fill(Total_Edep);
 
+	nHits = Hit_Time->size();
+	h_nHits->Fill(nHits);
+
 	//ROOT::Math::XYZVector v_inc(0,0,0);
 	if(Hit_Time->size() >1) {
-	  cout << "\n============Event: " << jentry << endl;
+	  //cout << "\n============Event: " << jentry << endl;
 	  Comp2_evts++;
 
 	   ROOT::Math::XYZVector v_comp, vin, vout, v1, v2;
-	   double scat_cos_theta; 
-  
-	  for (int iHit=0 ; iHit< (Hit_Time->size()-1); iHit++){
+	   double scat_theta;
+
+	   //sorting the hits in the ascending order of time
+	   vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort;
+	   vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitScatAng_cpy;
+
+	   
+	   HitPosX_sort.clear(); HitPosY_sort.clear(); HitPosZ_sort.clear(); HitTime_sort.clear(), HitScatAng_sort.clear();
+	   HitPosX_cpy.clear(); HitPosY_cpy.clear(); HitPosZ_cpy.clear(); HitTime_cpy.clear(), HitScatAng_cpy.clear(); 
+	   
+	   //if (jentry == 159){
+	     HitPosX_cpy = *Hit_PositionX;
+	     HitPosY_cpy = *Hit_PositionY;
+	     HitPosZ_cpy = *Hit_PositionZ;
+	     HitTime_cpy = *Hit_Time;
+	     HitScatAng_cpy = *Hit_ScatAngle;
+	     
+	     for (int iHit=0 ; iHit< nHits; iHit++){                               	 
+	     auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
+	     size_t min_idx = std::distance(HitTime_cpy.begin(), min_id_ptr);
+
+	     //cout << "type max time: " << typeid(max_time).name() << endl;
+	     
+	     // cout << "min time: " << *min_id_ptr << endl;
+	     // cout << "min idx: " << min_idx << endl;
+
+	     HitPosX_sort.push_back(HitPosX_cpy[min_idx]);
+	     HitPosY_sort.push_back(HitPosY_cpy[min_idx]);
+	     HitPosZ_sort.push_back(HitPosZ_cpy[min_idx]);
+	     HitTime_sort.push_back(HitTime_cpy[min_idx]);
+	     HitScatAng_sort.push_back(HitScatAng_cpy[min_idx]);
+
+	     //cout << "original size of Hit vector: " << HitTime_cpy.size() << endl;
+	      HitTime_cpy.erase(HitTime_cpy.begin() + min_idx);
+	      HitPosX_cpy.erase(HitPosX_cpy.begin() + min_idx);
+	      HitPosY_cpy.erase(HitPosY_cpy.begin() + min_idx);
+	      HitPosZ_cpy.erase(HitPosZ_cpy.begin() + min_idx);
+	      HitScatAng_cpy.erase(HitScatAng_cpy.begin() + min_idx);
+	      //cout << "size after cutting: " << HitTime_cpy.size() << "\n\n";	     
+	     }
+
+	     // cout << "size of sorted vector: " << HitTime_sort.size() << endl;
+
+	     //if (jentry == 159)
+	     for (int i = 0; i< HitTime_sort.size(); i++){
+	     //for (int i = 0; i< nHits; i++){
+	       //cout << "\ntime: " << HitTime_sort[i] << endl;
+	       //cout << "Time( " << HitTime_sort[i] << "): " << HitPosX_sort[i] << ", " << HitPosY_sort[i] << ", " << HitPosZ_sort[i] << "\n\n";
+	     }
+	     //}
+      
+
+	   for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit
 	    v_comp.SetXYZ(0,0,0);
 	    vin.SetXYZ(0,0,0);
 	    vout.SetXYZ(0,0,0);
 	    v1.SetXYZ(0,0,0);
 	    v2.SetXYZ(0,0,0);
 
-	    v_comp.SetXYZ((*Hit_PositionX)[iHit], (*Hit_PositionY)[iHit], (*Hit_PositionZ)[iHit]);
+	    v_comp.SetXYZ(HitPosX_sort[iHit], HitPosY_sort[iHit], HitPosZ_sort[iHit]);
+	    //cout << "\n\nworking till here!!" << endl;
 
-	    if (jentry == 3) cout << "hit pos: (" << v_comp.X() << ", " << v_comp.Y() << ", " << v_comp.Z() << ")" << endl;
-	    
+	    if(iHit == 0) v1.SetXYZ(0,0,0);            //for first hit initial point will be gun postion
+	    else v1.SetXYZ(HitPosX_sort[iHit-1], HitPosY_sort[iHit-1], HitPosZ_sort[iHit-1]);
 
-	    if(iHit == 0) v1.SetXYZ(0,0,0);
-	    else v1.SetXYZ((*Hit_PositionX)[iHit-1], (*Hit_PositionY)[iHit], (*Hit_PositionZ)[iHit]);
-
-	    v2.SetXYZ((*Hit_PositionX)[iHit+1], (*Hit_PositionY)[iHit+1], (*Hit_PositionZ)[iHit+1]);
+	    v2.SetXYZ(HitPosX_sort[iHit+1], HitPosY_sort[iHit+1], HitPosZ_sort[iHit+1]);
 
 	    vin = v_comp - v1;
-	    vout = v_comp -v2;
+	    vout = v2 - v_comp;
 
-	    //cout << "vin: (" << vin.X() << ", " << vin.Y() << ", " << vin.Z() << ")" << endl;
-	    //cout << "Mag2: " << vin.R() << endl;
+	    scat_theta = acos(vin.Dot(vout)/(vin.R()*vout.R()));
+
+	   //  	    //cout << "vin: (" << vin.X() << ", " << vin.Y() << ", " << vin.Z() << ")" << endl;
+	   //  //cout << "Mag2: " << vin.R() << endl;
 	   	    
 	    //cout << "Hit Time: " << (*Hit_Time)[iHit] << endl;
 
-	    scat_cos_theta = vin.Dot(vout)/(vin.R()*vout.R());
-
-	    //cout << "scattering angle: " << acos(scat_cos_theta)*180.0 / TMath::Pi() << "\n\n";	    
 	    
-	  }
+	    double scat_theta_SD = HitScatAng_sort[iHit];
+	    double Ang_diff = scat_theta - scat_theta_SD;
+	    h_ScatAng_SDvsAna->Fill(scat_theta, scat_theta_SD);
+
+	    if (Ang_diff > 0.0001) nDiffAngle++;
+	    
+	    //if (abs(Ang_diff) > 0.5) cout << "EventID of diff angle: " << jentry << endl;
+	    
+	    h_diff_Ana_SD->Fill(Ang_diff);
+
+	    if (jentry == 159) {
+
+	      cout << "time(" << HitTime_sort[iHit] << "): " << HitPosX_sort[iHit] << ", " << HitPosY_sort[iHit] << ", " << HitPosZ_sort[iHit] << endl;
+	      // cout << "detID" << (*Hit_DetId)[iHit] << endl;
+	      cout << "Ana_theta: " << scat_theta*180.0 / TMath::Pi() << endl;
+	      cout << "step_theta: " << scat_theta_SD*180.0 / TMath::Pi() << endl;
+	      //cout << "v1: " << v1.X() << << endl;
+	      //cout << "v2:" << v2 << endl;
+	      cout << "v1: (" << v1.X() << ", " << v1.Y() << ", " << v1.Z() << ")" << endl;
+	      cout << "v2: (" << v2.X() << ", " << v2.Y() << ", " << v2.Z() << ")" << "\n\n";
+	      //cout << "Hit position Ana: (" << (*Hit_PositionX)[iHit] << ", " << (*Hit_PositionY)[iHit] << ", " << (*Hit_PositionZ)[iHit] << ")" << "\n\n";	
+	    }
+	 	    
+	    // cout << "scattering angle SD: " << scat_theta*180.0 / TMath::Pi() << endl;      
+	    // cout << "scattering angle Ana: " << scat_theta_SD*180.0 / TMath::Pi() << "\n\n";
+	   
+	   }   //end of iHit loop
+	   // if (HitTime_sort.size() != nHits) cout<< "\n\neaa...eaaa...eaaa" << endl;
 	}
+
+	
 	//optical photon analysis
 	//h_Total_Edep_fine_binned->Fill(Total_Edep);
 
@@ -156,9 +236,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	//if (jentry < 100)cout << "Edep: " << Total_Edep << endl;
 
 	// if()
+
 	
       } //jentry loop end
+
     cout << "events with 2 or more comps: " << Comp2_evts << endl;
+    cout << "no. of hits with non zero diff in theta are: " << nDiffAngle << endl; 
 
     //cout << "Events with full Edep: " << Full_edep_evts << endl;
     //cout << "total Integral is: " << h_Total_Edep->Integral() << endl;

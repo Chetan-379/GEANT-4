@@ -49,7 +49,7 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_PositionZ;
   vector<double>  *Hit_Time;
   vector<double>  *Hit_TrkLen;
-  vector<double>  *Hit_DetId;
+  vector<int>  *Hit_DetId;
   vector<string>  *Hit_ProcName;
   vector<double>  *Hit_ScatAngle;
   

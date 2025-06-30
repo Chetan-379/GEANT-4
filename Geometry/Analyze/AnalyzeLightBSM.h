@@ -35,12 +35,15 @@ class AnalyzeLightBSM : public NtupleVariables{
   //TH1F *h_selectBaselineYields_;
   TH1D *h_Compt_Edep, *h_Photo_Edep, *h_Total_Edep, *h_Total_Edep_fine_binned;
   TH2D *h_ComptVsPhoto_Edep;
-  TH1I *h_nOptPho, *h_OptPhoOnDet;
-  TH2D *h_nOptPho_Edep;
-  TH2I *h_nOptPhoOnDet_genOptPho;
-  TH1D *h_OptPho_lmbda;
-  TH1D *h_OptPho_time;
-  TH1D *h_OptPho_PosX, *h_OptPho_PosY, *h_OptPho_PosZ;
+  TH2D *h_ScatAng_SDvsAna;
+  TH1D *h_diff_Ana_SD;
+  TH1I *h_nHits;
+  // TH1I *h_nOptPho, *h_OptPhoOnDet;
+  // TH2D *h_nOptPho_Edep;
+  // TH2I *h_nOptPhoOnDet_genOptPho;
+  // TH1D *h_OptPho_lmbda;
+  // TH1D *h_OptPho_time;
+  // TH1D *h_OptPho_PosX, *h_OptPho_PosY, *h_OptPho_PosZ;
   //TH2F *h_OptPho_XvsY;
   //TH1I h_nOptPho;
   TFile *oFile;
@@ -74,10 +77,19 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_ComptVsPhoto_Edep->SetYTitle("PhotoElectric_Edep");
 
   h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,1.1);
+
+  h_ScatAng_SDvsAna = new TH2D("ScatAng_SDvsAna","ScatAng_SDvsAna",316,0.,3.16, 316,0.,3.16);
+  h_ScatAng_SDvsAna->SetXTitle("Theta_Ana(rad)");
+  h_ScatAng_SDvsAna->SetYTitle("Theta_SD(rad)");
+
+  h_nHits = new TH1I("nHits", "nHits", 15, 0, 15);
+  h_diff_Ana_SD = new TH1D("diff_Ana_SD","diff_Ana_SD",632,-3.16,3.16);
+  
+  
   //h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
   //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 35000, 0, 35000);
-  h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 67000, 0, 67000);
+  //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 67000, 0, 67000);
   //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 250, 0, 250);
 
   // h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
@@ -90,14 +102,14 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   // h_nOptPhoOnDet_genOptPho -> SetXTitle("nOptPhotOnDet");
   // h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
 
-  h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",2000,0,2000);
+  //h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",2000,0,2000);
   
   //h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
-  h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
+  //h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
 
-  h_OptPho_PosX = new TH1D("OptPho_PosX", "OptPho_PosX",400,-200,200);
-  h_OptPho_PosY = new TH1D("OptPho_PosY", "OptPho_PosY",400,-200,200);
-  h_OptPho_PosZ = new TH1D("OptPho_PosZ", "OptPho_PosZ",600,-300,300);
+  // h_OptPho_PosX = new TH1D("OptPho_PosX", "OptPho_PosX",400,-200,200);
+  // h_OptPho_PosY = new TH1D("OptPho_PosY", "OptPho_PosY",400,-200,200);
+  // h_OptPho_PosZ = new TH1D("OptPho_PosZ", "OptPho_PosZ",600,-300,300);
   
   // h_OptPho_XvsY = new TH2F("OptPho_XvsY", "OptPho_XvsY",400, -200, 200, 400, -200, 200);
   // h_OptPho_XvsY->SetXTitle("PosX");
