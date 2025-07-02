@@ -4,3 +4,10 @@ Following are the main changes made in Analyzer while debugging:
 - sorting hits array in time.
 - including rayl scat also for registering the hits. though it is not possible in reality.  
 - will need to reject those events for polarisation study.
+
+
+
+=======To run the simulation:
+- `mkdir build`
+- `cmkae ..`
+- `./test`
