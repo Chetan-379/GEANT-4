@@ -31,17 +31,25 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
   // step length
   G4double stepLength = 0.;
+  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+  G4int procId;
+
+  //assigning variables to the processes
+  if (proc == "Rayl") procId = 0;
+  if (proc == "phot") procId = 1;
+  if (proc == "compt") procId = 2;
 
   if (step->GetTrack()->GetDefinition()->GetPDGCharge() != 0.) {
     stepLength = step->GetStepLength();
   }
 
-  if (edep == 0. && stepLength == 0.) return false;
+  if (edep == 0. && stepLength == 0. && proc != "Rayl") return false;
+  //if (stepLength == 0) return false;
 
   auto touchable = (step->GetPreStepPoint()->GetTouchable());
 
   //getting the position of compton scattering point
-  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+  //G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
   G4ThreeVector compt_scat_point;
   G4int ParentID = step->GetTrack()->GetParentID();
   
@@ -68,21 +76,20 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   // G4ThreeVector vout = step->GetPostStepPoint()->GetMomentum();
 
   // G4cout << "vin mag" << vin.mag() << G4endl;
-  if ((proc == "compt" || proc == "phot") && ParentID == 0) {
+  if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
 
     G4cout << "\nCompton Scat point: " << compt_scat_point << G4endl;
     G4cout << "pre step momDir: " << vin << G4endl;
     G4cout << "post step momDir: " << vout << "\n\n";
 
-    if (proc == "compt") scat_theta = acos(vin.dot(vout));
-    
-    
+    if (proc == "compt" || "Rayl") scat_theta = acos(vin.dot(vout));    
     hit->SetPosition(compt_scat_point);
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
     hit->SetTrackLength(TrkLen);
     hit->SetProcName(proc);
+    hit->SetProcId(procId);
     hit->SetScatAngle(scat_theta);
 
     fHitsCollection->insert(hit);

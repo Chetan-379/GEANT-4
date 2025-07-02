@@ -29,7 +29,7 @@ public:
   std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle;
   //std::vector<G4ThreeVector> InHitPos;
   std::vector<G4double> HitPosX, HitPosY, HitPosZ;
-  std::vector<G4int> HitDetId;
+  std::vector<G4int> HitDetId, HitProcId;
   std::vector<G4String> HitProcName;
  
 private:

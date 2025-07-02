@@ -49,8 +49,9 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_PositionZ;
   vector<double>  *Hit_Time;
   vector<double>  *Hit_TrkLen;
-  vector<int>  *Hit_DetId;
+  vector<int>     *Hit_DetId;
   vector<string>  *Hit_ProcName;
+  vector<int>  *Hit_ProcId;
   vector<double>  *Hit_ScatAngle;
   
    // List of branches
@@ -75,6 +76,7 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Hit_TrkLen;
   TBranch         *b_Hit_DetId;
   TBranch         *b_Hit_ProcName;
+  TBranch         *b_Hit_ProcId;
   TBranch         *b_Hit_ScatAngle;
   
   
@@ -129,6 +131,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    Hit_Time = 0;
    Hit_TrkLen = 0;
    Hit_DetId = 0;
+   //Hit_ProcName = 0;
    Hit_ProcName = 0;
    Hit_ScatAngle =0;
    
@@ -159,6 +162,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Hit_TrkLen", &Hit_TrkLen, &b_Hit_TrkLen);
    fChain->SetBranchAddress("Hit_DetId", &Hit_DetId, &b_Hit_DetId);
    fChain->SetBranchAddress("Hit_ProcName", &Hit_ProcName, &b_Hit_ProcName);
+   fChain->SetBranchAddress("Hit_ProcId", &Hit_ProcId, &b_Hit_ProcId);
    fChain->SetBranchAddress("Hit_ScatAngle", &Hit_ScatAngle, &b_Hit_ScatAngle);
 
    Notify();

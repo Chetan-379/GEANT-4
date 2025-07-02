@@ -41,6 +41,11 @@ void CellHit::SetProcName(G4String procName)
   fProcName = procName;
 }
 
+void CellHit::SetProcId(G4int procId)
+{
+  fProcId = procId;
+}
+
 void CellHit::SetScatAngle(G4double theta)
 {
   fScat = theta;

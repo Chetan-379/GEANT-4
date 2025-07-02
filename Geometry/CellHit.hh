@@ -35,6 +35,7 @@ public:
   void SetDetectorID(G4int DetID);
   void SetTrackLength(G4double Trklen);
   void SetProcName(G4String procName);
+  void SetProcId(G4int procId);
   void SetScatAngle(G4double theta);
     
   
@@ -45,6 +46,7 @@ public:
   G4double GetTime() const;
   G4int GetDetID() const;
   G4String GetProcName() const;
+  G4int GetProcId() const;
   G4double GetScatAngle() const;
 
   
@@ -55,6 +57,7 @@ private:
   G4double fTime = 0;
   G4int detId = -1;
   G4String fProcName = " ";
+  G4int fProcId = -1;
   G4double fScat = 10000.;
 };
 
@@ -118,6 +121,11 @@ inline G4int CellHit::GetDetID() const
 inline G4String CellHit::GetProcName() const
 {
   return fProcName;
+}
+
+inline G4int CellHit::GetProcId() const
+{
+  return fProcId;
 }
 
 inline G4double CellHit::GetScatAngle() const

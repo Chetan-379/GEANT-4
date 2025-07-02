@@ -52,7 +52,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
    bool Debug=false;
    int Full_edep_evts = 0;
    int Comp2_evts = 0;
-   int nDiffAngle = 0, nHits = -1;
+   int nDiffAngle = 0, nHits = -1, nRayl = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
       {
 	double progress = 10.0 * jentry / (1.0 * nentries);
@@ -135,13 +135,19 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	     //if (jentry == 159)
 	     for (int i = 0; i< HitTime_sort.size(); i++){
 	     //for (int i = 0; i< nHits; i++){
-	       //cout << "\ntime: " << HitTime_sort[i] << endl;
-	       //cout << "Time( " << HitTime_sort[i] << "): " << HitPosX_sort[i] << ", " << HitPosY_sort[i] << ", " << HitPosZ_sort[i] << "\n\n";
+	      //cout << "\ntime: " << HitTime_sort[i] << endl;
+	       //if (jentry == 195) cout << "Time( " << HitTime_sort[i] << "): " << HitPosX_sort[i] << ", " << HitPosY_sort[i] << ", " << HitPosZ_sort[i] << "\n\n"
+	       if ((*Hit_ProcId)[i] == 0) { nRayl++; break;}    //procId 0 for rayleigh
+	       //cout << "proc ID : " << (*Hit_ProcId)[i] << endl;
 	     }
 	     //}
+
+	     //counting the number of events with atleast one rayl
+	     // for (int i =0; i < HitTime_sort.size(); i++)
+	     //   {if ((*Hit_ProcName)[iHit])
       
 
-	   for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit
+	   for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit	     
 	    v_comp.SetXYZ(0,0,0);
 	    vin.SetXYZ(0,0,0);
 	    vout.SetXYZ(0,0,0);
@@ -171,22 +177,27 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    double Ang_diff = scat_theta - scat_theta_SD;
 	    h_ScatAng_SDvsAna->Fill(scat_theta, scat_theta_SD);
 
-	    if (Ang_diff > 0.0001) nDiffAngle++;
+	    if (Ang_diff > 0.0001) {
+	      nDiffAngle++;
+	      cout << "spurious event: " << jentry+1 << endl;
+	    }
 	    
 	    //if (abs(Ang_diff) > 0.5) cout << "EventID of diff angle: " << jentry << endl;
 	    
 	    h_diff_Ana_SD->Fill(Ang_diff);
 
-	    if (jentry == 159) {
+	    if (jentry == 195) {
 
-	      cout << "time(" << HitTime_sort[iHit] << "): " << HitPosX_sort[iHit] << ", " << HitPosY_sort[iHit] << ", " << HitPosZ_sort[iHit] << endl;
+	      cout << "\ntime(" << HitTime_sort[iHit] << "): " << HitPosX_sort[iHit] << ", " << HitPosY_sort[iHit] << ", " << HitPosZ_sort[iHit] << endl;
 	      // cout << "detID" << (*Hit_DetId)[iHit] << endl;
 	      cout << "Ana_theta: " << scat_theta*180.0 / TMath::Pi() << endl;
 	      cout << "step_theta: " << scat_theta_SD*180.0 / TMath::Pi() << endl;
 	      //cout << "v1: " << v1.X() << << endl;
 	      //cout << "v2:" << v2 << endl;
 	      cout << "v1: (" << v1.X() << ", " << v1.Y() << ", " << v1.Z() << ")" << endl;
-	      cout << "v2: (" << v2.X() << ", " << v2.Y() << ", " << v2.Z() << ")" << "\n\n";
+	      cout << "v2: (" << v2.X() << ", " << v2.Y() << ", " << v2.Z() << ")" << endl;
+	      cout << "vin: (" << vin.X() << ", " << vin.Y() << ", " << vin.Z() << ")" << endl;
+	      cout << "vout: (" << vout.X() << ", " << vout.Y() << ", " << vout.Z() << ")" << "\n\n";
 	      //cout << "Hit position Ana: (" << (*Hit_PositionX)[iHit] << ", " << (*Hit_PositionY)[iHit] << ", " << (*Hit_PositionZ)[iHit] << ")" << "\n\n";	
 	    }
 	 	    
@@ -241,7 +252,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       } //jentry loop end
 
     cout << "events with 2 or more comps: " << Comp2_evts << endl;
-    cout << "no. of hits with non zero diff in theta are: " << nDiffAngle << endl; 
+    cout << "no. of hits with non zero diff in theta are: " << nDiffAngle << endl;
+    cout << "no. of events with atleast one rayleigh: " << nRayl << endl;
 
     //cout << "Events with full Edep: " << Full_edep_evts << endl;
     //cout << "total Integral is: " << h_Total_Edep->Integral() << endl;

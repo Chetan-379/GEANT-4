@@ -62,11 +62,12 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitDetId_vec.clear();
   HitTrkLen_vec.clear();
   HitProcName_vec.clear();
+  HitProcId_vec.clear();
   HitScatAngle_vec.clear();
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
-  //if (ievent == 52) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+  //if (ievent == 196) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
   // else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
 }
 
@@ -142,13 +143,12 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitDetId_vec.push_back(ScintHit->GetDetID());
     HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
     HitProcName_vec.push_back(ScintHit->GetProcName());
+    HitProcId_vec.push_back(ScintHit->GetProcId());
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
   }
 
-  if (ievent == 160) {
-    G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-
-    
+  if (ievent == 196) {
+    G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
   }
   
   // // Print per event (modulo n)
@@ -181,6 +181,7 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitTrklen = HitTrkLen_vec;
   runObject->HitDetId = HitDetId_vec;
   runObject->HitProcName = HitProcName_vec;
+  runObject->HitProcId = HitProcId_vec;
   runObject->HitScatAngle = HitScatAngle_vec;
   runObject->tree->Fill();
     
