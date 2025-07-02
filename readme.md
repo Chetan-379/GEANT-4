@@ -1,4 +1,6 @@
--In this version mainly the Hit machinery is modified. Following are the changes made:
-- fixed the bug of overwriting the hits in the hit collection.
-- Instead of storing the hits of all SD, Hits of only relavant SD is stored. (only compton scattering need to include photo electric also)
-- Merging the hits of SDs corresponding to different logical volumes in a single hit collection.
+In this version, working machinery for calculating scattering angle from Compton/Rayleigh scattering is included.
+
+Following are the main changes made in Analyzer while debugging:
+- sorting hits array in time.
+- including rayl scat also for registering the hits. though it is not possible in reality.  
+- will need to reject those events for polarisation study.
