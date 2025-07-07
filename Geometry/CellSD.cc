@@ -71,19 +71,35 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double scat_theta = -1;
   G4ThreeVector vin = step->GetPreStepPoint()->GetMomentumDirection();
   G4ThreeVector vout = step->GetPostStepPoint()->GetMomentumDirection();
-
+  G4double eta = 10000;
+  
   // G4ThreeVector vin = step->GetPreStepPoint()->GetMomentum();
   // G4ThreeVector vout = step->GetPostStepPoint()->GetMomentum();
 
   // G4cout << "vin mag" << vin.mag() << G4endl;
+
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
 
     G4cout << "\nCompton Scat point: " << compt_scat_point << G4endl;
     G4cout << "pre step momDir: " << vin << G4endl;
-    G4cout << "post step momDir: " << vout << "\n\n";
+    G4cout << "post step momDir: " << vout << G4endl;
 
-    if (proc == "compt" || "Rayl") scat_theta = acos(vin.dot(vout));    
+    if (proc != "phot") {scat_theta = acos(vin.dot(vout));
+      auto prePol = step->GetPreStepPoint()->GetPolarization();
+      auto postPol = step->GetPostStepPoint()->GetPolarization();
+
+    G4cout << "polarisation before scattering: " << prePol << G4endl;
+    G4cout << "polarisation after scattering: " << postPol << "\n\n";
+
+    auto scatPlane = vin.cross(vout);
+    auto polPlane = vin.cross(prePol);
+    
+    eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
+
+    //G4cout << "\n\neta is: " << eta << G4endl;
+    }
+    
     hit->SetPosition(compt_scat_point);
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
@@ -91,8 +107,14 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetProcName(proc);
     hit->SetProcId(procId);
     hit->SetScatAngle(scat_theta);
+    hit->SetEta(eta);
 
     fHitsCollection->insert(hit);
+
+    //getting the polarisation of the photon after different compton scattering:
+
+    
+    
   }
   
   return true;

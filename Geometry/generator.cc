@@ -8,8 +8,10 @@ MyPrimaryGenerator::MyPrimaryGenerator()
   
   fParticleGun->SetParticlePosition(pos);
   fParticleGun->SetParticleMomentumDirection(mom);
-  //fParticleGun->SetParticleMomentum(0.5*MeV);
-  fParticleGun->SetParticleMomentum(511*keV);   
+  fParticleGun->SetParticleMomentum(511*keV);
+  //fParticleGun->SetParticlePolarization(G4ThreeVector(0,0,1));
+  fParticleGun->SetParticlePolarization(G4ThreeVector(0,0,1));
+
 }
 
 MyPrimaryGenerator::~MyPrimaryGenerator()
@@ -25,4 +27,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     
     fParticleGun->SetParticleDefinition(particle);  
     fParticleGun->GeneratePrimaryVertex(anEvent);
+
+    auto pol = fParticleGun->GetParticlePolarization();
+    G4cout << "\n\npolarisation of the photons: " << pol << G4endl;
 }

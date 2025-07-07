@@ -51,6 +51,11 @@ void CellHit::SetScatAngle(G4double theta)
   fScat = theta;
 }
 
+void CellHit::SetEta(G4double eta)
+{
+  fEta = eta;
+}
+
 
 void CellHit::Print()
 {
@@ -60,7 +65,9 @@ void CellHit::Print()
 	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time")
 	 << " DetId: " << std::setw(7) << detId
 	 << " ProcessName: " << std::setw(7) << fProcName
-	 << "ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << G4endl;
+	 << "ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi)
+	 << "eta: " << std::setw(7) << fEta << G4endl;
+    //<< "eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

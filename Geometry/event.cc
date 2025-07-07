@@ -61,9 +61,10 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitTime_vec.clear();
   HitDetId_vec.clear();
   HitTrkLen_vec.clear();
-  HitProcName_vec.clear();
+  //HitProcName_vec.clear();
   HitProcId_vec.clear();
   HitScatAngle_vec.clear();
+  HitEta_vec.clear();
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
@@ -142,14 +143,15 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitTime_vec.push_back(ScintHit->GetTime());
     HitDetId_vec.push_back(ScintHit->GetDetID());
     HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
-    HitProcName_vec.push_back(ScintHit->GetProcName());
+    //HitProcName_vec.push_back(ScintHit->GetProcName());
     HitProcId_vec.push_back(ScintHit->GetProcId());
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
+    HitEta_vec.push_back(ScintHit->GetEta());
   }
 
-  if (ievent == 196) {
-    G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
-  }
+  // if (ievent == 196) {
+  //   G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
+  // }
   
   // // Print per event (modulo n)
   // //
@@ -180,9 +182,11 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitTime = HitTime_vec;
   runObject->HitTrklen = HitTrkLen_vec;
   runObject->HitDetId = HitDetId_vec;
-  runObject->HitProcName = HitProcName_vec;
+  //runObject->HitProcName = HitProcName_vec;
   runObject->HitProcId = HitProcId_vec;
   runObject->HitScatAngle = HitScatAngle_vec;
+  runObject->HitEta = HitEta_vec;
+
   runObject->tree->Fill();
     
   ievent++;

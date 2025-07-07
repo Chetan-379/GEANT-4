@@ -26,11 +26,11 @@ public:
   //G4int nOpticalPhotons, nOptPhoOnDetEnd;
   //std::vector<G4double> Opt_Photon_PosX, Opt_Photon_PosY, Opt_Photon_PosZ, Opt_Photon_Energy, Opt_Photon_Time;
 
-  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle;
+  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle, HitEta;
   //std::vector<G4ThreeVector> InHitPos;
   std::vector<G4double> HitPosX, HitPosY, HitPosZ;
   std::vector<G4int> HitDetId, HitProcId;
-  std::vector<G4String> HitProcName;
+  //std::vector<G4String> HitProcName;
  
 private:
   

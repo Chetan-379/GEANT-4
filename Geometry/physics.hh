@@ -8,6 +8,7 @@
 #include "G4OpticalPhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4DecayPhysics.hh"
+#include "G4EmLivermorePolarizedPhysics.hh"
 
 class MyPhysicsList : public G4VModularPhysicsList
 {

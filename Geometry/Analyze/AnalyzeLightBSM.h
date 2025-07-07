@@ -32,22 +32,16 @@ class AnalyzeLightBSM : public NtupleVariables{
   void print(Long64_t);
 
   //define histograms here
-  //TH1F *h_selectBaselineYields_;
   TH1D *h_Compt_Edep, *h_Photo_Edep, *h_Total_Edep, *h_Total_Edep_fine_binned;
   TH2D *h_ComptVsPhoto_Edep;
   TH2D *h_ScatAng_SDvsAna;
   TH1D *h_diff_Ana_SD;
   TH1I *h_nHits;
-  // TH1I *h_nOptPho, *h_OptPhoOnDet;
-  // TH2D *h_nOptPho_Edep;
-  // TH2I *h_nOptPhoOnDet_genOptPho;
-  // TH1D *h_OptPho_lmbda;
-  // TH1D *h_OptPho_time;
-  // TH1D *h_OptPho_PosX, *h_OptPho_PosY, *h_OptPho_PosZ;
-  //TH2F *h_OptPho_XvsY;
-  //TH1I h_nOptPho;
+  TH1D *h_compSigEta;
+  TH1D *h_theta, *h_eta;
+  TH2D *h_theta_eta;
+
   TFile *oFile;
-  /* TH1F *h_events; */
 };
 #endif
 
@@ -84,8 +78,23 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
   h_nHits = new TH1I("nHits", "nHits", 15, 0, 15);
   h_diff_Ana_SD = new TH1D("diff_Ana_SD","diff_Ana_SD",632,-3.16,3.16);
+
+  h_theta = new TH1D("scat_theta", "scat_theta", 200,-200, 200);
+  h_theta->GetXaxis()->SetTitle("theta (deg)");
   
-  
+  h_eta = new TH1D("pol_scat_eta", "pol_scat_eta", 200, -200, 200);
+  h_eta->GetXaxis()->SetTitle("eta (deg)");
+
+  h_compSigEta = new TH1D("Eta_compSig", "Eta_compSig",200,-200,200);
+  h_compSigEta->GetXaxis()->SetTitle("eta (deg)");
+
+  h_theta_eta = new TH2D("ThetaVsEta", "ThetaVsEta", 2000, -200, 200, 2000, -200, 200);
+  h_theta_eta->GetXaxis()->SetTitle("eta (deg)");
+  h_theta_eta->GetYaxis()->SetTitle("theta (deg)");
+ 
+
+
+
   //h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
 
   //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 35000, 0, 35000);
@@ -175,7 +184,8 @@ Long64_t AnalyzeLightBSM::LoadTree(Long64_t entry) {
 
 AnalyzeLightBSM::~AnalyzeLightBSM() { 
 
-  if (!fChain) return;
+  if (!fChain) {
+    return;}
   delete fChain->GetCurrentFile();
   oFile->cd();
   oFile->Write();

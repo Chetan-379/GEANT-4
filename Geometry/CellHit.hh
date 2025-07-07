@@ -37,6 +37,7 @@ public:
   void SetProcName(G4String procName);
   void SetProcId(G4int procId);
   void SetScatAngle(G4double theta);
+  void SetEta(G4double eta);
     
   
   // get methods
@@ -48,6 +49,7 @@ public:
   G4String GetProcName() const;
   G4int GetProcId() const;
   G4double GetScatAngle() const;
+  G4double GetEta() const;
 
   
 private:
@@ -59,6 +61,7 @@ private:
   G4String fProcName = " ";
   G4int fProcId = -1;
   G4double fScat = 10000.;
+  G4double fEta = 10000.;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -131,6 +134,11 @@ inline G4int CellHit::GetProcId() const
 inline G4double CellHit::GetScatAngle() const
 {
   return fScat;
+}
+
+inline G4double CellHit::GetEta() const
+{
+  return fEta;
 }
 
 
