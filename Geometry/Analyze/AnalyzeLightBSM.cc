@@ -85,7 +85,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_Total_Edep-> Fill(Total_Edep);
 
 	nHits = Hit_Time->size();
-	h_nHits->Fill(nHits);
+	//h_nHits->Fill(nHits);
 
 	//ROOT::Math::XYZVector v_inc(0,0,0);
 	if(Hit_Time->size() >1) {
@@ -142,12 +142,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	     }
 
 	     //counting the events with atleast one rayleigh
-	     for (int i = 0; i< HitTime_sort.size(); i++){
+	     for (int i = 0; i< HitTime_sort.size(); i++){	     
 	       if ((*Hit_ProcId)[i] == 0) { nRayl++; break;}    //procId 0 for rayleigh
 	     }      
 
-	   for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit
-	     
+	     // for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit
+	     for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit  
 	    v_comp.SetXYZ(0,0,0);
 	    vin.SetXYZ(0,0,0);
 	    vout.SetXYZ(0,0,0);
@@ -192,11 +192,15 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 		h_eta->Fill(EtaPolScat_deg);
 		h_theta_eta->Fill(EtaPolScat_deg, scat_theta_deg);
 		
-		if(scat_theta_deg > 50 && scat_theta_deg < 100) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
+		if(scat_theta_deg > 50 && scat_theta_deg < 95) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
 	      }	
-	     
+
+	    //if (jentry == 9999 || jentry == 9991 || jentry == 9988 || jentry == 9987 || jentry == 9986) cout << "first HitTime of event " <<  jentry+1 << ": " <<  HitTime_sort[iHit] << endl;
 	   }   //end of iHit loop
+
+	     //cout << jentry << endl;
 	}      // nHit >1 condition brkt end
+	
 	
 	
       } //jentry loop end

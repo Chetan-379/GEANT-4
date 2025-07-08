@@ -94,8 +94,29 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
     auto scatPlane = vin.cross(vout);
     auto polPlane = vin.cross(prePol);
+    //autoq polPlane = vin;
+
     
-    eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
+    //auto prfY = G4PolarizationHelper::GetParticleFrameY(vin);
+    auto prfY = G4PolarizationHelper::GetParticleFrameY(vin);
+    auto prfX = G4PolarizationHelper::GetParticleFrameX(vin);
+
+    //G4cout << "dot of vin with pol: " << vin.dot(prf) << "\n\n";
+
+    //G4PolarizationHelper::TestPolarizationTransformations();
+    //auto post_prf = G
+
+    G4cout << "\nvin: " << vin << "\n";
+    G4cout << "PRF_Xaxis:" << prfX << "\n";
+    G4cout << "PRF_Yaxis:" << prfY << "\n";
+    
+    //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
+    auto vinPol_Angle = vin.dot(prfY);
+
+    // if (vinPol_Angle > 0.000001) G4cout << "\n\n\n=============================ALERT!!==================" << G4endl;
+
+    G4cout << "\nvin.prfY: " << vinPol_Angle << G4endl;
+    eta = acos((scatPlane.dot(prfY))/(scatPlane.mag()*prfY.mag()));
 
     //G4cout << "\n\neta is: " << eta << G4endl;
     }
