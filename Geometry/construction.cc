@@ -110,6 +110,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //else if (i == 2) phi_shift = phi_shift + (dPhi/4); 
   }
 
+  // G4cout << "\n\n polarisation of StripSD: " << logicStrip->GetPolarization() << G4endl;
+  // G4cout << "\n\n polarisation of inStripSD: " << logicInStrip->GetPolarization() << G4endl;
+  // G4cout << "\n\n polarisation of outerMosttripSD: " << logicOuterMostStrip->GetPolarization() << G4endl;
   //   //Reading/writing GDML
   //G4GDMLParser parser;
   //parser.Write("JPET_Geometry.gdml", physWorld);
@@ -141,6 +144,14 @@ void MyDetectorConstruction::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(OuterMostStripSD);
   SetSensitiveDetector("OuterMostStripLV", OuterMostStripSD);
   OuterMostStripSD->SetVerboseLevel(2);
+
+  // //setting the logical volume to be unpolarised
+  // G4PolarizationManager* polMgr = G4PolarizationManager::GetInstance();
+  // polMgr->SetVolumePolarization(logicStrip, G4ThreeVector(0., 0., 0.));
+  // polMgr->SetVolumePolarization(logicInStrip, G4ThreeVector(0., 0., 0.));
+  // polMgr->SetVolumePolarization(logicOuterMostStrip, G4ThreeVector(0., 0., 0.));
+
+
   
   //
   // Magnetic field

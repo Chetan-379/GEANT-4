@@ -8,6 +8,7 @@
 #include "G4SDManager.hh"
 #include "G4VProcess.hh"
 #include "G4PolarizationHelper.hh"
+#include "G4StokesVector.hh"
 #include "globals.hh"
 
 class G4Step;

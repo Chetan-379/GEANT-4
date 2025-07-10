@@ -60,7 +60,7 @@ private:
   G4int fOuterMostStripHCID = -1;
 
   std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec, HitScatAngle_vec, HitEta_vec;
-  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
+  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec, HitPol0_vec, HitPol1_vec, HitPol2_vec;
   std::vector<G4int> HitDetId_vec, HitProcId_vec;
   //std::vector<G4String> HitProcName_vec;
 };

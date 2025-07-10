@@ -36,6 +36,9 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Hit_ProcId", &HitProcId);
   tree->Branch("Hit_ScatAngle", &HitScatAngle);
   tree->Branch("Hit_Eta", &HitEta);
+  tree->Branch("Hit_Pol0", &HitPol0);
+  tree->Branch("Hit_Pol1", &HitPol1);
+  tree->Branch("Hit_Pol2", &HitPol2);
 
   hfile = hfile = TFile::Open("test.root","RECREATE");
 }

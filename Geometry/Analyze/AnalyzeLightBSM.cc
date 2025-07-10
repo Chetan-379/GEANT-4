@@ -95,13 +95,32 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	   ROOT::Math::XYZVector v_comp, vin, vout, v1, v2;
 
 	   //sorting the hits in the ascending order of time
-	   vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort;
-	   vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitScatAng_cpy, HitEta_cpy;
+	   vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, HitPol0_sort, HitPol1_sort, HitPol2_sort;
+	   vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitScatAng_cpy, HitEta_cpy, HitPol0_cpy, HitPol1_cpy, HitPol2_cpy;
 	   vector <int> HitProcId_sort;
 	   vector<int> HitProcId_cpy;
 	   
-	   HitPosX_sort.clear(); HitPosY_sort.clear(); HitPosZ_sort.clear(); HitTime_sort.clear(), HitScatAng_sort.clear(), HitEta_sort.clear(), HitProcId_sort.clear();
-	   HitPosX_cpy.clear(); HitPosY_cpy.clear(); HitPosZ_cpy.clear(); HitTime_cpy.clear(), HitScatAng_cpy.clear(), HitEta_cpy.clear(), HitProcId_cpy.clear(); 
+	   HitPosX_sort.clear();
+	   HitPosY_sort.clear();
+	   HitPosZ_sort.clear();
+	   HitTime_sort.clear();
+	   HitScatAng_sort.clear();
+	   HitEta_sort.clear();
+	   HitProcId_sort.clear();
+	   HitPol0_sort.clear();
+	   HitPol1_sort.clear();
+	   HitPol2_sort.clear();
+	   
+	   HitPosX_cpy.clear();
+	   HitPosY_cpy.clear();
+	   HitPosZ_cpy.clear();
+	   HitTime_cpy.clear();
+	   HitScatAng_cpy.clear();
+	   HitEta_cpy.clear();
+	   HitProcId_cpy.clear();
+	   HitPol0_cpy.clear();
+	   HitPol1_cpy.clear();
+	   HitPol2_cpy.clear();
 	   
 	   //if (jentry == 159){
 	     HitPosX_cpy = *Hit_PositionX;
@@ -111,6 +130,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	     HitScatAng_cpy = *Hit_ScatAngle;
 	     HitEta_cpy = *Hit_Eta;
 	     HitProcId_cpy = *Hit_ProcId;
+	     HitPol0_cpy = *Hit_Pol0;
+	     HitPol1_cpy = *Hit_Pol1;
+	     HitPol2_cpy = *Hit_Pol2;
 	     
 	     for (int iHit=0 ; iHit< nHits; iHit++){                               	 
 	     auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
@@ -128,6 +150,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	     HitScatAng_sort.push_back(HitScatAng_cpy[min_idx]);
 	     HitEta_sort.push_back(HitEta_cpy[min_idx]);
 	     HitProcId_sort.push_back(HitProcId_cpy[min_idx]);
+	     HitPol0_sort.push_back(HitPol0_cpy[min_idx]);
+	     HitPol1_sort.push_back(HitPol1_cpy[min_idx]);
+	     HitPol2_sort.push_back(HitPol2_cpy[min_idx]);
+	     
 
 	     //cout << "original size of Hit vector: " << HitTime_cpy.size() << endl;
 	      HitTime_cpy.erase(HitTime_cpy.begin() + min_idx);
@@ -137,6 +163,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	      HitScatAng_cpy.erase(HitScatAng_cpy.begin() + min_idx);
 	      HitEta_cpy.erase(HitEta_cpy.begin() + min_idx);
 	      HitProcId_cpy.erase(HitProcId_cpy.begin() + min_idx);
+	      HitPol0_cpy.erase(HitPol0_cpy.begin() + min_idx);
+	      HitPol1_cpy.erase(HitPol1_cpy.begin() + min_idx);
+	      HitPol2_cpy.erase(HitPol2_cpy.begin() + min_idx);
 	      
 	      //cout << "size after cutting: " << HitTime_cpy.size() << "\n\n";	     
 	     }
@@ -180,7 +209,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    double EtaPolScat = HitEta_sort[iHit];
 	    double EtaPolScat_deg = EtaPolScat*180.0 / TMath::Pi();
 	    int procId = HitProcId_sort[iHit];
-	    
+
+	    float Pol0 = HitPol0_sort[iHit];
+	    float Pol1 = HitPol1_sort[iHit];
+	    float Pol2 = HitPol2_sort[iHit];	    
 	    
 	    //if (abs(Ang_diff) > 0.5) cout << "EventID of diff angle: " << jentry << endl;
 	    
@@ -191,18 +223,19 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	        h_theta->Fill(scat_theta_deg);
 		h_eta->Fill(EtaPolScat_deg);
 		h_theta_eta->Fill(EtaPolScat_deg, scat_theta_deg);
+		h_pol0->Fill(Pol0);
+		h_pol1->Fill(Pol1);
+		h_pol2->Fill(Pol2);
 		
-		if(scat_theta_deg > 50 && scat_theta_deg < 95) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
+		
+		if(scat_theta_deg > 50 && scat_theta_deg < 100) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
 	      }	
 
-	    //if (jentry == 9999 || jentry == 9991 || jentry == 9988 || jentry == 9987 || jentry == 9986) cout << "first HitTime of event " <<  jentry+1 << ": " <<  HitTime_sort[iHit] << endl;
-	   }   //end of iHit loop
+	    // if (jentry == 9999 || jentry == 9991 || jentry == 9988 || jentry == 9987 || jentry == 9986) cout << jentry+1 <<", eta: " << HitEta_sort[iHit]*180.0 / TMath::Pi() << endl;
 
-	     //cout << jentry << endl;
-	}      // nHit >1 condition brkt end
-	
-	
-	
+
+	     }   //end of iHit loop
+	}      // nHit >1 condition brkt end			
       } //jentry loop end
 
     cout << "events with 2 or more comps: " << Comp2_evts << endl;

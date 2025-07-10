@@ -38,6 +38,7 @@ public:
   void SetProcId(G4int procId);
   void SetScatAngle(G4double theta);
   void SetEta(G4double eta);
+  void SetPolarisation(G4ThreeVector pol);
     
   
   // get methods
@@ -50,12 +51,13 @@ public:
   G4int GetProcId() const;
   G4double GetScatAngle() const;
   G4double GetEta() const;
+  G4ThreeVector GetPolarisation() const;
 
   
 private:
   G4double fEdep = 0.;  ///< Energy deposit in the sensitive volume
   G4double fTrackLength = 0.;  ///< Track length in the  sensitive volume
-  G4ThreeVector fPosition;
+  G4ThreeVector fPosition, fPol;
   G4double fTime = 0;
   G4int detId = -1;
   G4String fProcName = " ";
@@ -139,6 +141,11 @@ inline G4double CellHit::GetScatAngle() const
 inline G4double CellHit::GetEta() const
 {
   return fEta;
+}
+
+inline G4ThreeVector CellHit::GetPolarisation() const
+{
+  return fPol;
 }
 
 

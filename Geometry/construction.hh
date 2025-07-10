@@ -12,6 +12,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
 #include "G4OpticalSurface.hh"
+#include "G4PolarizationManager.hh"
 #include "G4LogicalBorderSurface.hh"
 
 #include "G4GDMLParser.hh"

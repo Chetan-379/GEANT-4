@@ -56,17 +56,22 @@ void CellHit::SetEta(G4double eta)
   fEta = eta;
 }
 
+void CellHit::SetPolarisation(G4ThreeVector pol)
+{
+  fPol = pol;
+}
+
 
 void CellHit::Print()
 {
-  G4cout << "Edep: " << std::setw(7) << G4BestUnit(fEdep, "Energy")
-         << " track length: " << std::setw(7) << G4BestUnit(fTrackLength, "Length")
-	 << " position: " << std::setw(7) << G4BestUnit(fPosition, "Length")
-	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time")
-	 << " DetId: " << std::setw(7) << detId
-	 << " ProcessName: " << std::setw(7) << fProcName
-	 << "ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi)
-	 << "eta: " << std::setw(7) << fEta << G4endl;
+  G4cout << "Edep: " << std::setw(7) << G4BestUnit(fEdep, "Energy") << "|"
+         << " track length: " << std::setw(7) << G4BestUnit(fTrackLength, "Length") << "|"
+	 << " position: " << std::setw(7) << G4BestUnit(fPosition, "Length") << "|"
+	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time") << "|"
+	 << " DetId: " << std::setw(7) << detId << "|"
+	 << " ProcessName: " << std::setw(7) << fProcName << "|"
+	 << " ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << "|"
+	 << " eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << G4endl;
     //<< "eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << G4endl;
 }
 

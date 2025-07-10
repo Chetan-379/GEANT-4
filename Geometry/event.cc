@@ -65,6 +65,9 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitProcId_vec.clear();
   HitScatAngle_vec.clear();
   HitEta_vec.clear();
+  HitPol0_vec.clear();
+  HitPol1_vec.clear();
+  HitPol2_vec.clear();
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
@@ -147,6 +150,9 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitProcId_vec.push_back(ScintHit->GetProcId());
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
     HitEta_vec.push_back(ScintHit->GetEta());
+    HitPol0_vec.push_back((ScintHit->GetPolarisation())[0]);
+    HitPol1_vec.push_back((ScintHit->GetPolarisation())[1]);
+    HitPol2_vec.push_back((ScintHit->GetPolarisation())[2]);
   }
 
   // if (ievent == 196) {
@@ -186,6 +192,9 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitProcId = HitProcId_vec;
   runObject->HitScatAngle = HitScatAngle_vec;
   runObject->HitEta = HitEta_vec;
+  runObject->HitPol0 = HitPol0_vec;
+  runObject->HitPol1 = HitPol1_vec;
+  runObject->HitPol2 = HitPol2_vec;
 
   runObject->tree->Fill();
     

@@ -54,6 +54,9 @@ class NtupleVariables : public TSelector {
   vector<int>  *Hit_ProcId;
   vector<double>  *Hit_ScatAngle;
   vector<double>  *Hit_Eta;
+  vector<double>  *Hit_Pol0;
+  vector<double>  *Hit_Pol1;
+  vector<double>  *Hit_Pol2;
   
    // List of branches
    TBranch        *b_positionX;   //!
@@ -80,6 +83,9 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Hit_ProcId;
   TBranch         *b_Hit_ScatAngle;
   TBranch         *b_Hit_Eta;
+  TBranch         *b_Hit_Pol0;
+  TBranch         *b_Hit_Pol1;
+  TBranch         *b_Hit_Pol2;
   
   
   
@@ -137,6 +143,10 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    Hit_ProcId = 0;
    Hit_ScatAngle =0;
    Hit_Eta =0;
+   Hit_Pol0 =0;
+   Hit_Pol1 =0;
+   Hit_Pol2 =0;
+   
    
    // Set branch addresses and branch pointers
    if (!tree) return;
@@ -168,6 +178,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Hit_ProcId", &Hit_ProcId, &b_Hit_ProcId);
    fChain->SetBranchAddress("Hit_ScatAngle", &Hit_ScatAngle, &b_Hit_ScatAngle);
    fChain->SetBranchAddress("Hit_Eta", &Hit_Eta, &b_Hit_Eta);
+   fChain->SetBranchAddress("Hit_Pol0", &Hit_Pol0, &b_Hit_Pol0);
+   fChain->SetBranchAddress("Hit_Pol1", &Hit_Pol1, &b_Hit_Pol1);
+   fChain->SetBranchAddress("Hit_Pol2", &Hit_Pol2, &b_Hit_Pol2);   
 
    Notify();
 }

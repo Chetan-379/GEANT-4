@@ -40,6 +40,9 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH1D *h_compSigEta;
   TH1D *h_theta, *h_eta;
   TH2D *h_theta_eta;
+  TH1F *h_pol0;
+  TH1F *h_pol1;
+  TH1F *h_pol2;
 
   TFile *oFile;
 };
@@ -91,6 +94,11 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_theta_eta = new TH2D("ThetaVsEta", "ThetaVsEta", 2000, -200, 200, 2000, -200, 200);
   h_theta_eta->GetXaxis()->SetTitle("eta (deg)");
   h_theta_eta->GetYaxis()->SetTitle("theta (deg)");
+
+  h_pol0 = new TH1F("Pol_0", "Pol_0", 2000,-1.2,1.2);
+  h_pol1 = new TH1F("Pol_1", "Pol_1", 2000,-1.2,1.2);
+  h_pol2 = new TH1F("Pol_2", "Pol_2", 2000,-1.2,1.2);
+  
  
 
 
