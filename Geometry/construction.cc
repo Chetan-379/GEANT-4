@@ -146,8 +146,8 @@ void MyDetectorConstruction::ConstructSDandField()
   OuterMostStripSD->SetVerboseLevel(2);
 
   // //setting the logical volume to be unpolarised
-  // G4PolarizationManager* polMgr = G4PolarizationManager::GetInstance();
-  // polMgr->SetVolumePolarization(logicStrip, G4ThreeVector(0., 0., 0.));
+  G4PolarizationManager* polMgr = G4PolarizationManager::GetInstance();
+  G4cout << "\n\n ========= volpol" << polMgr->GetVolumePolarization (logicOuterMostStrip) << G4endl;
   // polMgr->SetVolumePolarization(logicInStrip, G4ThreeVector(0., 0., 0.));
   // polMgr->SetVolumePolarization(logicOuterMostStrip, G4ThreeVector(0., 0., 0.));
 

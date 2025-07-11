@@ -9,6 +9,7 @@
 #include "G4DecayTable.hh"
 #include "G4IonTable.hh"
 #include "G4Geantino.hh"
+#include "G4StokesVector.hh"
 
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {

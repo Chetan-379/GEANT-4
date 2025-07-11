@@ -91,7 +91,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_compSigEta = new TH1D("Eta_compSig", "Eta_compSig",200,-200,200);
   h_compSigEta->GetXaxis()->SetTitle("eta (deg)");
 
-  h_theta_eta = new TH2D("ThetaVsEta", "ThetaVsEta", 2000, -200, 200, 2000, -200, 200);
+  h_theta_eta = new TH2D("ThetaVsEta", "ThetaVsEta", 200, -200, 200, 200, -200, 200);
   h_theta_eta->GetXaxis()->SetTitle("eta (deg)");
   h_theta_eta->GetYaxis()->SetTitle("theta (deg)");
 

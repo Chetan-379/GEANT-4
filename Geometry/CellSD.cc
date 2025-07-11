@@ -131,6 +131,11 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
     //G4cout << "\n\ndirectional Angle between PRF_Y and ptcl Mom: " << a
       
+    //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
+    //eta = acos((Plane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
+    //eta = scatPlane.angle(prfX_before);
+    //eta = polPlane.angle(scatPlane);
+    
     //eta = acos((scatPlane.dot(prfY_before))/(scatPlane.mag()*prfY_before.mag()));
     //eta = acos((scatPlane.dot(vin.cross(prfX_before)))/(scatPlane.mag()*(vin.cross(prfX_before)).mag()));
     //eta = scatPlane.azimAngle(prfY_before, vin);
@@ -138,8 +143,28 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
     //polDir =
 
- 
-    eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
+    //================ working eta===============
+    //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
+    //===========================================
+
+    eta = std::atan2(vin.dot(prePol.cross(vout)), prePol.dot(vout));
+    //eta = std::atan2(vin.dot(polPlane.cross(vout)), polPlane.dot(vout));
+
+    //test = G4ThreeVector()
+    //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
+    //eta = std::atan2(vin.dot(prfY_before.cross(vout)), prfY_before.dot(vout));
+    //eta = std::atan2(vin.dot(prfY_before.cross(vout)), prfY_before.dot(vout));
+    
+    G4ThreeVector e1 = vin.orthogonal().unit(); // E-field direction
+    G4ThreeVector n_s = vin.cross(vout).unit();
+    G4ThreeVector n_p = vin.cross(e1).unit();
+
+    G4double cosPhi = n_p.dot(n_s);
+    G4double sinPhi = vin.dot(e1.cross(vout)); // Gives sign
+
+    //eta = std::atan2(sinPhi, cosPhi);  
+
+    //eta = std::atan2(vin.dot(prePol.cross(vout)), prePol.dot(vout));
 
     //eta = std::atan2(vin.dot(vrandom.cross(vout)), vrandom.dot(vout));
     //eta = std::atan2(vin.dot(prfY_before.cross(vout)), prfY_before.dot(vout));
