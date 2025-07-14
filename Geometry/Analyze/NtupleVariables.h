@@ -22,7 +22,6 @@
 #endif
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
-
 using namespace std;
 class NtupleVariables : public TSelector {
  public :
@@ -37,12 +36,6 @@ class NtupleVariables : public TSelector {
    Double_t        Total_Edep;
    Double_t        Edep_Compt;
    Double_t        Edep_Photo;
-   // Int_t           nOpticalPhotons;
-   // vector<double>  *OptPho_PosX;
-   // vector<double>  *OptPho_PosY;
-   // vector<double>  *OptPho_PosZ;
-   // vector<double>  *OptPho_Energy;
-   // vector<double>  *OptPho_Time;
   vector<double>  *Hit_Edep;
   vector<double>  *Hit_PositionX;
   vector<double>  *Hit_PositionY;
@@ -50,8 +43,7 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_Time;
   vector<double>  *Hit_TrkLen;
   vector<int>     *Hit_DetId;
-  //vector<string>  *Hit_ProcName;
-  vector<int>  *Hit_ProcId;
+  vector<int>     *Hit_ProcId;
   vector<double>  *Hit_ScatAngle;
   vector<double>  *Hit_Eta;
   vector<double>  *Hit_Pol0;
@@ -59,19 +51,13 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_Pol2;
   
    // List of branches
-   TBranch        *b_positionX;   //!
-   TBranch        *b_positionY;   //!
-   TBranch        *b_positionZ;   //!
-   TBranch        *b_Energy;   //!
-   TBranch        *b_Total_Edep;   //!
-   TBranch        *b_Edep_Compt;   //!
-   TBranch        *b_Edep_Photo;   //!
-   // TBranch        *b_nOpticalPhotons;
-   // TBranch        *b_OptPho_PosX;
-   // TBranch        *b_OptPho_PosY;
-   // TBranch        *b_OptPho_PosZ;
-   // TBranch        *b_OptPho_Energy;
-   // TBranch        *b_OptPho_Time;
+  TBranch         *b_positionX;   //!
+  TBranch         *b_positionY;   //!
+  TBranch         *b_positionZ;   //!
+  TBranch         *b_Energy;   //!
+  TBranch         *b_Total_Edep;   //!
+  TBranch         *b_Edep_Compt;   //!
+  TBranch         *b_Edep_Photo;   //!
   TBranch         *b_Hit_Edep;
   TBranch         *b_Hit_PositionX;
   TBranch         *b_Hit_PositionY;
@@ -79,7 +65,6 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Hit_Time;
   TBranch         *b_Hit_TrkLen;
   TBranch         *b_Hit_DetId;
-  //TBranch         *b_Hit_ProcName;
   TBranch         *b_Hit_ProcId;
   TBranch         *b_Hit_ScatAngle;
   TBranch         *b_Hit_Eta;
@@ -94,11 +79,6 @@ class NtupleVariables : public TSelector {
    void    Init(TTree *tree, string);
    Bool_t  Notify();
    Int_t   GetEntry(Long64_t entry, Int_t getall = 0) { return fChain ? fChain->GetTree()->GetEntry(entry, getall) : 0; }
-  /*  double  DeltaPhi(double, double); */
-  /*  double  DeltaR(double eta1, double phi1, double eta2, double phi2); */
-  /*  void    sortTLorVec(vector<TLorentzVector> *);    */
-  /*  double  MinDr(TLorentzVector, vector<TLorentzVector>); */
-  /* double  MinDr2(vector<TLorentzVector>,TLorentzVector); */
   double  DeltaPhi(double, double);
   double  DeltaR(double eta1, double phi1, double eta2, double phi2);
   void    sortTLorVec(vector<TLorentzVector> *);
@@ -127,11 +107,6 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    positionY = 0;
    positionZ = 0;
    Energy = 0;
-   // OptPho_PosX =0;
-   // OptPho_PosY =0;
-   // OptPho_PosZ =0;
-   // OptPho_Energy =0;
-   // OptPho_Time =0;
    Hit_Edep = 0;
    Hit_PositionX = 0;
    Hit_PositionY = 0;
@@ -139,7 +114,6 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    Hit_Time = 0;
    Hit_TrkLen = 0;
    Hit_DetId = 0;
-   //Hit_ProcName = 0;
    Hit_ProcId = 0;
    Hit_ScatAngle =0;
    Hit_Eta =0;
@@ -161,12 +135,7 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Total_Edep", &Total_Edep, &b_Total_Edep);
    fChain->SetBranchAddress("Edep_Compt", &Edep_Compt, &b_Edep_Compt);
    fChain->SetBranchAddress("Edep_Photo", &Edep_Photo, &b_Edep_Photo);
-   // fChain->SetBranchAddress("nOpticalPhotons", &nOpticalPhotons, &b_nOpticalPhotons);
-   // fChain->SetBranchAddress("OptPho_PosX", &OptPho_PosX, &b_OptPho_PosX);
-   // fChain->SetBranchAddress("OptPho_PosY", &OptPho_PosY, &b_OptPho_PosY);
-   // fChain->SetBranchAddress("OptPho_PosZ", &OptPho_PosZ, &b_OptPho_PosZ);
-   // fChain->SetBranchAddress("OptPho_Energy", &OptPho_Energy, &b_OptPho_Energy);
-   // fChain->SetBranchAddress("OptPho_Time", &OptPho_Time, &b_OptPho_Time);
+
    fChain->SetBranchAddress("Hit_Edep", &Hit_Edep, &b_Hit_Edep);
    fChain->SetBranchAddress("Hit_PositionX", &Hit_PositionX, &b_Hit_PositionX);
    fChain->SetBranchAddress("Hit_PositionY", &Hit_PositionY, &b_Hit_PositionY);
@@ -174,7 +143,6 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Hit_Time", &Hit_Time, &b_Hit_Time);
    fChain->SetBranchAddress("Hit_TrkLen", &Hit_TrkLen, &b_Hit_TrkLen);
    fChain->SetBranchAddress("Hit_DetId", &Hit_DetId, &b_Hit_DetId);
-   //fChain->SetBranchAddress("Hit_ProcName", &Hit_ProcName, &b_Hit_ProcName);
    fChain->SetBranchAddress("Hit_ProcId", &Hit_ProcId, &b_Hit_ProcId);
    fChain->SetBranchAddress("Hit_ScatAngle", &Hit_ScatAngle, &b_Hit_ScatAngle);
    fChain->SetBranchAddress("Hit_Eta", &Hit_Eta, &b_Hit_Eta);

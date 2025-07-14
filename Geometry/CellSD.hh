@@ -15,14 +15,6 @@ class G4Step;
 class G4HCofThisEvent;
 class G4TouchableHistory;
 
-/// cell sensitive detector class
-///
-/// In Initialize(), it creates one hit for each calorimeter layer and one more
-/// hit for accounting the total quantities in all layers.
-///
-/// The values are accounted in hits in ProcessHits() function which is called
-/// by Geant4 kernel at each step.
-
 class CellSD : public G4VSensitiveDetector
 {
   public:

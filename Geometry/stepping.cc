@@ -62,33 +62,15 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (track->GetCreatorProcess()) {
     processName = track->GetCreatorProcess()->GetProcessName();
   }
-  
-  G4double OptPho_Energy;
-  G4double OptPhot_time;
-  
-  if (particleName == "opticalphoton" && processName != "Cerenkov")
-    {
-      // fEventAction -> nOptPho++;
-      // fEventAction -> OptPho_PosX.push_back(TrkPos[0]);
-      // fEventAction -> OptPho_PosY.push_back(TrkPos[1]);
-      // fEventAction -> OptPho_PosZ.push_back(TrkPos[2]);
-      
-      // OptPho_Energy = track->GetKineticEnergy();
-      // fEventAction ->OptPho_Energy.push_back(OptPho_Energy);
-
-      // OptPhot_time = track->GetGlobalTime();
-      // fEventAction ->OptPho_time.push_back(OptPhot_time);
-      // if (abs(TrkPos[0]) <= 100 && abs(TrkPos[1]) <= 100 && abs(TrkPos[2]) == 150) fEventAction->TrkOnDet++;
-    }
-}  
+}
    
 
 
 
 
-  // G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+// G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
   
-  // const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-  // G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
+// const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+// G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
 
 

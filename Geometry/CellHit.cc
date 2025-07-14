@@ -2,8 +2,6 @@
 #include "CellHit.hh"
 #include "G4UnitsTable.hh"
 #include <iomanip>
-// #include <cmath>
-// #include <numbers>
 
 G4ThreadLocal G4Allocator<CellHit>* CellHitAllocator = nullptr;
 
@@ -72,7 +70,6 @@ void CellHit::Print()
 	 << " ProcessName: " << std::setw(7) << fProcName << "|"
 	 << " ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << "|"
 	 << " eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << G4endl;
-    //<< "eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

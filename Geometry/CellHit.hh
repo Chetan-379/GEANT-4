@@ -55,8 +55,8 @@ public:
 
   
 private:
-  G4double fEdep = 0.;  ///< Energy deposit in the sensitive volume
-  G4double fTrackLength = 0.;  ///< Track length in the  sensitive volume
+  G4double fEdep = 0.;  // Energy deposit in the sensitive volume
+  G4double fTrackLength = 0.;  // Track length in the  sensitive volume
   G4ThreeVector fPosition, fPol;
   G4double fTime = 0;
   G4int detId = -1;

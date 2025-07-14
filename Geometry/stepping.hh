@@ -7,7 +7,6 @@
 
 #include "construction.hh"
 #include "event.hh"
-//#include "run.hh"
 
 class MySteppingAction : public G4UserSteppingAction
 {
@@ -19,7 +18,6 @@ public:
 
 private:
   MyEventAction *fEventAction;
-  //MyRunAction *fRunAction;
 };
 
 #endif

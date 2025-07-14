@@ -1,7 +1,7 @@
 const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
-TString legend_text[15] = {"100keV","511keV", "1000keV"};
+TString legend_text[15] = {"\\gamma_{E}: 511keV","511keV", "1000keV"};
 
 int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
@@ -110,14 +110,15 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   canvas_n1->SetTopMargin(0.06);
   canvas_n1->SetBottomMargin(0.12);
 
-  gStyle->SetOptStat(0);
+  
+  gStyle->SetOptStat(1);
   
   vector<TString> legName;
   std::string leg_head_str = leg_head;
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.3,0.7,0.5,0.9);  
+  legend = new TLegend(0.3,0.8,0.5,0.9);  
   legend->SetTextSize(0.030);
   legend->SetLineColor(kWhite);
   char* lhead = new char[100];
@@ -181,7 +182,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     vector <string> Intg;
     char final_label[100];    
     float Integral = hist.at(i)->Integral();
-    sprintf(final_label,"%s (%.1f)",legend_text[i].Data(), Integral);
+    sprintf(final_label,"%s",legend_text[i].Data());
     //sprintf(final_label,"%.0f events", Integral);
    
     legName.push_back(hist.at(i)->GetName());
@@ -194,15 +195,28 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   if(ymin == 0.0) ymin = 1e-3;
   if(ymin<0.0) ymin = 1e-4;
   for(int i = 0; i < (int)hist.size(); i++) {
-    if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax*10);
-    //if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/7));
+    //if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax*10);
+    if(!normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(1, ymax*10);
+    if(!normalize && !log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/7));
     
-    else
-      hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
+    // else
+    //   hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
     
     if(!i) hist.at(i)->Draw("hist");
     else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
-	
+
+    TPaveStats *ptstats1 = new TPaveStats(0.8,0.83,0.955,0.94,"brNDC");
+    ptstats1->SetBorderSize(1);
+    ptstats1->SetFillColor(0);
+    ptstats1->SetLineColor(hist.at(i)->GetLineColor());
+    ptstats1->SetTextAlign(12);
+    ptstats1->SetTextColor(hist.at(i)->GetLineColor());
+    ptstats1->SetTextFont(42);
+    ptstats1->SetOptStat(110011);
+    ptstats1->SetOptFit(1);
+    hist.at(i)->GetListOfFunctions()->Add(ptstats1);
+    ptstats1->SetParent(hist.at(i));
+
   }
   
   legend->Draw();
@@ -210,7 +224,10 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   if(log_flag) gPad->SetLogy();
   if(logx) gPad->SetLogx();
   
+
   gPad->Update();
+  canvas_n1->Update();
+
   
   char* canvas_name = new char[1000];
   //saving the file
@@ -232,28 +249,26 @@ void overlay(string pathname)
 
   vector<string> f;
  
-  f= {"PbWO4_out_root_files/PbWO4_5cm_ScintON_100keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_1000keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root"};
+  //  f= {"PbWO4_out_root_files/PbWO4_5cm_ScintON_100keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root", "PbWO4_out_root_files/PbWO4_5cm_ScintON_1000keV_Birk0_NoAbs_NoCeren_DerEmis_spline_out.root"};
+  f= {"test_comp_egEta_out.root"};
 
-  //f= {"BGO_out_root_files/BGO_5cm_ScintON_100keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root", "BGO_out_root_files/BGO_5cm_ScintON_511keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root", "BGO_out_root_files/BGO_5cm_ScintON_1000keV_Birk0_NoAbs_NoCeren_SefDerEmiss_spline_out.root"};
   
   //define your histograms to be read from here
   string histname1[100], histname2[100], histname3[100];
 
   vector<string> variables;
-  variables = {"Total_Edep"};//, "Compton_Edep", "Total_Edep","Photo_Edep"};   //put the names of variables here
-  //variables = {"OptPho_lmbda"};
-  //variables = {"nOptical_Photons"};
+  variables = {"Eta_compSig", "nHits", "scat_theta", "HitTime", "HitPosX", "HitPosY", "HitPosZ"};
 
  
   vector<string> filetag;
-  filetag={"PbWO4_5cm"};
+  filetag={"ScatEta", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ"};
  
   //rebin values
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {1.2};
-  vector<double>xmin = {0};
+  vector<double>xmax = {200, 15, 200, 10, 700, 700, 700};
+  vector<double>xmin = {-200, 0, 0, 0, -700, -700, -700};
 
   for (int iVar =0; iVar < variables.size(); iVar++){
     vector<TH1F*> hist_list;
@@ -275,17 +290,20 @@ void overlay(string pathname)
     //diff_title = { "Compton_Edep"};
     //diff_title = { "nOptPhotons"};
     //diff_title = { "OptPho_lmbda (nm)"};
-    diff_title = { "Total_Edep(MeV)"};
-    vector<string>xtitle;
-    xtitle = {diff_title[iVar]};
+    diff_title = {"eta(#circ)", "nHits", "|theta(#circ)|", "time(ns)", "posX(mm)", "posY(mm)", "posZ(mm)"};
+    // vector<string>xtitle;
+    // xtitle = {diff_title[0], diff_title[1]};
 	 
     //path to save the files a jpg or pdf
     vector<string> folder;   
-    folder = {"Overlay_plots/", "Overlay_plots/", "Overlay_plots/"};
-    sprintf(full_path,"%s/%simage",pathname.c_str(),folder[iVar].c_str());
+    folder = {"plots/", "plots/", "plots/", "plots/", "plots/", "plots/", "plots/"};
+    sprintf(full_path,"%s%s%s",pathname.c_str(),folder[iVar].c_str(),variables[iVar].c_str());
+
+    bool logFlag = false;
+    if (filetag[iVar] == "nHits" || filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
 	 	    
     //calling generate_1Dplot which will take this vector of histograms and 
-    generate_1Dplot(hist_list,full_path,xmax[iVar],xmin[iVar],leg_head,false,true,false,true,filetag[iVar].c_str(),xtitle[iVar].c_str(),rebin[iVar]);
+    generate_1Dplot(hist_list,full_path,xmax[iVar],xmin[iVar],leg_head,false,logFlag,false,true,filetag[iVar].c_str(),diff_title[iVar].c_str(),rebin[iVar]);
   }
 }
 

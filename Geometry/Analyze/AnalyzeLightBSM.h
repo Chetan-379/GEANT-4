@@ -21,9 +21,7 @@
 class AnalyzeLightBSM : public NtupleVariables{
 
  public:
-  //AnalyzeLightBSM(const TString &inputFileList="foo.txt", const char *outFileName="histo.root",const char *detType="PbWO4");
   AnalyzeLightBSM(const TString &inputFileList="foo.txt", const char *outFileName="histo.root",const char *detType="PbWO4");
-  //  std::cout<<"alpana"<<std::endl;
   ~AnalyzeLightBSM();
   Bool_t   FillChain(TChain *chain, const TString &inputFileList);
   Long64_t LoadTree(Long64_t entry);
@@ -37,13 +35,11 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH2D *h_ScatAng_SDvsAna;
   TH1D *h_diff_Ana_SD;
   TH1I *h_nHits;
-  TH1D *h_compSigEta;
+  TH1D *h_compSigEta, *h_hitTime;
   TH1D *h_theta, *h_eta;
   TH2D *h_theta_eta;
-  TH1F *h_pol0;
-  TH1F *h_pol1;
-  TH1F *h_pol2;
-
+  TH1F *h_pol0, *h_pol1, *h_pol2;
+  TH1F *h_hitPosX, *h_hitPosY, *h_hitPosZ;
   TFile *oFile;
 };
 #endif
@@ -54,18 +50,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   oFile = new TFile(outFileName, "recreate");
   TH1::SetDefaultSumw2(1);
   //TGaxis::SetMaxDigits(2);
-  //Initialize histogram here
-  //h_selectBaselineYields_ = new TH1F("cutflows","cutflows",60,-0.5,60.5);
 
-  // vector<TString> Energy, Material;
-  // vector<double> hist_Max;
-  // vector<int> Energy_val;
-  
-  // Material = {"BGO", "PbWO4", "Plastic"};
-  // Energy = {"511keV", "100keV", "150keV", "300keV", "450keV", "600keV", "800keV", "1000keV"};
-  // Energy_val = {511, 100, 150, 300, 450, 600, 800, 1000};
-  
-  
   h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",100,0,1.1);
   h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",100,0,1.1);
 
@@ -79,7 +64,18 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_ScatAng_SDvsAna->SetXTitle("Theta_Ana(rad)");
   h_ScatAng_SDvsAna->SetYTitle("Theta_SD(rad)");
 
-  h_nHits = new TH1I("nHits", "nHits", 15, 0, 15);
+  double bin_edges[16];
+  for (int i = 0; i <= 15; ++i) {
+    bin_edges[i] = i - 0.5;
+  }
+  
+  h_nHits = new TH1I("nHits", "nHits", 15, bin_edges);
+
+  h_hitTime = new TH1D("HitTime", "HitTime", 100,0 ,10);
+  h_hitPosX = new TH1F("HitPosX", "HitPosX", 350,-700 ,700);
+  h_hitPosY = new TH1F("HitPosY", "HitPosY", 350,-700 ,700);
+  h_hitPosZ = new TH1F("HitPosZ", "HitPosZ", 350,-700 ,700);
+  
   h_diff_Ana_SD = new TH1D("diff_Ana_SD","diff_Ana_SD",632,-3.16,3.16);
 
   h_theta = new TH1D("scat_theta", "scat_theta", 200,-200, 200);
@@ -97,41 +93,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
   h_pol0 = new TH1F("Pol_0", "Pol_0", 2000,-1.2,1.2);
   h_pol1 = new TH1F("Pol_1", "Pol_1", 2000,-1.2,1.2);
-  h_pol2 = new TH1F("Pol_2", "Pol_2", 2000,-1.2,1.2);
-  
- 
-
-
-
-  //h_Total_Edep_fine_binned = new TH1D("Edep_fine", "Edep_fine", 700, 0.45, 0.52);
-
-  //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 35000, 0, 35000);
-  //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 67000, 0, 67000);
-  //h_nOptPho = new TH1I("nOptical_Photons", "nOptical_Photons", 250, 0, 250);
-
-  // h_nOptPho_Edep = new TH2D("nOptPhoVsEdep", "nOptPhoVsEdep", 70, 0., 0.7, 60, 0, 60);
-  // h_nOptPho_Edep->SetXTitle("Total Edep");
-  // h_nOptPho_Edep->SetYTitle("nOptical Photons");
-
-  // h_OptPhoOnDet = new TH1I("nOptPhoton_OnDet", "nOptPhoton_OnDet", 50, 0, 50);
-
-  // h_nOptPhoOnDet_genOptPho = new TH2I("OptPhotOnDet_vs_genOptPhot", "OptPhotOnDet_vs_genOptPhot", 50, 0,50, 50, 0, 50);
-  // h_nOptPhoOnDet_genOptPho -> SetXTitle("nOptPhotOnDet");
-  // h_nOptPhoOnDet_genOptPho -> SetYTitle("genOptPhotons");
-
-  //h_OptPho_lmbda = new TH1D("OptPho_lmbda", "OptPho_lmbda",2000,0,2000);
-  
-  //h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
-  //h_OptPho_time = new TH1D("OptPho_time", "OptPho_time",5000,0,1000);
-
-  // h_OptPho_PosX = new TH1D("OptPho_PosX", "OptPho_PosX",400,-200,200);
-  // h_OptPho_PosY = new TH1D("OptPho_PosY", "OptPho_PosY",400,-200,200);
-  // h_OptPho_PosZ = new TH1D("OptPho_PosZ", "OptPho_PosZ",600,-300,300);
-  
-  // h_OptPho_XvsY = new TH2F("OptPho_XvsY", "OptPho_XvsY",400, -200, 200, 400, -200, 200);
-  // h_OptPho_XvsY->SetXTitle("PosX");
-  // h_OptPho_XvsY->SetYTitle("PosY");
-
+  h_pol2 = new TH1F("Pol_2", "Pol_2", 2000,-1.2,1.2);  
 }
 
 

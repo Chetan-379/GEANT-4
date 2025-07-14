@@ -45,14 +45,6 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   compt_total_edep=0;
   photo_total_edep=0;
   nCompt_Before_Photo = 0;
-  // nOptPho = 0;
-  // OptPho_PosX.clear();
-  // OptPho_PosY.clear();
-  // OptPho_PosZ.clear();
-  // OptPho_Energy.clear();
-  // OptPho_time.clear();
-  
-  // TrkOnDet = 0;
 
   HitEdep_vec.clear();
   HitPosX_vec.clear();
@@ -61,7 +53,6 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitTime_vec.clear();
   HitDetId_vec.clear();
   HitTrkLen_vec.clear();
-  //HitProcName_vec.clear();
   HitProcId_vec.clear();
   HitScatAngle_vec.clear();
   HitEta_vec.clear();
@@ -87,12 +78,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   }
   
 
-  // for (G4int i =0; i < OptPho_PosZ.size(); i++){
-  //   if (OptPho_PosZ[i] < -1)  {G4EventManager::GetEventManager()->KeepTheCurrentEvent();
-  //   }
-  // }
+  //****************Processing Hit collection of the Event*******************************
 
-  //****************Processing Hit collection on the Event*******************************
   // // Get hits collections IDs (only once)
   if (fInStripHCID == -1) {
     fInStripHCID = G4SDManager::GetSDMpointer()->GetCollectionID("InStripHitsCollection");
@@ -102,18 +89,13 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   
   // Get hits collections
   auto InStripHC = event->GetHCofThisEvent()->GetHC(0);
-  //G4cout << "name of HC0: " << InStripHC->GetName() << G4endl;
-  
   auto OutStripHC = event->GetHCofThisEvent()->GetHC(1);
-  //G4cout << "name of HC1: " << OutStripHC->GetName() << G4endl;
-  
   auto OuterMostStripHC = event->GetHCofThisEvent()->GetHC(2);
-  //G4cout << "name of HC2: " << OuterMostStripHC->GetName() << G4endl;
 
   auto ScintHC = new G4THitsCollection<CellHit>;
 
   ///////////////////////////////
-  //Merging the Hit collections from innermost layer and three outer layers in a single collection  
+  //Merging the Hit collections from innermost layer and middle 2layers and the outermost layer in a single hit collection  
 
   for (int iHit = 0; iHit < InStripHC->GetSize(); iHit++){
     auto hit = dynamic_cast<CellHit*>(InStripHC->GetHit(iHit));
@@ -146,7 +128,6 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitTime_vec.push_back(ScintHit->GetTime());
     HitDetId_vec.push_back(ScintHit->GetDetID());
     HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
-    //HitProcName_vec.push_back(ScintHit->GetProcName());
     HitProcId_vec.push_back(ScintHit->GetProcId());
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
     HitEta_vec.push_back(ScintHit->GetEta());
@@ -159,16 +140,6 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   //   G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
   // }
   
-  // // Print per event (modulo n)
-  // //
-  // auto eventID = event->GetEventID();
-  // auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-  // //if ((printModulo > 0) && (eventID % printModulo == 0)) {
-  // //PrintEventStatistics(InStripHit->GetEdep(), InStripHit->GetTrackLength());
-  //   PrintEventStatistics(ScintHit->GetEdep(), ScintHit->GetTrackLength());
-  //   G4cout << "--> End of event: " << eventID << "\n" << G4endl;
-  //   //}
-
   //**************************************************************************************************
 
   //storing informations in the Tree
@@ -180,7 +151,6 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->Total_Compt_Edep = compt_total_edep;
   runObject->Photo_Edep = Photo_edep[0];
 
-  //filling hit information
   runObject->HitEdep = HitEdep_vec;
   runObject->HitPosX = HitPosX_vec;
   runObject->HitPosY = HitPosY_vec;
@@ -188,7 +158,6 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitTime = HitTime_vec;
   runObject->HitTrklen = HitTrkLen_vec;
   runObject->HitDetId = HitDetId_vec;
-  //runObject->HitProcName = HitProcName_vec;
   runObject->HitProcId = HitProcId_vec;
   runObject->HitScatAngle = HitScatAngle_vec;
   runObject->HitEta = HitEta_vec;
