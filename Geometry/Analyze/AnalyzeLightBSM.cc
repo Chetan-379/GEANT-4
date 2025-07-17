@@ -88,8 +88,11 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  
       }
 
-      if(Hit_Time->size() >1) {
-	Comp2_evts++;
+      //if(Hit_Time->size() >1) {
+      //if(nHits >0){
+      //if (nHits==1){
+      //if (nHits==2){
+      //if (nHits>2){
 	
 	ROOT::Math::XYZVector v_comp, vin, vout, v1, v2;
 
@@ -159,12 +162,28 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  HitPol2_cpy.erase(HitPol2_cpy.begin() + min_idx);
 	}
 
-	//counting the events with atleast one rayleigh
+	int nHitComp = 0;
+	bool incrs_nHit = false;
+	
+	if ( nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
+
 	for (int i = 0; i< HitTime_sort.size(); i++){	     
-	  if ((*Hit_ProcId)[i] == 0) { nRayl++; break;}    //procId 0 for rayleigh
+	  if (incrs_nHit) nHitComp++;		  
 	}      
 
-	// for (int iHit=0 ; iHit< nHits-1; iHit++){     //cannot calculate theta at the last hit
+
+
+	// //counting the events with atleast one rayleigh
+	// for (int i = 0; i< HitTime_sort.size(); i++){	     
+	//   //if ((*Hit_ProcId)[i] == 0) { nRayl++; break;}    //procId 0 for rayleigh
+	//   if (incrs_nHit) nHitComp++;		  
+	// }      
+
+	//for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
+	//if (nHits>=1){
+	//if (nHits==2){
+	
+	if(nHitComp ==2){
 	for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit  
 	  v_comp.SetXYZ(0,0,0);
 	  vin.SetXYZ(0,0,0);
@@ -175,21 +194,23 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  v_comp.SetXYZ(HitPosX_sort[iHit], HitPosY_sort[iHit], HitPosZ_sort[iHit]);
 
 	  if(iHit == 0) v1.SetXYZ(0,0,0);            //for first hit initial point will be gun postion
-	  else v1.SetXYZ(HitPosX_sort[iHit-1], HitPosY_sort[iHit-1], HitPosZ_sort[iHit-1]);
+	  //else v1.SetXYZ(HitPosX_sort[iHit-1], HitPosY_sort[iHit-1], HitPosZ_sort[iHit-1]);
 
-	  v2.SetXYZ(HitPosX_sort[iHit+1], HitPosY_sort[iHit+1], HitPosZ_sort[iHit+1]);
+	  //v2.SetXYZ(HitPosX_sort[iHit+1], HitPosY_sort[iHit+1], HitPosZ_sort[iHit+1]);
 
 	  vin = v_comp - v1;
 	  vout = v2 - v_comp;
 
 	  double scat_theta = 10000;
+
 	  scat_theta = acos(vin.Dot(vout)/(vin.R()*vout.R()));
 
-	  double scat_theta_deg = scat_theta*180.0 / TMath::Pi();
+	  
 	    
 	  double scat_theta_SD = HitScatAng_sort[iHit];
 	  double Ang_diff = scat_theta - scat_theta_SD;
-
+	  double scat_theta_deg = scat_theta*180.0 / TMath::Pi();
+	
 	  h_ScatAng_SDvsAna->Fill(scat_theta, scat_theta_SD);
 
 	  double EtaPolScat = HitEta_sort[iHit];
@@ -202,20 +223,23 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    
 	  h_diff_Ana_SD->Fill(Ang_diff);
 	    
-	  if (procId !=0 && procId !=1)       //excluding rayleigh && phot
-	    {
-	      h_theta->Fill(scat_theta_deg);
-	      h_eta->Fill(EtaPolScat_deg);
-	      h_theta_eta->Fill(EtaPolScat_deg, scat_theta_deg);
-	      h_pol0->Fill(Pol0);
-	      h_pol1->Fill(Pol1);
-	      h_pol2->Fill(Pol2);		
-		
-	      if(scat_theta_deg > 50 && scat_theta_deg < 100) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
-	    }	
+	  if (procId !=0 && procId !=1){       //excluding rayleigh && phot
+	    Comp2_evts++;
+	    //h_theta->Fill(scat_theta_deg);
+	    h_theta->Fill(scat_theta_SD*180.0/TMath::Pi());
+	    h_eta->Fill(EtaPolScat_deg);	    
+	    h_theta_eta->Fill(EtaPolScat_deg, scat_theta_SD*180.0/TMath::Pi());
+	    //theta_eta->Fill(EtaPolScat_deg, scat_theta_deg);               );
+	    h_pol0->Fill(Pol0);
+	    h_pol1->Fill(Pol1);
+	    h_pol2->Fill(Pol2);		
+	    
+	    if(scat_theta_deg > 50 && scat_theta_deg < 100) h_compSigEta->Fill(EtaPolScat*180.0 / TMath::Pi());      //taking large values of theta to see more variation
+	  }	
 
 	}   //end of iHit loop
-      }      // nHit >1 condition brkt end			
+	//} //nhits>0 conditin brkt
+      }       // nHit >1 condition brkt end			
     } //jentry loop end
 
   cout << "events with 2 or more comps: " << Comp2_evts << endl;
