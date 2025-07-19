@@ -27,6 +27,7 @@ void CellSD::Initialize(G4HCofThisEvent* hce)
 
 G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 {
+  bool summary = true; 
   // energy deposit
   auto edep = step->GetTotalEnergyDeposit();
 
@@ -65,8 +66,10 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double scat_theta = -1;
   G4ThreeVector vin = step->GetPreStepPoint()->GetMomentumDirection();
   G4ThreeVector vout = step->GetPostStepPoint()->GetMomentumDirection();
-  G4double eta = 10000, eta1 = 10000;
+  G4double eta = 10000;
   G4ThreeVector prePol(-1000,-1000,-1000);
+  G4double Ein = step->GetPreStepPoint()->GetKineticEnergy();
+  G4double Eout = step->GetPostStepPoint()->GetKineticEnergy();
   
   
 
@@ -75,53 +78,68 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
     G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
 
-    if (proc != "phot") {scat_theta = acos(vin.dot(vout));
+    if (proc != "phot") {
+      scat_theta = acos(vin.dot(vout));
+      //scat_theta = vin.angle(vout);
       prePol = step->GetPreStepPoint()->GetPolarization();
       auto postPol = step->GetPostStepPoint()->GetPolarization();
 
-      G4cout << "polarization vector before scattering: " << prePol << G4endl;
-      G4cout << "polarization vector after scattering: " << postPol << "\n\n";
-
+      
       auto scatPlane = vin.cross(vout);
       auto polPlane = vin.cross(prePol);
       auto postPolPlane = vout.cross(postPol);
 
-      auto prfY_before = G4PolarizationHelper::GetParticleFrameY(vin);
-      auto prfX_before = G4PolarizationHelper::GetParticleFrameX(vin);
+      // auto prfY_before = G4PolarizationHelper::GetParticleFrameY(vin);
+      // auto prfX_before = G4PolarizationHelper::GetParticleFrameX(vin);
 
       auto prfY_after = G4PolarizationHelper::GetParticleFrameY(vout);
       auto prfX_after = G4PolarizationHelper::GetParticleFrameX(vout);
 
-      float pol_mom_Angle_bef = acos(vin.dot(prfX_before)) * 180/CLHEP::pi;
-      float pol_mom_Angle_aft = acos(vout.dot(prfX_after)) * 180/CLHEP::pi;
+      // float pol_mom_Angle_bef = acos(vin.dot(prfX_before)) * 180/CLHEP::pi;
+      // float pol_mom_Angle_aft = acos(vout.dot(prfX_after)) * 180/CLHEP::pi;
 
+      float pol_mom_Angle_bef = acos(vin.dot(prePol)) * 180/CLHEP::pi;
+      float pol_mom_Angle_aft = acos(vout.dot(postPol)) * 180/CLHEP::pi;
 
+      //================ working eta===============
+      //eta = std::atan2(vin.dot(prePol.cross(vout)), prePol.dot(vout));
+      //===========================================
+
+      eta = vout.azimAngle(prePol,vin);
+      //eta = vout.azimAngle(polPlane,vin);
+
+      //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
+      //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
+      //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
+      
+      if(summary){  
+      G4cout << "polarization vector before scattering: " << prePol << G4endl;
+      G4cout << "polarization vector after scattering: " << postPol << "\n\n";
+      
       G4cout << "vin Direction: " << vin << "\n";
-
       G4cout << "polarisation (Elec field Direction) before scattering: " << prePol << "\n";
       G4cout << "polPlane normal before scattering: " << polPlane << "\n\n";
       
       G4cout << "vout Direction: " << vout << "\n";
       G4cout << "polarisation (Elec field Direction) after scattering:" << postPol << "\n";
       G4cout << "polPlane normal after scattering:" << postPolPlane << "\n\n";
-    
-      //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
-      //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
-      //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
-    
-      //================ working eta===============
-      eta = std::atan2(vin.dot(prePol.cross(vout)), prePol.dot(vout));
-      //===========================================
-
+            
       G4cout << "Angle between polDir & ptcl momDir before scattering: " << pol_mom_Angle_bef << " deg" << G4endl;
       G4cout << "Angle between polDir & ptcl momDir after scattering: " << pol_mom_Angle_aft << " deg" << "\n\n";
     
-      G4cout << "vin mag: " << vin.mag() << G4endl;
-      G4cout << "vout mag: " << vout.mag() << G4endl;
-      G4cout << "prfX mag: " << prfX_before.mag() << G4endl;
-    
-      G4cout << "Angle between polPlane & ScatPlane: " << eta*180/CLHEP::pi  << " deg" << G4endl;
+      G4cout << "Angle between polPlane & ScatPlane: " << eta*180/CLHEP::pi  << " deg" << "\n\n";
+
+      G4cout << "photon Energy before Scattering: " << Ein << "\n";
+      G4cout << "photon Energy after Scattering: " << Eout << "\n";
+
+      
       G4cout << "\n*****" << "\n\n";
+      }
+
+      // if (proc == "compt" && scat_theta*180/CLHEP::pi > 89 && scat_theta*180/CLHEP::pi < 91){
+      // G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();\
+
+      // G4cout << "\n\n***************Event with 90 deg compt: " << eventID << G4endl;}
     }
     
     hit->SetPosition(compt_scat_point);
@@ -133,6 +151,8 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetScatAngle(scat_theta);
     hit->SetEta(eta);
     hit->SetPolarisation(prePol);
+    hit->SetEin(Ein);
+    hit->SetEout(Eout);
 
     fHitsCollection->insert(hit);
   }
