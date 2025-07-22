@@ -155,13 +155,22 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       //Sorting done
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
+
+      ///////////Hit Proc Id Convention used while generating the tree////////////
+      //
+      //0: Rayleigh
+      //1: Photoelectric
+      //2: Compton
+      //
+      ///////////////////////////////////////////////////////////////////////////
+      
       bool incrs_nHit = false;
 	
-      if ( nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
+      if (nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
 
       for (int i = 0; i< HitTime_sort.size(); i++){
-	if(incrs_nHit) nHitComp++;
+	if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
       }
 
       h_nHits->Fill(nHitComp);
@@ -211,25 +220,86 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  float Eout = HitEout_sort[iHit];	  
 	  float Ein = HitEin_sort[iHit];
 
-	  int DetId = HitDetId_sort[iHit];	  
-	    
+	  int DetId = HitDetId_sort[iHit];
+	 	    
 	  h_diff_Ana_SD->Fill(Ang_diff);
 	  //}
 
+	  //enum HitCat{all_inc =0, nHit_eq1 =1, nHit_gt1 =2, nHit_eq2 =3, nHit_gt2 =4};
+	  
+	  //***************************************
+	  //convention followed for nHits ==2:
+	  //S: Scintillator, B: BGO
+	  //left for location of 1st hit;
+	  //right for 2nd;
+	  //1 and 2 in S or B for identifying same or different crystal of a material;
+	  //no identifier when hits are in different materials;
+	  //e.g. nHit2_S1S1 means 1st hit in scintillator 2nd hit in the same scinitillator
+	  //***************************************
+	  	  
+	  enum HitsLoc{all_inc, nHit0, nHit1_S, nHit1_B, nHit2_S1S1, nHit2_S1S2, nHit2_SB, nHit2_B1B1, nHit2_B1B2, nHit2_BS, remain};
 
-	  enum HitCat{all_inc =0, nHit_eq1 =1, nHit_gt1 =2, nHit_eq2 =3, nHit_gt2 =4};
+	  //Definitng the boolians for each category
+	  bool inc_all =false, noHit =false;
+	  bool hit1_S =false, hit1_B =false;
+	  bool hit2_S1S1 =false, hit2_S1S2 =false, hit2_SB =false, hit2_B1B1 =false, hit2_B1B2 =false, hit2_BS =false, rest =false;
+	 
+	  int DetId1 = HitDetId_sort[0];
+	  int DetId2 = -1;
+	  
+	  //if (nHitComp >=2) DetId2 = HitDetId_sort[1];
+	  if (nHitComp >0) inc_all = true;
+
+	  if (nHitComp ==0) noHit = true;
+
+	  else if (nHitComp ==1){
+	    if (MatName(DetId1) =="Scint") hit1_S = true;
+	    else if (MatName(DetId1) =="BGO") hit1_B = true;
+	  }
+
+	  else if (nHitComp ==2){
+	    DetId2 = HitDetId_sort[1];
+	    if (DetId1 == DetId2){
+	      if (MatName(DetId1) =="Scint") hit2_S1S1 == true;
+	      else if (MatName(DetId1) =="BGO") hit2_B1B1 == true;
+	    }
+	    
+	    else if (DetId1 != DetId2)
+	      { if(MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") hit2_S1S2 == true;
+		else if(MatName(DetId1) =="BGO" && MatName(DetId2) =="BGO") hit2_B1B2 == true;
+		else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") hit2_SB == true;
+		else if (DetId1 != DetId2 && MatName(DetId1) =="BGO" && MatName(DetId2) == "Scint") hit2_BS == true;
+	      }
+	  }
+
+	  else rest = true;
+
+	  //else if (DetId1 != DetId2 && MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") hit2_S1S2 == true;
+	  //else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") hit2_SB == true;
+	  //else if (DetId1 == DetId2 && MatName(DetId1) =="BGO") hit2_B1B1 == true;
+	  //else if (DetId1 != DetId2 && MatName(DetId1) =="BGO" && MatName(DetId2) =="BGO") hit2_B1B2 == true;
+	  //else if (DetId1 != DetId2 && MatName(DetId1) =="BGO" && MatName(DetId2) == "Scint") hit2_BS == true;
+	  
+
 	  
 	  
 	  if (procId !=0 && procId != 1){       //excluding rayleigh && phot (not required exactly but kept of safety purpose)
 	    //if (procId !=0 && procId != 1 && (DetId/4000 >= 1)){       //excluding rayleigh && phot && BGO Hit
 	    h_ScatAng_SDvsAna->Fill(scat_theta, scat_theta_SD);
 	    
-	    if (nHitComp>0) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    if (nHitComp==1) FillHistogram(nHit_eq1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    if (nHitComp>1) FillHistogram(nHit_gt1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    if (nHitComp==2) FillHistogram(nHit_eq2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    if (nHitComp>2) FillHistogram(nHit_gt2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	  }     //procId condition end
+	    // if (nHitComp>0) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	    
+	    // if (nHitComp==1) FillHistogram(nHit_eq1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // if (nHitComp>1) FillHistogram(nHit_gt1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // if (nHitComp==2) FillHistogram(nHit_eq2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // if (nHitComp>2) FillHistogram(nHit_gt2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    // if (inc_all) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	  //   else if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	  //   else if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	  //   else if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	  //   else if (nHitComp>2) FillHistogram(nHit2_S1S1,Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	  // } 
+	  //procId condition end
 	  //}	
 
 	}   //end of iHit loop
@@ -260,6 +330,15 @@ void AnalyzeLightBSM::FillHistogram(int cat, double time, double posX, double po
   h_theta_Eout[cat]->Fill(theta_deg, Eout);
   
   if(theta_deg > 50 && theta_deg < 100) h_compSigEta[cat]->Fill(eta_deg);    //taking large values of theta to see maximum variation
+}
+
+string AnalyzeLightBSM::MatName(int DetId){
+  string mat = " ";
+  if (DetId < 0) mat = "error";
+  if (DetId /4000 >=1) mat = "BGO"; 
+  else if (DetId/ 1000 >=1 && DetId/ 4000 <1) mat = "Scint";
+
+  return mat;
 }
 
 
