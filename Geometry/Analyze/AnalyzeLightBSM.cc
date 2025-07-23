@@ -53,7 +53,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
   int Full_edep_evts = 0;
   int Comp2_evts = 0;
   int nDiffAngle = 0, nHits = -1, nRayl = 0;
-	
+
+  int n1s = 0, n1 =0;
+  int n1b =0;
    
   for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
@@ -237,42 +239,52 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  //e.g. nHit2_S1S1 means 1st hit in scintillator 2nd hit in the same scinitillator
 	  //***************************************
 	  	  
-	  enum HitsLoc{all_inc, nHit0, nHit1_S, nHit1_B, nHit2_S1S1, nHit2_S1S2, nHit2_SB, nHit2_B1B1, nHit2_B1B2, nHit2_BS, remain};
+	  enum HitsLoc{all_inc =0, nHit0 =1, nHit1_S =2, nHit1_B =3, nHit2_S1S1 =4, nHit2_S1S2 =5, nHit2_SB =6, nHit2_B1B1 =7, nHit2_B1B2 =8, nHit2_BS =9, remain =10};
 
 	  //Definitng the boolians for each category
 	  bool inc_all =false, noHit =false;
 	  bool hit1_S =false, hit1_B =false;
 	  bool hit2_S1S1 =false, hit2_S1S2 =false, hit2_SB =false, hit2_B1B1 =false, hit2_B1B2 =false, hit2_BS =false, rest =false;
 	 
-	  int DetId1 = HitDetId_sort[0];
-	  int DetId2 = -1;
+
 	  
+	  
+	  int DetId2 = -1;
+	  int DetId1 = -1;
+
+
 	  //if (nHitComp >=2) DetId2 = HitDetId_sort[1];
-	  if (nHitComp >0) inc_all = true;
-
+	  if (nHitComp >0) {inc_all = true; DetId1 = HitDetId_sort[0];}
+	  
 	  if (nHitComp ==0) noHit = true;
-
+	  
 	  else if (nHitComp ==1){
-	    if (MatName(DetId1) =="Scint") hit1_S = true;
+	    //n1++;
+	    if (MatName(DetId1) =="Scint") hit1_S = true; 
 	    else if (MatName(DetId1) =="BGO") hit1_B = true;
+	    else rest =true;
 	  }
 
-	  else if (nHitComp ==2){
+	  else if (nHitComp ==2){	  
 	    DetId2 = HitDetId_sort[1];
-	    if (DetId1 == DetId2){
-	      if (MatName(DetId1) =="Scint") hit2_S1S1 == true;
-	      else if (MatName(DetId1) =="BGO") hit2_B1B1 == true;
-	    }
+	    if (DetId1 == DetId2){	   		    
+	      if (MatName(DetId1) =="Scint") hit2_S1S1 = true; 
+	      else if (MatName(DetId1) =="BGO") hit2_B1B1 = true;
+	      else rest = true;	      
+	    }	    
 	    
 	    else if (DetId1 != DetId2)
-	      { if(MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") hit2_S1S2 == true;
-		else if(MatName(DetId1) =="BGO" && MatName(DetId2) =="BGO") hit2_B1B2 == true;
-		else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") hit2_SB == true;
-		else if (DetId1 != DetId2 && MatName(DetId1) =="BGO" && MatName(DetId2) == "Scint") hit2_BS == true;
+	      { if(MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") hit2_S1S2 = true;
+		else if(MatName(DetId1) =="BGO" && MatName(DetId2) =="BGO") hit2_B1B2 = true;
+		else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") hit2_SB = true;
+		else if (DetId1 != DetId2 && MatName(DetId1) =="BGO" && MatName(DetId2) == "Scint") hit2_BS = true;
+		else rest = true;
 	      }
 	  }
 
 	  else rest = true;
+
+	  //if (hit2_S1S1) cout << "two hits in same scint" << endl;
 
 	  //else if (DetId1 != DetId2 && MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") hit2_S1S2 == true;
 	  //else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") hit2_SB == true;
@@ -293,14 +305,52 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    // if (nHitComp==2) FillHistogram(nHit_eq2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    // if (nHitComp>2) FillHistogram(nHit_gt2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 
+
+	    //======================
 	    // if (inc_all) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	  //   else if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	  //   else if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	  //   else if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	  //   else if (nHitComp>2) FillHistogram(nHit2_S1S1,Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    // if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	    
+	    // else if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // else if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    // else if (hit2_S1S1) FillHistogram(nHit2_S1S1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // else if (hit2_S1S2) FillHistogram(nHit2_S1S2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // else if (hit2_SB) FillHistogram(nHit2_SB, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    // else if (hit2_B1B1) FillHistogram(nHit2_B1B1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // else if (hit2_B1B2) FillHistogram(nHit2_B1B2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    // else if (hit2_BS) FillHistogram(nHit2_BS, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    // else if (rest) FillHistogram(remain, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    
+	    //====================
+
+	    if (inc_all) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	    
+	    if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    if (hit2_S1S1) FillHistogram(nHit2_S1S1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	      
+	    if (hit2_S1S2) FillHistogram(nHit2_S1S2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    if (hit2_SB) FillHistogram(nHit2_SB, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    if (hit2_B1B1) FillHistogram(nHit2_B1B1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    if (hit2_B1B2) FillHistogram(nHit2_B1B2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    if (hit2_BS) FillHistogram(nHit2_BS, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+	    if (rest) FillHistogram(remain, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+
+
+
+
+
+	    //else if (nHitComp>2) FillHistogram(nHit2_S1S1,Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	  // } 
 	  //procId condition end
-	  //}	
+	  }	
 
 	}   //end of iHit loop
       }       // nHit >1 condition brkt end			
