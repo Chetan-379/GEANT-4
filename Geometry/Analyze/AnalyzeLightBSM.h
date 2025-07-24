@@ -37,13 +37,13 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH2D *h_ScatAng_SDvsAna;
   TH1D *h_diff_Ana_SD;
   TH1I *h_nHits;
-  TH1D *h_compSigEta[10], *h_hitTime[10];
-  TH1D *h_theta[10], *h_eta[10];
-  TH2D *h_theta_eta[10];
-  TH1F *h_pol0[10], *h_pol1[10], *h_pol2[10];
-  TH1F *h_hitPosX[10], *h_hitPosY[10], *h_hitPosZ[10];
-  TH1F *h_Eout[10], *h_Ein[10];
-  TH2D *h_theta_Eout[10];
+  TH1D *h_compSigEta[15], *h_hitTime[15];
+  TH1D *h_theta[15], *h_eta[15];
+  TH2D *h_theta_eta[15];
+  TH1F *h_pol0[15], *h_pol1[15], *h_pol2[15];
+  TH1F *h_hitPosX[15], *h_hitPosY[15], *h_hitPosZ[15];
+  TH1F *h_Eout[15], *h_Ein[15];
+  TH2D *h_theta_Eout[15];
   TFile *oFile;
 };
 #endif
@@ -78,7 +78,8 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
 
 
-  vector<string> nHit_cat = {"all_inc", "nHit_eq1", "nHit_gt1", "nHit_eq2", "nHit_gt2"};
+    //vector<string> nHit_cat = {"all_inc", "nHit_eq1", "nHit_gt1", "nHit_eq2", "nHit_gt2"};
+    vector<string> nHit_cat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
 
   char hname_Compt_Edep[100], hname_Photo_Edep[100], hname_Total_Edep[100], hname_Total_Edep_fine_binned[100], hname_ComptVsPhoto_Edep[10], hname_ScatAng_SDvsAna[100], hname_diff_Ana_SD[100], hname_nHits[100], hname_compSigEta[100], hname_hitTime[100], hname_theta[100], hname_eta[100], hname_theta_eta[100], hname_pol0[100], hname_pol1[100], hname_pol2[100], hname_hitPosX[100], hname_hitPosY[100], hname_hitPosZ[100], hname_Eout[100], hname_Ein[100], hname_theta_Eout[100];
 

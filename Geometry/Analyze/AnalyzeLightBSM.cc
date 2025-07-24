@@ -173,6 +173,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       for (int i = 0; i< HitTime_sort.size(); i++){
 	if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
+	//if(incrs_nHit) nHitComp++;   
       }
 
       h_nHits->Fill(nHitComp);
@@ -259,9 +260,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  if (nHitComp ==0) noHit = true;
 	  
 	  else if (nHitComp ==1){
-	    //n1++;
-	    if (MatName(DetId1) =="Scint") hit1_S = true; 
-	    else if (MatName(DetId1) =="BGO") hit1_B = true;
+	    n1++;
+	    if (MatName(DetId1) =="Scint") {n1s++; hit1_S = true;} 
+	    else if (MatName(DetId1) =="BGO") {n1b++; hit1_B = true;}
 	    else rest =true;
 	  }
 
@@ -357,6 +358,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
     } //jentry loop end
 
   cout << "events with 2 or more comps: " << Comp2_evts << endl;
+  cout << "n1: " << n1 << endl;
+  cout << "n1s: " << n1s << endl;
+  cout << "n1b: " << n1b << endl;
 }
 
 void AnalyzeLightBSM::FillHistogram(int cat, double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double pol0, double pol1, double pol2, double Ein, double Eout){
