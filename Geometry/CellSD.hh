@@ -9,6 +9,7 @@
 #include "G4VProcess.hh"
 #include "G4PolarizationHelper.hh"
 #include "G4StokesVector.hh"
+#include "G4EventManager.hh"
 #include "globals.hh"
 
 class G4Step;
@@ -27,8 +28,9 @@ class CellSD : public G4VSensitiveDetector
     void EndOfEvent(G4HCofThisEvent* hitCollection) override;
 
   private:
-    CellHitsCollection* fHitsCollection = nullptr;
-    G4int fNofCells = 0;
+  CellHitsCollection* fHitsCollection = nullptr;
+  G4int fNofCells = 0;
+  G4bool summary = false; 
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

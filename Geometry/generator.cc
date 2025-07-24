@@ -4,8 +4,8 @@ MyPrimaryGenerator::MyPrimaryGenerator()
   fParticleGun = new G4ParticleGun(1);
   G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
 
-  //G4ThreeVector mom(1.5, 2.5, 0.);
-  G4ThreeVector mom(1.5, 2.5, 1.);
+  G4ThreeVector mom(1.5, 2.5, 0.);
+  //G4ThreeVector mom(1.5, 2.5, 1.);
 
   //G4ThreeVector mom(0, 1.5, 0);
   //G4StokesVector pol(G4ThreeVector(-1., 0., 0.));
@@ -16,6 +16,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
   fParticleGun->SetParticleMomentum(511*keV);
   
   G4ThreeVector pol = fParticleGun->GetParticleMomentumDirection().orthogonal().unit();
+  
   G4cout << "\n\npolarsation direction: " << pol << G4endl;
   fParticleGun->SetParticlePolarization(pol);
 }

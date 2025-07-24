@@ -12,33 +12,44 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   auto nist = G4NistManager::Instance();
   //auto air = nist->FindOrBuildMaterial("G4_AIR");
-  auto air = nist->FindOrBuildMaterial("G4_Galactic");
+  //auto air = nist->FindOrBuildMaterial("G4_Galactic");
   auto plastic = nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+  //auto plastic = nist->FindOrBuildMaterial("G4_BGO");
   auto BGO = nist->FindOrBuildMaterial("G4_BGO");
+  //auto BGO = nist->FindOrBuildMaterial("G4_Galactic");
+  auto vaccum = nist->FindOrBuildMaterial("G4_Galactic");
 
   // World
   G4double worldSize = 1.5 * m;
   auto solidWorld = new G4Box("World", worldSize, worldSize, worldSize);
-  auto logicWorld = new G4LogicalVolume(solidWorld, air, "World");
+  auto logicWorld = new G4LogicalVolume(solidWorld, vaccum, "World");
   auto physWorld = new G4PVPlacement(nullptr, {}, logicWorld, "World", nullptr, false, 0);
 
   // Scintillator strip (long axis along Z)
   G4double stripLength = 500.0 * mm;
+  //G4double stripLength = 3000.0 * mm;
+  //G4double stripLength = 7.0 * mm;
   G4double stripWidth  = 19.0 * mm;
   G4double stripThick  = 7.0 * mm;
 
   G4double InstripLength = 500.0 * mm;
+  //G4double InstripLength = 3000.0 * mm;
+  //G4double InstripLength = 7.0 * mm;
   G4double InstripWidth  = 24.0 * mm;
+  //G4double InstripWidth  = 60.0 * mm;
   G4double InstripThick  = 6.0 * mm;
         
   auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
   logicStrip = new G4LogicalVolume(solidStrip, plastic, "StripLV");
+  //logicStrip = new G4LogicalVolume(solidStrip, air, "StripLV");
 
   logicOuterMostStrip = new G4LogicalVolume(solidStrip, BGO, "OuterMostStripLV");
+  //logicOuterMostStrip = new G4LogicalVolume(solidStrip, plastic, "OuterMostStripLV");
+  //logicOuterMostStrip = new G4LogicalVolume(solidStrip, air, "OuterMostStripLV");
 
   auto solidInStrip = new G4Box("InStrip", InstripWidth / 2, InstripThick / 2, InstripLength / 2);
   logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStripLV");
-
+  
   
   G4int nstrips_block = 13;
 
@@ -49,10 +60,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 			       {312, 362.0 * mm},				 
 			       {48, 425.0 * mm},
 			       {48, 467.5 * mm},
-			       {96, 575.0 * mm}
-			       //{192, 575.0 * mm}
-			      
-  };
+			       {96, 575.0 * mm}			      
+                              };
 
   G4double phi_shift = 0;
   for (size_t i = 0; i < layers.size(); ++i) {

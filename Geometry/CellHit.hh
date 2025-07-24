@@ -39,6 +39,8 @@ public:
   void SetScatAngle(G4double theta);
   void SetEta(G4double eta);
   void SetPolarisation(G4ThreeVector pol);
+  void SetEout(G4double Eout);
+  void SetEin(G4double Ein);
     
   
   // get methods
@@ -52,6 +54,8 @@ public:
   G4double GetScatAngle() const;
   G4double GetEta() const;
   G4ThreeVector GetPolarisation() const;
+  G4double GetEout() const;
+  G4double GetEin() const;
 
   
 private:
@@ -64,6 +68,7 @@ private:
   G4int fProcId = -1;
   G4double fScat = 10000.;
   G4double fEta = 10000.;
+  G4double fEin = -10000, fEout = -10000;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -147,6 +152,17 @@ inline G4ThreeVector CellHit::GetPolarisation() const
 {
   return fPol;
 }
+
+inline G4double CellHit::GetEin() const
+{
+  return fEin;
+}
+
+inline G4double CellHit::GetEout() const
+{
+  return fEout;
+}
+
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

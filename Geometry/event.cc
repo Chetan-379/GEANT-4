@@ -59,6 +59,8 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitPol0_vec.clear();
   HitPol1_vec.clear();
   HitPol2_vec.clear();
+  HitEin_vec.clear();
+  HitEout_vec.clear();
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
@@ -99,7 +101,10 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
 
   for (int iHit = 0; iHit < InStripHC->GetSize(); iHit++){
     auto hit = dynamic_cast<CellHit*>(InStripHC->GetHit(iHit));
-    ScintHC->insert(hit); 
+    ScintHC->insert(hit);
+    //auto scatAngl = hit->GetScatAngle()*180/CLHEP::pi;
+    //if(scatAngl > 89 && scatAngl < 91 && hit->GetDetID() == 1051) G4cout << "\n\n=====event with 90: " << ievent << G4endl;
+    
   }
 
   for (int iHit = 0; iHit < OutStripHC->GetSize(); iHit++){
@@ -129,15 +134,24 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitDetId_vec.push_back(ScintHit->GetDetID());
     HitTrkLen_vec.push_back(ScintHit->GetTrackLength());
     HitProcId_vec.push_back(ScintHit->GetProcId());
+
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
+
+    //if (ScintHC->GetSize() ==1 || ScintHC->GetSize() ==2) HitScatAngle_vec.push_back(ScintHit->GetScatAngle()* 180/CLHEP::pi);
+    //if (ScintHC->GetSize() ==1)
+    //HitScatAngle_vec.push_back(ScintHit->GetScatAngle()* 180/CLHEP::pi);
+
     HitEta_vec.push_back(ScintHit->GetEta());
     HitPol0_vec.push_back((ScintHit->GetPolarisation())[0]);
     HitPol1_vec.push_back((ScintHit->GetPolarisation())[1]);
     HitPol2_vec.push_back((ScintHit->GetPolarisation())[2]);
+
+    HitEin_vec.push_back(ScintHit->GetEin());
+    HitEout_vec.push_back(ScintHit->GetEout());   
   }
 
-  // if (ievent == 196) {
-  //   G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
+  //  if (ievent == 800) {
+  //    G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
   // }
   
   //**************************************************************************************************
@@ -164,7 +178,9 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitPol0 = HitPol0_vec;
   runObject->HitPol1 = HitPol1_vec;
   runObject->HitPol2 = HitPol2_vec;
-
+  runObject->HitEout = HitEout_vec;
+  runObject->HitEin = HitEin_vec;
+  
   runObject->tree->Fill();
     
   ievent++;

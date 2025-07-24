@@ -27,7 +27,7 @@ void CellSD::Initialize(G4HCofThisEvent* hce)
 
 G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 {
-  bool summary = true; 
+  //bool summary = false; 
   // energy deposit
   auto edep = step->GetTotalEnergyDeposit();
 
@@ -163,7 +163,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
 void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
-  if (verboseLevel > 1) {
+  if (verboseLevel > 1 && summary) {
     auto nofHits = fHitsCollection->entries();
     
     G4cout << "\n" << "-------->Hit summary of the SD "  << G4endl;

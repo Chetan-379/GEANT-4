@@ -24,7 +24,7 @@ public:
   std::vector<double> X, Y, Z, E;
   G4double Total_E, Total_Compt_Edep, Photo_Edep;
 
-  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle, HitEta, HitPol0, HitPol1, HitPol2;
+  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle, HitEta, HitPol0, HitPol1, HitPol2, HitEout, HitEin;
   std::vector<G4double> HitPosX, HitPosY, HitPosZ;
   std::vector<G4int> HitDetId, HitProcId;
  

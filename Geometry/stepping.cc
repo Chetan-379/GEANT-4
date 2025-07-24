@@ -45,6 +45,14 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (step->GetTrack()->GetParentID() == 0){
     if (proc == "compt" || proc == "Rayl") {
       fEventAction-> Compt_edep.push_back(KE_i - KE_f);
+
+      //auto prePhoDir = step->GetPreStepPoint()->GetMomentumDirection();
+      //auto postPhoDir = step->PostStepPoint()->GetMomentumDirection();
+
+     //G4double scat_theta = prePhoDir.dot(postPhoDir);
+     
+     //if (ievent == 196) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+     // else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
     }
     
     if (proc == "phot") {      
