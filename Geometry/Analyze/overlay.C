@@ -101,12 +101,15 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
 		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
   
 
-  TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
+  //TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
+  TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,1000,750);//600,600,1200,1200);
   canvas_n1->Range(-60.25,-0.625,562.25,0.625);
+  //canvas_n1->Range(-70.25,-0.625,300.25,0.625);
   canvas_n1->SetFillColor(0);
   canvas_n1->SetBorderMode(0);
   canvas_n1->SetBorderSize(2);
-  canvas_n1->SetRightMargin(0.045);
+  //canvas_n1->SetRightMargin(0.045);
+  canvas_n1->SetRightMargin(0.095);
   canvas_n1->SetLeftMargin(0.12);
   canvas_n1->SetTopMargin(0.06);
   canvas_n1->SetBottomMargin(0.12);
@@ -119,7 +122,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.45,0.8,0.65,0.9);  
+  legend = new TLegend(0.40,0.8,0.60,0.9);  
   legend->SetTextSize(0.030);
   legend->SetLineColor(kWhite);
   char* lhead = new char[100];
@@ -142,7 +145,8 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
       hist.at(i)->GetYaxis()->SetTitle("Normalized");
     }
     else {
-      hist.at(i)->GetYaxis()->SetTitle("Entries");
+      //hist.at(i)->GetYaxis()->SetTitle("Entries");
+      hist.at(i)->GetYaxis()->SetTitle("E_{\\gamma_{scattered}}");
     }
 
     hist.at(i)->Rebin(rebin);
@@ -187,7 +191,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     //sprintf(final_label,"%.0f events", Integral);
    
     legName.push_back(hist.at(i)->GetName());
-    leg_entry[i] = legend->AddEntry(hist.at(i), final_label, "l");
+    leg_entry[i] = legend->AddEntry(hist.at(i), final_label, " ");
     leg_entry[i]->SetTextColor(hist.at(i)->GetLineColor());
     if(hist.at(i)->GetMaximum() > ymax) ymax = hist.at(i)->GetMaximum();
     if(hist.at(i)->GetMinimum() < ymin) ymin = hist.at(i)->GetMinimum();
@@ -203,10 +207,13 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     // else
     //   hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
     
-    if(!i) hist.at(i)->Draw("hist colz");
-    else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
+    if(!i) hist.at(i)->Draw("colz");
+    //else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
+    //canvas_n1->Update();
 
-    TPaveStats *ptstats1 = new TPaveStats(0.8,0.83,0.955,0.94,"brNDC");
+    
+    //TPaveStats *ptstats1 = new TPaveStats(0.8,0.83,0.955,0.94,"brNDC");
+    TPaveStats *ptstats1 = new TPaveStats(0.71,0.78,0.905,0.94,"brNDC");
     ptstats1->SetBorderSize(1);
     ptstats1->SetFillColor(0);
     ptstats1->SetLineColor(hist.at(i)->GetLineColor());
@@ -254,7 +261,8 @@ void overlay(string pathname)
   //f= {"test_comp_egEta_out.root"};
   //f= {"test_comp_egEta_nHit2plus_posTheta_100kEvts_z0_out.root"};
   //f= {"test_diffEta_out.root"};
-  f= {"test_diffEta_check_out_nHit_updte.root"};
+  //f= {"test_diffEta_check_out_nHit_updte.root"};
+  f= {"test_BinWidth_change_out.root"};
 
   
   //define your histograms to be read from here
@@ -262,17 +270,22 @@ void overlay(string pathname)
 
   vector<string> nHitCat;
   nHitCat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
+  //nHitCat = {"all_inc"};//, "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
 
-  char hname_theta[100], hname_eta[100], hname_Eout[100]; 
+  char hname_theta[100], hname_eta[100], hname_Eout[100], hname_ThetaVsEout[100]; 
 
   
   for(int i=0; i< nHitCat.size(); i++){
     sprintf(hname_theta, "h_theta_%s",nHitCat[i].c_str());
     sprintf(hname_eta, "h_eta_%s",nHitCat[i].c_str());
     sprintf(hname_Eout, "h_Eout_%s",nHitCat[i].c_str());
+    sprintf(hname_ThetaVsEout, "h_theta_Eout_%s",nHitCat[i].c_str());
+    
+    
 
     vector<string> variables;
-    variables = {hname_theta, hname_eta, hname_Eout};
+    //variables = {hname_theta, hname_eta, hname_Eout, hname_ThetaVsEout};
+    variables = {hname_ThetaVsEout};
   
 
   //vector<string> variables;  
@@ -283,18 +296,20 @@ void overlay(string pathname)
   
  
   //vector<string> filetag;
-    string filetag;
-  //filetag={"ScatEta", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ"};
+    vector<string> filetag;
+     filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit==2_Plastic_singleCrys", "nHit==2_Plastic_diffCryst", "nHit==2_Plastic_BGO" ,"nHit==2_BGO_singleCrys", "nHit==2_BGO_diffCryst", "nHit==2_BGO_Plastic", "rest (nHit>2)"};
+
+    
   //filetag={"scatTheta inclusive", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
   //filetag={"all_inc", "all_inc", "all_inc"};//, "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
-    filetag = nHitCat[i]; 
+    //filetag = nHitCat[i]; 
  
   //rebin values
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {200, 200, 200, 10, 700, 700, 700};
-  vector<double>xmin = {0, -200, 0, 0, -700, -700, -700};
+  vector<double>xmax = {200, 200, 200, 300, 700, 700, 700};
+  vector<double>xmin = {0, -200, 0, 0, 0, -700, -700};
 
   for (int iVar =0; iVar < variables.size(); iVar++){
     vector<TH1F*> hist_list;
@@ -317,7 +332,7 @@ void overlay(string pathname)
     //diff_title = { "nOptPhotons"};
     //diff_title = { "OptPho_lmbda (nm)"};
     //diff_title = {"eta(#circ)", "nHits", "theta(#circ)", "time(ns)", "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
-    diff_title = {"theta(#circ)", "eta(#circ)", "Escat_(MeV)"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
+    diff_title = {"#theta_{scat}(#circ)", "eta(#circ)", "Escat_(MeV)", "test"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
     // vector<string>xtitle;
     // xtitle = {diff_title[0], diff_title[1]};
 	 
@@ -332,7 +347,7 @@ void overlay(string pathname)
     //if (filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
 	 	    
     //calling generate_1Dplot which will take this vector of histograms and 
-    generate_1Dplot(hist_list,full_path,xmax[iVar],xmin[iVar],leg_head,false,logFlag,false,true,filetag.c_str(),diff_title[iVar].c_str(),rebin[iVar]);
+    generate_1Dplot(hist_list,full_path,xmax[iVar],xmin[iVar],leg_head,false,logFlag,false,true,filetag[i].c_str(),diff_title[iVar].c_str(),rebin[iVar]);
   }
   }
 }
