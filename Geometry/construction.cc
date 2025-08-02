@@ -40,6 +40,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G4double InstripThick  = 6.0 * mm;
         
   auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
+
   logicStrip = new G4LogicalVolume(solidStrip, plastic, "StripLV");
   //logicStrip = new G4LogicalVolume(solidStrip, air, "StripLV");
 
@@ -89,28 +90,29 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
       }
 
       else if (i == 3){
-	G4ThreeVector position = (layer.radius + 0.5 * InstripWidth) * uz;
-	G4Transform3D transform = G4Transform3D(rot, position);	      
-	new G4PVPlacement(transform,
-			  logicOuterMostStrip,
-			  "OuterMostStrip",
-			  logicWorld,
-			  false,
-			  (i+1) * 1000 + j,
-			  true);
+      	G4ThreeVector position = (layer.radius + 0.5 * InstripWidth) * uz;
+      	G4Transform3D transform = G4Transform3D(rot, position);	      
+      	new G4PVPlacement(transform,
+      			  logicOuterMostStrip,
+      			  "OuterMostStrip",
+      			  logicWorld,
+      			  false,
+      			  (i+1) * 1000 + j,
+      			  true);
       }
 
       else{
-	G4ThreeVector position = (layer.radius + 0.5 * stripWidth) * uz;
-	G4Transform3D transform = G4Transform3D(rot, position);	      
-	new G4PVPlacement(transform,
-			  logicStrip,
-			  "Strip",
-			  logicWorld,
-			  false,
-			  (i+1) * 1000 + j,
-			  true);
-      }	      
+      	G4ThreeVector position = (layer.radius + 0.5 * stripWidth) * uz;
+      	G4Transform3D transform = G4Transform3D(rot, position);	      
+      	new G4PVPlacement(transform,
+      			  logicStrip,
+      			  "Strip",
+      			  logicWorld,
+      			  false,
+      			  (i+1) * 1000 + j,
+      			  true);
+      }
+      
     }
 	
     G4cout << "\n\nphi_shift: " << phi_shift << G4endl;

@@ -81,7 +81,8 @@ void CellHit::Print()
 	 << " ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << "|"
 	 << " eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << "|"
 	 << " Ein: " << std::setw(7) << fEin << " MeV" << "|"
-	 << " Eout: " << std::setw(7) << fEout << "MeV" << G4endl;
+	 << " Eout: " << std::setw(7) << fEout << "MeV" << "|"
+	 << " Pol: " << std::setw(7) << fPol << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

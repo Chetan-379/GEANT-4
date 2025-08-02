@@ -7,6 +7,7 @@
 #include "NtupleVariables.h"
 #include "TH1F.h"
 #include "TH2.h"
+#include "TH3.h"
 #include <TProfile.h>
 #include "TFile.h"
 #include "TLorentzVector.h"
@@ -44,6 +45,8 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH1F *h_hitPosX[15], *h_hitPosY[15], *h_hitPosZ[15];
   TH1F *h_Eout[15], *h_Ein[15];
   TH2D *h_theta_Eout[15];
+  TH2F *h_posX_posY, *h_polX_polY;
+  //TH3F *h_posXYZ;
   TFile *oFile;
 };
 #endif
@@ -70,6 +73,20 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
     h_diff_Ana_SD = new TH1D("diff_Ana_SD", "diff_Ana_SD", 632,-3.16,3.16);
 
+    h_posX_posY = new TH2F("XposVsYpos","XposVsYpos",1200,-600,600, 1200,-600,600);
+    h_posX_posY->SetXTitle("X_Pos (mm)");
+    h_posX_posY->SetYTitle("Y_Pos (mm)");
+
+    h_polX_polY = new TH2F("XpolVsYpol","XpolVsYpol",120,-1.2,1.2, 120,-1.2,1.2);
+    h_polX_polY->SetXTitle("X_Pol");
+    h_polX_polY->SetYTitle("Y_Pol");
+
+    // h_posXYZ = new TH3F("PosXYZ","PosXYZ",1200,-600,600, 1200,-600,600, 1000, -500, 500);
+    // h_posXYZ->SetXTitle("X (mm)");
+    // h_posXYZ->SetYTitle("Y (mm)");
+    // h_posXYZ->SetZTitle("Z (mm)");
+    
+
      double bin_edges[16];
     for (int j = 0; j <= 15; ++j) {
       bin_edges[j] = j - 0.5;
@@ -79,7 +96,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
 
     //vector<string> nHit_cat = {"all_inc", "nHit_eq1", "nHit_gt1", "nHit_eq2", "nHit_gt2"};
-    vector<string> nHit_cat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
+    vector<string> nHit_cat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain", "test"};
 
   char hname_Compt_Edep[100], hname_Photo_Edep[100], hname_Total_Edep[100], hname_Total_Edep_fine_binned[100], hname_ComptVsPhoto_Edep[10], hname_ScatAng_SDvsAna[100], hname_diff_Ana_SD[100], hname_nHits[100], hname_compSigEta[100], hname_hitTime[100], hname_theta[100], hname_eta[100], hname_theta_eta[100], hname_pol0[100], hname_pol1[100], hname_pol2[100], hname_hitPosX[100], hname_hitPosY[100], hname_hitPosZ[100], hname_Eout[100], hname_Ein[100], hname_theta_Eout[100];
 
@@ -140,7 +157,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     h_Ein[i] = new TH1F(hname_Ein, hname_Ein, 260, 0, 0.520);
     h_Ein[i]->GetXaxis()->SetTitle("Ein (MeV)");
 
-    h_theta_Eout[i] = new TH2D(hname_theta_Eout, hname_theta_Eout, 100,0,200, 260,0.,0.520);
+    h_theta_Eout[i] = new TH2D(hname_theta_Eout, hname_theta_Eout, 500,0,200, 260,0.,0.520);
     h_theta_Eout[i]->GetYaxis()->SetTitle("Eout (MeV)");
     h_theta_Eout[i]->GetXaxis()->SetTitle("theta (deg)");        
   }

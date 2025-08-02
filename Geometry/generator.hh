@@ -10,6 +10,7 @@
 #include "G4IonTable.hh"
 #include "G4Geantino.hh"
 #include "G4StokesVector.hh"
+#include "Randomize.hh"
 
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction
 {

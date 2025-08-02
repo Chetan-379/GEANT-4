@@ -46,7 +46,7 @@ public:
 private:
   G4double fX;
   MyRunAction *runObject;
-  G4int ievent=1;
+  G4int ievent=1, chkEvt = 59267;
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
 

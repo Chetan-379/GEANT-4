@@ -122,8 +122,10 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.40,0.8,0.60,0.9);  
-  legend->SetTextSize(0.030);
+  legend = new TLegend(0.40,0.8,0.60,0.9);
+  //legend = new TLegend(0.15,0.8,0.35,0.9);  
+  //legend->SetTextSize(0.030);
+  legend->SetTextSize(0.040);
   legend->SetLineColor(kWhite);
   char* lhead = new char[100];
 
@@ -145,8 +147,8 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
       hist.at(i)->GetYaxis()->SetTitle("Normalized");
     }
     else {
-      //hist.at(i)->GetYaxis()->SetTitle("Entries");
-      hist.at(i)->GetYaxis()->SetTitle("E_{\\gamma_{scattered}}");
+      hist.at(i)->GetYaxis()->SetTitle("Entries");
+      //hist.at(i)->GetYaxis()->SetTitle("E_{\\gamma_{scattered}}");
     }
 
     hist.at(i)->Rebin(rebin);
@@ -207,8 +209,9 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     // else
     //   hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
     
-    if(!i) hist.at(i)->Draw("colz");
-    //else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
+    //if(!i) hist.at(i)->Draw("colz");
+    if(!i) hist.at(i)->Draw("hist");
+    else   hist.at(i)->Draw("hist sames"); //overlaying the histograms
     //canvas_n1->Update();
 
     
@@ -262,7 +265,10 @@ void overlay(string pathname)
   //f= {"test_comp_egEta_nHit2plus_posTheta_100kEvts_z0_out.root"};
   //f= {"test_diffEta_out.root"};
   //f= {"test_diffEta_check_out_nHit_updte.root"};
-  f= {"test_BinWidth_change_out.root"};
+  //f= {"test_BinWidth_change_out.root"};
+  //f= {"random_mom_100kEvts_out.root"};
+  //f= {"random_pol_random_mom_100kEvts_out.root"};
+  f= {"mom_randomXYZ_pol_random_100kEvts_out.root"};
 
   
   //define your histograms to be read from here
@@ -279,13 +285,13 @@ void overlay(string pathname)
     sprintf(hname_theta, "h_theta_%s",nHitCat[i].c_str());
     sprintf(hname_eta, "h_eta_%s",nHitCat[i].c_str());
     sprintf(hname_Eout, "h_Eout_%s",nHitCat[i].c_str());
-    sprintf(hname_ThetaVsEout, "h_theta_Eout_%s",nHitCat[i].c_str());
+    //sprintf(hname_ThetaVsEout, "h_theta_Eout_%s",nHitCat[i].c_str());
     
     
 
     vector<string> variables;
-    //variables = {hname_theta, hname_eta, hname_Eout, hname_ThetaVsEout};
-    variables = {hname_ThetaVsEout};
+    variables = {hname_theta, hname_eta, hname_Eout};//, hname_ThetaVsEout};
+    //variables = {hname_ThetaVsEout};
   
 
   //vector<string> variables;  
@@ -297,7 +303,8 @@ void overlay(string pathname)
  
   //vector<string> filetag;
     vector<string> filetag;
-     filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit==2_Plastic_singleCrys", "nHit==2_Plastic_diffCryst", "nHit==2_Plastic_BGO" ,"nHit==2_BGO_singleCrys", "nHit==2_BGO_diffCryst", "nHit==2_BGO_Plastic", "rest (nHit>2)"};
+    //filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit==2_Plastic_singleCrys", "nHit==2_Plastic_diffCryst", "nHit==2_Plastic_BGO" ,"nHit==2_BGO_singleCrys", "nHit==2_BGO_diffCryst", "nHit==2_BGO_Plastic", "rest (nHit>2)"};
+    filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit>=2_Plastic_singleCrys", "nHit>=2_Plastic_diffCryst", "nHit>=2_Plastic_BGO" ,"nHit>=2_BGO_singleCrys", "nHit>=2_BGO_diffCryst", "nHit>=2_BGO_Plastic", "rest"};
 
     
   //filetag={"scatTheta inclusive", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};

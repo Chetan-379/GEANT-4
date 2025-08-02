@@ -64,8 +64,8 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
-  //if (ievent == 196) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
-  // else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
+  if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+  else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
 }
 
 void MyEventAction::EndOfEventAction(const G4Event* event)
@@ -150,9 +150,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitEout_vec.push_back(ScintHit->GetEout());   
   }
 
-  //  if (ievent == 800) {
-  //    G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
-  // }
+  if (ievent == chkEvt) G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
+     //}
   
   //**************************************************************************************************
 
