@@ -46,6 +46,8 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH1F *h_Eout[15], *h_Ein[15];
   TH2D *h_theta_Eout[15];
   TH2F *h_posX_posY, *h_polX_polY;
+  TH1F *h_Pol_Ana;
+  TH2F *h_PolX_Ana_SD, *h_PolY_Ana_SD, *h_PolZ_Ana_SD;
   //TH3F *h_posXYZ;
   TFile *oFile;
 };
@@ -81,6 +83,21 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     h_polX_polY->SetXTitle("X_Pol");
     h_polX_polY->SetYTitle("Y_Pol");
 
+    h_PolX_Ana_SD = new TH2F("PolX_AnaVsSD","PolX_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
+    h_PolX_Ana_SD->SetXTitle("PolX_Ana");
+    h_PolX_Ana_SD->SetYTitle("PolX_SD");
+
+    h_PolY_Ana_SD = new TH2F("PolY_AnaVsSD","PolY_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
+    h_PolY_Ana_SD->SetXTitle("PolY_Ana");
+    h_PolY_Ana_SD->SetYTitle("PolY_SD");
+
+    h_PolZ_Ana_SD = new TH2F("PolZ_AnaVsSD","PolZ_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
+    h_PolZ_Ana_SD->SetXTitle("PolZ_Ana");
+    h_PolZ_Ana_SD->SetYTitle("PolZ_SD");
+
+    h_Pol_Ana = new TH1F("Pol_Ana", "Pol_Ana", 240,-1.2,1.2);
+
+
     // h_posXYZ = new TH3F("PosXYZ","PosXYZ",1200,-600,600, 1200,-600,600, 1000, -500, 500);
     // h_posXYZ->SetXTitle("X (mm)");
     // h_posXYZ->SetYTitle("Y (mm)");
@@ -98,7 +115,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     //vector<string> nHit_cat = {"all_inc", "nHit_eq1", "nHit_gt1", "nHit_eq2", "nHit_gt2"};
     vector<string> nHit_cat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain", "test"};
 
-  char hname_Compt_Edep[100], hname_Photo_Edep[100], hname_Total_Edep[100], hname_Total_Edep_fine_binned[100], hname_ComptVsPhoto_Edep[10], hname_ScatAng_SDvsAna[100], hname_diff_Ana_SD[100], hname_nHits[100], hname_compSigEta[100], hname_hitTime[100], hname_theta[100], hname_eta[100], hname_theta_eta[100], hname_pol0[100], hname_pol1[100], hname_pol2[100], hname_hitPosX[100], hname_hitPosY[100], hname_hitPosZ[100], hname_Eout[100], hname_Ein[100], hname_theta_Eout[100];
+    char hname_Compt_Edep[100], hname_Photo_Edep[100], hname_Total_Edep[100], hname_Total_Edep_fine_binned[100], hname_ComptVsPhoto_Edep[10], hname_ScatAng_SDvsAna[100], hname_diff_Ana_SD[100], hname_nHits[100], hname_compSigEta[100], hname_hitTime[100], hname_theta[100], hname_eta[100], hname_theta_eta[100], hname_pol0[100], hname_pol1[100], hname_pol2[100], hname_hitPosX[100], hname_hitPosY[100], hname_hitPosZ[100], hname_Eout[100], hname_Ein[100], hname_theta_Eout[100];
 
   for(int i=0; i< nHit_cat.size(); i++){            
     // sprintf(hname_h_Compt_Edep, "h_Compt_Edep_%s",nHit_cat[i].c_str());

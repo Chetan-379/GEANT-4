@@ -178,7 +178,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       h_nHits->Fill(nHitComp);
 
-      if(nHitComp >0){
+      if(nHitComp >1){
 	//for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
 	for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
 	  v_comp.SetXYZ(0,0,0);
@@ -200,7 +200,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  double scat_theta = 10000;
 
 	  scat_theta = acos(vin.Dot(vout)/(vin.R()*vout.R()));
-
+	 
 	  double Time = HitTime_sort[iHit];
 	  double PosX = HitPosX_sort[iHit];
 	  double PosY = HitPosY_sort[iHit];
@@ -241,6 +241,21 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  h_diff_Ana_SD->Fill(Ang_diff);
 	  h_posX_posY ->Fill(PosX, PosY);
 	  h_polX_polY ->Fill(Pol0, Pol1);
+
+	  //vector<double> Pol_Ana;
+	  ROOT::Math::XYZVector Pol_Ana;
+	  Pol_Ana = vin.Cross(vout)/(vin.R()*vout.R());
+
+	  h_PolX_Ana_SD->Fill(Pol_Ana.X(), Pol0);
+	  h_PolY_Ana_SD->Fill(Pol_Ana.Y(), Pol1);
+	  h_PolZ_Ana_SD->Fill(Pol_Ana.Z(), Pol2);
+
+	  //ROOT::Math::XYZVector Pol_SD(Pol0, Pol1, Pol2);
+
+	  //if (EtaPolScat_deg == 90) 
+
+	  h_Pol_Ana->Fill(Pol_Ana.Mag2());
+	  
 
 	  
 	  //***************************************
