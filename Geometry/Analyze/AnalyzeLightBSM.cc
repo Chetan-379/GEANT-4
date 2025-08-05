@@ -178,7 +178,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       h_nHits->Fill(nHitComp);
 
-      if(nHitComp >1){
+      if(nHitComp >0){
 	//for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
 	for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
 	  v_comp.SetXYZ(0,0,0);
