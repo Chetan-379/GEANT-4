@@ -1,12 +1,10 @@
-In this version, mainly working machinery for calculating the angle between scattering plane and the polarisation plane (eta) is included.
+In this version, most of the changes are made in the Analyzer script and the Primary generator script.
 
-- Here we have tried to reproduce the result from Klein Nishina formula for dependence of cross section on eta.
-- We got the distribution of eta over 10000 events similar to the expected one (peak at +90 and -90 degrees).
-- We took only first compton scattering of the event in the Analysis script based on the timing information of the hits.
-- There was a confusion regarding `SetParticlePolarisation()`: whether it sets the direction of electric field or the stokes vector of the photon.
-- We arrived at the conclusion that the polarisation vector there is the electric field direction. since simulation results are consistent only when the polarisation vector and photon momentum direction are perpendicular.
-- As of now, we plan to move ahead with this interpretation, I will modify the things in future if any mistake is found.
+-Definition of nHit variable (to calculate no. of Hits in the event) is updated to include only the events where 1st hit is from Compton Scattering.
+-Added in the Analyzer script to analyze all the events into different categories based on location of hits. e.g 1st hit in plastic 2nd in BGO etc.
 
+-In the primary generator file, randomized the incident photon momentum direction in the XY plane and also along the axis of the cylinder.
+-Also randomized the direction of polarisation of incident photon in the plane perpendicular to the momentum direction.
 
 =======To run the simulation:
 - `mkdir build`
