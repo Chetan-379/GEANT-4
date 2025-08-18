@@ -122,8 +122,8 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   double x = 0.15;
   double y = 0.90;
   TLegend *legend; //legend to be drawn on the plot - shift x,ys if you want to move this on the canvas
-  legend = new TLegend(0.40,0.8,0.60,0.9);
-  //legend = new TLegend(0.15,0.8,0.35,0.9);  
+  //legend = new TLegend(0.40,0.8,0.60,0.9);
+  legend = new TLegend(0.15,0.8,0.35,0.9);  
   //legend->SetTextSize(0.030);
   legend->SetTextSize(0.040);
   legend->SetLineColor(kWhite);
@@ -152,6 +152,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     }
 
     hist.at(i)->Rebin(rebin);
+    //hist.at(i)->Rebin(2);
     hist.at(i)->GetXaxis()->SetRangeUser(xmin, xmax); //to be given while calling this function
     hist.at(i)->SetLineWidth(line_width[i]); //these are defined on top of this script    
     hist.at(i)->SetLineStyle(line_style[i]);
@@ -223,6 +224,8 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     ptstats1->SetTextAlign(12);
     ptstats1->SetTextColor(hist.at(i)->GetLineColor());
     ptstats1->SetTextFont(42);
+    ptstats1->SetTextSize(0.030);
+    //ptstats1->SetName(""); 
     ptstats1->SetOptStat(110011);
     ptstats1->SetOptFit(1);
     hist.at(i)->GetListOfFunctions()->Add(ptstats1);
@@ -268,29 +271,37 @@ void overlay(string pathname)
   //f= {"test_BinWidth_change_out.root"};
   //f= {"random_mom_100kEvts_out.root"};
   //f= {"random_pol_random_mom_100kEvts_out.root"};
-  f= {"mom_randomXYZ_pol_random_100kEvts_out.root"};
+  //f= {"mom_randomXYZ_pol_random_100kEvts_out.root"};
+  //f= {"Final_UnRandomized_1Pho_100kEvts_out.root"};
+  //f= {"Final_allRandomized_100kEvts_out.root"};
+  f= {"test_out.root"};
 
   
   //define your histograms to be read from here
   string histname1[100], histname2[100], histname3[100];
 
   vector<string> nHitCat;
-  nHitCat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
-  //nHitCat = {"all_inc"};//, "nHit0", "nHit1_S", "nHit1_B", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
-
-  char hname_theta[100], hname_eta[100], hname_Eout[100], hname_ThetaVsEout[100]; 
+  //nHitCat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S_AnyDiffDet", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
+  //nHitCat = {"nHit2_S_AnyDiffDet"};
+  nHitCat = {"all_inc"};
+  
+  char hname_theta[100], hname_eta[100], hname_Eout[100], hname_ThetaVsEout[100], hname_PosX[100], hname_PosY[100], hname_PosZ[100], hname_Time[100]; 
 
   
   for(int i=0; i< nHitCat.size(); i++){
     sprintf(hname_theta, "h_theta_%s",nHitCat[i].c_str());
     sprintf(hname_eta, "h_eta_%s",nHitCat[i].c_str());
     sprintf(hname_Eout, "h_Eout_%s",nHitCat[i].c_str());
+    sprintf(hname_PosX, "h_hitPosX_%s",nHitCat[i].c_str());
+    sprintf(hname_PosY, "h_hitPosY_%s",nHitCat[i].c_str());
+    sprintf(hname_PosZ, "h_hitPosZ_%s",nHitCat[i].c_str());
+    sprintf(hname_Time, "h_hitTime_%s",nHitCat[i].c_str());
     //sprintf(hname_ThetaVsEout, "h_theta_Eout_%s",nHitCat[i].c_str());
     
     
 
     vector<string> variables;
-    variables = {hname_theta, hname_eta, hname_Eout};//, hname_ThetaVsEout};
+    variables = {hname_theta, hname_eta, hname_Eout, hname_PosX, hname_PosY, hname_PosZ, hname_Time};
     //variables = {hname_ThetaVsEout};
   
 
@@ -303,9 +314,10 @@ void overlay(string pathname)
  
   //vector<string> filetag;
     vector<string> filetag;
-    //filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit==2_Plastic_singleCrys", "nHit==2_Plastic_diffCryst", "nHit==2_Plastic_BGO" ,"nHit==2_BGO_singleCrys", "nHit==2_BGO_diffCryst", "nHit==2_BGO_Plastic", "rest (nHit>2)"};
-    filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit>=2_Plastic_singleCrys", "nHit>=2_Plastic_diffCryst", "nHit>=2_Plastic_BGO" ,"nHit>=2_BGO_singleCrys", "nHit>=2_BGO_diffCryst", "nHit>=2_BGO_Plastic", "rest"};
+    // filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit>=2_Plastic_AnyDiffDet", "nHit>=2_Plastic_singleCrys", "nHit>=2_Plastic_diffCryst", "nHit>=2_Plastic_BGO" ,"nHit>=2_BGO_singleCrys", "nHit>=2_BGO_diffCryst", "nHit>=2_BGO_Plastic", "rest"};
 
+    //filetag={"nHit>=2_Plastic_AnyDiffDet"};
+    filetag={"All Inc"};
     
   //filetag={"scatTheta inclusive", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
   //filetag={"all_inc", "all_inc", "all_inc"};//, "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
@@ -315,8 +327,8 @@ void overlay(string pathname)
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {200, 200, 200, 300, 700, 700, 700};
-  vector<double>xmin = {0, -200, 0, 0, 0, -700, -700};
+  vector<double>xmax = {200, 200, 200, 1000, 1000, 1000, 20};
+  vector<double>xmin = {0, -200, 0, -1000, 1000, -700, 0};
 
   for (int iVar =0; iVar < variables.size(); iVar++){
     vector<TH1F*> hist_list;
@@ -339,13 +351,13 @@ void overlay(string pathname)
     //diff_title = { "nOptPhotons"};
     //diff_title = { "OptPho_lmbda (nm)"};
     //diff_title = {"eta(#circ)", "nHits", "theta(#circ)", "time(ns)", "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
-    diff_title = {"#theta_{scat}(#circ)", "eta(#circ)", "Escat_(MeV)", "test"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
+    diff_title = {"#theta_{scat}(#circ)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
     // vector<string>xtitle;
     // xtitle = {diff_title[0], diff_title[1]};
 	 
     //path to save the files a jpg or pdf
     vector<string> folder;   
-    folder = {"plots/", "plots/", "plots/", "plots/", "plots/", "plots/", "plots/", "plots/1"};
+    folder = {"plots/", "plots/", "plots/", "plots/", "plots/", "plots/", "plots/", "plots/"};
     sprintf(full_path,"%s%s%s",pathname.c_str(),folder[iVar].c_str(),variables[iVar].c_str());
 
     cout << full_path << endl;

@@ -1,1 +1,1 @@
-src_root_files/Mom_randomXYZ_Pol_random_100kEvts.root
+src_root_files/test_check.root

@@ -178,7 +178,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       h_nHits->Fill(nHitComp);
 
-      if(nHitComp >0){
+       if(nHitComp >0){
+      //if(nHitComp >1){
 	//for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
 	for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
 	  v_comp.SetXYZ(0,0,0);
@@ -268,12 +269,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  //e.g. nHit2_S1S1 means 1st hit in scintillator 2nd hit in the same scinitillator
 	  //***************************************
 	  	  
-	  enum HitsLoc{all_inc =0, nHit0 =1, nHit1_S =2, nHit1_B =3, nHit2_S1S1 =4, nHit2_S1S2 =5, nHit2_SB =6, nHit2_B1B1 =7, nHit2_B1B2 =8, nHit2_BS =9, remain =10, test = 11};
+	  enum HitsLoc{all_inc =0, nHit0 =1, nHit1_S =2, nHit1_B =3, nHit2_S_AnyDiffDet =4, nHit2_S1S1 =5, nHit2_S1S2 =6, nHit2_SB =7, nHit2_B1B1 =8, nHit2_B1B2 =9, nHit2_BS =10, remain =11, test = 12};
 
 	  //Definitng the booleans for each category
 	  bool inc_all =false, noHit =false;
 	  bool hit1_S =false, hit1_B =false;
-	  bool hit2_S1S1 =false, hit2_S1S2 =false, hit2_SB =false, hit2_B1B1 =false, hit2_B1B2 =false, hit2_BS =false, rest =false;
+	  bool hit2_S_AnyDiffDet = false, hit2_S1S1 =false, hit2_S1S2 =false, hit2_SB =false, hit2_B1B1 =false, hit2_B1B2 =false, hit2_BS =false, rest =false;
 	  bool teSt = false;	 	  
 	  	  
 	  int DetId1 = HitDetId_sort[0];
@@ -305,7 +306,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    }	    
 	    
 	     else if (DetId1 != DetId2)
-	       { if(MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") {hit2_S1S2 = true;} //cout << "event with s1s2: " << jentry +1 << endl;}
+	       {if(MatName(DetId1) =="Scint") hit2_S_AnyDiffDet = true;
+		 if(MatName(DetId1) =="Scint" && MatName(DetId2) =="Scint") {hit2_S1S2 = true;} //cout << "event with s1s2: " << jentry +1 << endl;}
 		 else if(MatName(DetId1) =="BGO" && MatName(DetId2) =="BGO") hit2_B1B2 = true;
 		 else if (MatName(DetId1) =="Scint" && MatName(DetId2) =="BGO") {hit2_SB = true;}// cout << "event with SB: " << jentry +1 << endl;}	       
 		 else if (MatName(DetId1) =="BGO" && MatName(DetId2) == "Scint") hit2_BS = true;
@@ -364,7 +366,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    
 	    if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
+	    
+	    if (hit2_S_AnyDiffDet) FillHistogram(nHit2_S_AnyDiffDet, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	      
 	    if (hit2_S1S1) FillHistogram(nHit2_S1S1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	      
 	    if (hit2_S1S2) FillHistogram(nHit2_S1S2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    if (hit2_SB) FillHistogram(nHit2_SB, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
