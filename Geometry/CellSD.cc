@@ -63,7 +63,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double currentTime = step->GetPreStepPoint()->GetGlobalTime();
   G4double TrkLen = step->GetTrack()->GetTrackLength();
   G4int DetId = touchable->GetVolume()->GetCopyNo();
-  G4double scat_theta = -1;
+  G4double scat_theta = -1000;
   G4ThreeVector vin = step->GetPreStepPoint()->GetMomentumDirection();
   G4ThreeVector vout = step->GetPostStepPoint()->GetMomentumDirection();
   G4double eta = 10000;
@@ -76,11 +76,15 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
 
-    G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
+    //G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
 
     if (proc != "phot") {
-      scat_theta = acos(vin.dot(vout));
-      //scat_theta = vin.angle(vout);
+      if(step->GetPostStepPoint()->GetProcessDefinedStep() && step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() != "Rayl"){
+	if(proc == "compt" && step->GetPreStepPoint()->GetKineticEnergy() == 0.511) scat_theta = acos(vin.dot(vout));
+      }
+
+      //scat_theta = acos(vin.dot(vout));
+      
       prePol = step->GetPreStepPoint()->GetPolarization();
       auto postPol = step->GetPostStepPoint()->GetPolarization();
 
@@ -163,7 +167,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
 void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
-  if (verboseLevel > 1 && summary) {
+  if (verboseLevel > 1) {
     auto nofHits = fHitsCollection->entries();
     
     G4cout << "\n" << "-------->Hit summary of the SD "  << G4endl;
