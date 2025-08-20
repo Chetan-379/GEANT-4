@@ -78,12 +78,12 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
     //G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
 
-    if (proc != "phot") {
-      if(step->GetPostStepPoint()->GetProcessDefinedStep() && step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() != "Rayl"){
-	if(proc == "compt" && step->GetPreStepPoint()->GetKineticEnergy() == 0.511) scat_theta = acos(vin.dot(vout));
-      }
+    if (proc != "phot") {      
+      //if(step->GetPreStepPoint()->GetProcessDefinedStep() && step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName() != "Rayl"){
+      //if(proc == "compt" && step->GetPreStepPoint()->GetKineticEnergy() == 0.511) scat_theta = acos(vin.dot(vout));
+      //}
 
-      //scat_theta = acos(vin.dot(vout));
+      scat_theta = acos(vin.dot(vout));
       
       prePol = step->GetPreStepPoint()->GetPolarization();
       auto postPol = step->GetPostStepPoint()->GetPolarization();
@@ -167,7 +167,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
 void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
-  if (verboseLevel > 1) {
+  if (verboseLevel > 1 && summary) {
     auto nofHits = fHitsCollection->entries();
     
     G4cout << "\n" << "-------->Hit summary of the SD "  << G4endl;
