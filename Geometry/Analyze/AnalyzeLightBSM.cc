@@ -56,6 +56,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
   int n1s = 0, n1 =0;
   int n1b =0;
+  //int nRelvEvts =0;
    
   for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
@@ -120,7 +121,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitPol2_cpy = *Hit_Pol2;
       HitEout_cpy = *Hit_Eout;
       HitEin_cpy = *Hit_Ein;
-      HitDetId_cpy = *Hit_DetId;
+      HitDetId_cpy = *Hit_DetId;      
 	
       for (int iHit=0 ; iHit< nHits; iHit++){                               	 
 	auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
@@ -168,20 +169,29 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       ///////////////////////////////////////////////////////////////////////////
       
       bool incrs_nHit = false;
+      //bool RejEvt = false;
 	
       if (nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
 
       for (int i = 0; i< HitTime_sort.size(); i++){
 	if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
-	//if(incrs_nHit) nHitComp++;   
+	//if(incrs_nHit) nHitComp++;
+	//if (HitProcId_sort[i] == 0) RejEvt = true;
       }
+
+      // if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
 
       h_nHits->Fill(nHitComp);
 
-       if(nHitComp >0){
+      
+      //if(nHitComp >0){
+      if(nHits >0){
       //if(nHitComp >1){
-	//for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
-	for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
+	vector<vector<double>> AnniPho, ScatPho, Relv4Hits;
+	int nHits_RaylEx = 0;
+	for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
+	//for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
+	  
 	  v_comp.SetXYZ(0,0,0);
 	  vin.SetXYZ(0,0,0);
 	  vout.SetXYZ(0,0,0);
@@ -205,7 +215,13 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  double Time = HitTime_sort[iHit];
 	  double PosX = HitPosX_sort[iHit];
 	  double PosY = HitPosY_sort[iHit];
-	  double PosZ = HitPosZ_sort[iHit];	      
+	  double PosZ = HitPosZ_sort[iHit];
+
+	  double Eout = HitEout_sort[iHit];	  
+	  double Ein = HitEin_sort[iHit];
+
+	  int DetId = HitDetId_sort[iHit];
+
 	    
 	  double scat_theta_SD = HitScatAng_sort[iHit];
 	  double Ang_diff = scat_theta - scat_theta_SD;
@@ -218,12 +234,30 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  if(HitProcId_sort[iHit] == 1) procName = "Photo";
 	  if(HitProcId_sort[iHit] == 2) procName = "Compt";
 
-	  // if(HitProcId_sort[1] == 0) procName = "Rayl";
-	  // if(HitProcId_sort[1] == 1) procName = "Compt";
-	  // if(HitProcId_sort[1] == 2) procName = "Photo";
+	  float AnniPho_scat_theta_SD = -1000;
 
-	  
+	  if (procName != "Rayl") nHits_RaylEx++ ;
+	  if (procName == "Compt" && Ein == 0.511) AnniPho_scat_theta_SD = scat_theta_SD;  //be careful here, there can be rayl before compt
 
+	  float AnniPho_scat_theta_SD_deg = AnniPho_scat_theta_SD*180.0 / TMath::Pi();
+
+	  //vector<vector<double>> AnniPho;
+	  vector<double> info;
+
+	  info.push_back(Time);
+	  info.push_back(PosX);
+	  info.push_back(PosY);
+	  info.push_back(PosZ);
+	  info.push_back(scat_theta_SD_deg);
+	  info.push_back(Ein);
+	  info.push_back(DetId);
+
+	  if (AnniPho_scat_theta_SD > 0) {	    
+	    AnniPho.push_back(info);
+	  }
+
+	  if (procName != "Rayl" && Ein != 0.511) ScatPho.push_back(info); 
+	  	  	  	  
 	  double EtaPolScat = HitEta_sort[iHit];
 	  //double EtaPolScat = -100000;
 	  //if (nHitComp >=2) EtaPolScat = HitEta_sort[1];
@@ -234,10 +268,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  float Pol1 = HitPol1_sort[iHit];
 	  float Pol2 = HitPol2_sort[iHit];
 
-	  float Eout = HitEout_sort[iHit];	  
-	  float Ein = HitEin_sort[iHit];
-
-	  int DetId = HitDetId_sort[iHit];
+	  
 	 	    
 	  h_diff_Ana_SD->Fill(Ang_diff);
 	  h_posX_posY ->Fill(PosX, PosY);
@@ -275,7 +306,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  bool inc_all =false, noHit =false;
 	  bool hit1_S =false, hit1_B =false;
 	  bool hit2_S_AnyDiffDet = false, hit2_S1S1 =false, hit2_S1S2 =false, hit2_SB =false, hit2_B1B1 =false, hit2_B1B2 =false, hit2_BS =false, rest =false;
-	  bool teSt = false;	 	  
+	  //bool teSt = false;
+	  bool teSt = true;
 	  	  
 	  int DetId1 = HitDetId_sort[0];
 	  int DetId2 = -1;
@@ -284,9 +316,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  if (nHitComp >0) inc_all = true;
 	  
 	  //if (nHitComp > 0 && MatName(DetId1) == "BGO") {hit_BGO_inc = true; DetId1 = HitDetId_sort[0];}
-	  if (nHitComp >=2 && DetId1 != DetId2 && MatName(DetId1) == "Scint") {
-	    teSt = true;
-	  }
+	  // if (nHitComp >=2 && DetId1 != DetId2 && MatName(DetId1) == "Scint") {
+	  //   teSt = true;
+	  // }
 	  
 	  if (nHitComp ==0) noHit = true;
 	  
@@ -329,39 +361,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  
 	  
 	  if (procId !=0 && procId != 1){       //excluding rayleigh && phot (not required exactly but kept of safety purpose)
-	    //if (procId !=0 && procId != 1 && (DetId/4000 >= 1)){       //excluding rayleigh && phot && BGO Hit
 	    h_ScatAng_SDvsAna->Fill(scat_theta, scat_theta_SD);
 	    
-	    // if (nHitComp>0) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	    
-	    // if (nHitComp==1) FillHistogram(nHit_eq1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // if (nHitComp>1) FillHistogram(nHit_gt1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // if (nHitComp==2) FillHistogram(nHit_eq2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // if (nHitComp>2) FillHistogram(nHit_gt2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-
-	    //======================
-	    // if (inc_all) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-	    // if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	    
-	    // else if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // else if (hit1_B) FillHistogram(nHit1_B, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-	    // else if (hit2_S1S1) FillHistogram(nHit2_S1S1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // else if (hit2_S1S2) FillHistogram(nHit2_S1S2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // else if (hit2_SB) FillHistogram(nHit2_SB, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-	    // else if (hit2_B1B1) FillHistogram(nHit2_B1B1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // else if (hit2_B1B2) FillHistogram(nHit2_B1B2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    // else if (hit2_BS) FillHistogram(nHit2_BS, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-	    // else if (rest) FillHistogram(remain, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    
-	    //====================
-
 	    if (inc_all) FillHistogram(all_inc, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	    if (teSt) FillHistogram(test, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
+	    if (teSt && scat_theta_SD > 0) {FillHistogram(test, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	     
+	    //if (teSt) FillHistogram(test, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
+	    }
 	    if (noHit) FillHistogram(nHit0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	    
 	    if (hit1_S) FillHistogram(nHit1_S, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
@@ -371,25 +376,58 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    if (hit2_S1S1) FillHistogram(nHit2_S1S1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	      
 	    if (hit2_S1S2) FillHistogram(nHit2_S1S2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    if (hit2_SB) FillHistogram(nHit2_SB, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
+	    
 	    if (hit2_B1B1) FillHistogram(nHit2_B1B1, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    if (hit2_B1B2) FillHistogram(nHit2_B1B2, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
 	    if (hit2_BS) FillHistogram(nHit2_BS, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-	    if (rest) FillHistogram(remain, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-
-
-
-
-
-	    //else if (nHitComp>2) FillHistogram(nHit2_S1S1,Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);
-	  // } 
-	  //procId condition end
-	  }	
+	    
+	    if (rest) FillHistogram(remain, Time, PosX, PosY, PosZ, scat_theta_SD_deg, EtaPolScat_deg, Pol0, Pol1, Pol2, Ein, Eout);	    	    	    	    	  
+	  } //procId condition end	
 
 	}   //end of iHit loop
-      }       // nHit >1 condition brkt end			
-      } //jentry loop end
+
+	enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId};
+	enum AnniScat{A1, A2, S1, S2};
+
+	//convention followed:
+	//A1: first compton hit from Annihilation
+	//A2: second compton hit from Annihilation
+	//S1: first hit from Scattered photon
+	//S3: 2nd hit from Scattered photon
+	  
+	if(AnniPho.size()==2 && nHits_RaylEx ==4) {
+	  h_nAnniPho->Fill(AnniPho.size());
+
+	  Relv4Hits.push_back(AnniPho[0]);
+	  Relv4Hits.push_back(AnniPho[1]);
+
+	  h_rough->Fill(ScatPho.size());
+	  Relv4Hits.push_back(ScatPho[0]);
+	  Relv4Hits.push_back(ScatPho[1]);
+	} //nAnniPho condition end
+
+	if (Relv4Hits.size()>0){
+	  //h_rough->Fill(Relv4Hits[3][Ein]);
+
+	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
+	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
+	  float dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
+	  float dt_A2S2 = Relv4Hits[S2][time] - Relv4Hits[A2][time];
+
+	  float dt_A1A2 = Relv4Hits[A2][time] - Relv4Hits[A1][time];
+	  float dt_S1S2 = Relv4Hits[S2][time] - Relv4Hits[S1][time];
+
+	  h_dt_A1S1->Fill(dt_A1S1);
+	  h_dt_A1S2->Fill(dt_A1S2);
+	  h_dt_A2S1->Fill(dt_A2S1);
+	  h_dt_A2S2->Fill(dt_A2S2);
+	  h_dt_A1A2->Fill(dt_A1A2);
+	  h_dt_S1S2->Fill(dt_S1S2);	  
+	}
+
+	  
+      }       // nHit >0 condition brkt end			
+    } //jentry loop end
 
   cout << "events with 2 or more comps: " << Comp2_evts << endl;
   cout << "n1: " << n1 << endl;

@@ -48,7 +48,12 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH2F *h_posX_posY, *h_polX_polY;
   TH1F *h_Pol_Ana;
   TH2F *h_PolX_Ana_SD, *h_PolY_Ana_SD, *h_PolZ_Ana_SD;
-  //TH3F *h_posXYZ;
+
+  TH1I *h_nAnniPho;
+  TH1F *h_rough;
+
+  TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
+ 
   TFile *oFile;
 };
 #endif
@@ -96,6 +101,20 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     h_PolZ_Ana_SD->SetYTitle("PolZ_SD");
 
     h_Pol_Ana = new TH1F("Pol_Ana", "Pol_Ana", 240,-1.2,1.2);
+
+    h_nAnniPho = new TH1I("nAnniPho", "nAnniPho", 10,0,10);
+
+    
+
+    h_rough = new TH1F("rough", "rough", 100,0,4);
+
+    h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 1000, -5, 5);
+    h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 1000, -5, 5);
+    h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 1000, -5, 5);
+    h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 1000, -5, 5); 
+    h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 1000, -5, 5);
+    h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 1000, -5, 5); 
+    
 
 
     // h_posXYZ = new TH3F("PosXYZ","PosXYZ",1200,-600,600, 1200,-600,600, 1000, -500, 500);
