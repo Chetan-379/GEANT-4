@@ -46,7 +46,7 @@ public:
 private:
   G4double fX;
   MyRunAction *runObject;
-  G4int ievent=1, chkEvt = 59267;
+  G4int ievent=1, chkEvt = 2693;
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
 
@@ -59,7 +59,7 @@ private:
 
   std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec, HitScatAngle_vec, HitEta_vec, HitEin_vec, HitEout_vec;
   std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec, HitPol0_vec, HitPol1_vec, HitPol2_vec;
-  std::vector<G4int> HitDetId_vec, HitProcId_vec;
+  std::vector<G4int> HitDetId_vec, HitGunId_vec, HitProcId_vec;
 };
 
 #endif

@@ -1,1 +1,1 @@
-src_root_files/test_check.root
+src_root_files/test_randomized_100kEvts_gunTagged.root

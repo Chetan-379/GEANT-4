@@ -25,6 +25,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Hit_Time", &HitTime);
   tree->Branch("Hit_TrkLen", &HitTrklen);
   tree->Branch("Hit_DetId", &HitDetId);
+  tree->Branch("Hit_GunId", &HitGunId);
   tree->Branch("Hit_ProcId", &HitProcId);
   tree->Branch("Hit_ScatAngle", &HitScatAngle);
   tree->Branch("Hit_Eta", &HitEta);

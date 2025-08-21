@@ -11,12 +11,9 @@ MyDetectorConstruction::~MyDetectorConstruction()
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
   auto nist = G4NistManager::Instance();
-  //auto air = nist->FindOrBuildMaterial("G4_AIR");
-  //auto air = nist->FindOrBuildMaterial("G4_Galactic");
+  
   auto plastic = nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
-  //auto plastic = nist->FindOrBuildMaterial("G4_BGO");
   auto BGO = nist->FindOrBuildMaterial("G4_BGO");
-  //auto BGO = nist->FindOrBuildMaterial("G4_Galactic");
   auto vaccum = nist->FindOrBuildMaterial("G4_Galactic");
 
   // World
@@ -27,13 +24,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   // Scintillator strip (long axis along Z)
   G4double stripLength = 500.0 * mm;
-  //G4double stripLength = 3000.0 * mm;
   //G4double stripLength = 7.0 * mm;
   G4double stripWidth  = 19.0 * mm;
   G4double stripThick  = 7.0 * mm;
 
   G4double InstripLength = 500.0 * mm;
-  //G4double InstripLength = 3000.0 * mm;
   //G4double InstripLength = 7.0 * mm;
   G4double InstripWidth  = 24.0 * mm;
   //G4double InstripWidth  = 60.0 * mm;
@@ -42,12 +37,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   auto solidStrip = new G4Box("Strip", stripWidth / 2, stripThick / 2, stripLength / 2);
 
   logicStrip = new G4LogicalVolume(solidStrip, plastic, "StripLV");
-  //logicStrip = new G4LogicalVolume(solidStrip, air, "StripLV");
-
+ 
   logicOuterMostStrip = new G4LogicalVolume(solidStrip, BGO, "OuterMostStripLV");
-  //logicOuterMostStrip = new G4LogicalVolume(solidStrip, plastic, "OuterMostStripLV");
-  //logicOuterMostStrip = new G4LogicalVolume(solidStrip, air, "OuterMostStripLV");
-
+ 
   auto solidInStrip = new G4Box("InStrip", InstripWidth / 2, InstripThick / 2, InstripLength / 2);
   logicInStrip = new G4LogicalVolume(solidInStrip, plastic, "InStripLV");
   
@@ -121,9 +113,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //else if (i == 2) phi_shift = phi_shift + (dPhi/4); 
   }
 
-  // G4cout << "\n\n polarisation of StripSD: " << logicStrip->GetPolarization() << G4endl;
-  // G4cout << "\n\n polarisation of inStripSD: " << logicInStrip->GetPolarization() << G4endl;
-  // G4cout << "\n\n polarisation of outerMosttripSD: " << logicOuterMostStrip->GetPolarization() << G4endl;
+  
   //   //Reading/writing GDML
   //G4GDMLParser parser;
   //parser.Write("JPET_Geometry.gdml", physWorld);

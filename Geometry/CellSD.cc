@@ -52,6 +52,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
   G4ThreeVector compt_scat_point;    
   G4int ParentID = step->GetTrack()->GetParentID();
+  G4int TrackID = step->GetTrack()->GetTrackID();
         
   // Get hit accounting data for this cell
   auto hit = new CellHit();
@@ -70,11 +71,13 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4ThreeVector prePol(-1000,-1000,-1000);
   G4double Ein = step->GetPreStepPoint()->GetKineticEnergy();
   G4double Eout = step->GetPostStepPoint()->GetKineticEnergy();
-  
-  
-
+  G4double GunID = -1;
+    
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
+
+    if(TrackID == 1) GunID = 1;
+    else if (TrackID == 2) GunID = 2;
 
     //G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
 
@@ -149,6 +152,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetPosition(compt_scat_point);
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
+    hit->SetGunID(GunID);
     hit->SetTrackLength(TrkLen);
     hit->SetProcName(proc);
     hit->SetProcId(procId);
@@ -157,6 +161,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetPolarisation(prePol);
     hit->SetEin(Ein);
     hit->SetEout(Eout);
+    
 
     fHitsCollection->insert(hit);
   }
@@ -168,6 +173,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 void CellSD::EndOfEvent(G4HCofThisEvent*)
 {
   if (verboseLevel > 1 && summary) {
+  //if (verboseLevel > 1) {
     auto nofHits = fHitsCollection->entries();
     
     G4cout << "\n" << "-------->Hit summary of the SD "  << G4endl;

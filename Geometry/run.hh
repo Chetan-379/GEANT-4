@@ -26,7 +26,7 @@ public:
 
   std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle, HitEta, HitPol0, HitPol1, HitPol2, HitEout, HitEin;
   std::vector<G4double> HitPosX, HitPosY, HitPosZ;
-  std::vector<G4int> HitDetId, HitProcId;
+  std::vector<G4int> HitDetId, HitGunId, HitProcId;
  
 private:
   

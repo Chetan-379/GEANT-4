@@ -29,6 +29,12 @@ void CellHit::SetDetectorID(G4int DetID)
   detId = DetID;
 }
 
+void CellHit::SetGunID(G4int GunID)
+{
+  fGunId = GunID;
+}
+
+
 void CellHit::SetTrackLength(G4double Trklen)
 {
   fTrackLength = Trklen;
@@ -70,6 +76,8 @@ void CellHit::SetEin(G4double Ein)
 }
 
 
+
+
 void CellHit::Print()
 {
   G4cout << "Edep: " << std::setw(7) << G4BestUnit(fEdep, "Energy") << "|"
@@ -82,7 +90,9 @@ void CellHit::Print()
 	 << " eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << "|"
 	 << " Ein: " << std::setw(7) << fEin << " MeV" << "|"
 	 << " Eout: " << std::setw(7) << fEout << "MeV" << "|"
-	 << " Pol: " << std::setw(7) << fPol << G4endl;
+	 << " Pol: " << std::setw(7) << fPol << "|"
+	 << " GunId: " << std::setw(7) << fGunId << G4endl;
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -14,8 +14,7 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
   //fParticleGun = new G4ParticleGun(1);
-  G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
-  
+  G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);  
   
   //G4ThreeVector mom(1.5, 2.5, 0.);
   G4ThreeVector mom(0, 1, 0.);
@@ -52,14 +51,14 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   pol2 = pol2.rotate(CLHEP::pi / 2.0, gammaMom);
   gParticleGun->SetParticlePolarization(pol2);
   
-  fParticleGun->GeneratePrimaryVertex(anEvent);
+  fParticleGun->GeneratePrimaryVertex(anEvent);    
   gParticleGun->GeneratePrimaryVertex(anEvent);
   
-  G4cout << "\n\nMomentum direction of the 1st incident photons: " << fParticleGun->GetParticleMomentumDirection () << G4endl;
-  G4cout << "polarisation vector (EF direction) of the 1st incident photons: " << fParticleGun->GetParticlePolarization() << "\n\n";
+  // G4cout << "\n\nMomentum direction of the 1st incident photons: " << fParticleGun->GetParticleMomentumDirection () << G4endl;
+  // G4cout << "polarisation vector (EF direction) of the 1st incident photons: " << fParticleGun->GetParticlePolarization() << "\n\n";
 
-  G4cout << "Momentum direction of the 2nd incident photons: " << gParticleGun->GetParticleMomentumDirection () << G4endl;
-  G4cout << "polarisation vector (EF direction) of the 2nd incident photons: " << gParticleGun->GetParticlePolarization() << "\n\n";
+  // G4cout << "Momentum direction of the 2nd incident photons: " << gParticleGun->GetParticleMomentumDirection () << G4endl;
+  // G4cout << "polarisation vector (EF direction) of the 2nd incident photons: " << gParticleGun->GetParticlePolarization() << "\n\n";
 
-  G4cout << "Angle betn pol1 and pol2: " << acos(pol1.dot(pol2))*(180/CLHEP::pi) << " degs\n\n";
+  // G4cout << "Angle betn pol1 and pol2: " << acos(pol1.dot(pol2))*(180/CLHEP::pi) << " degs\n\n";
 }

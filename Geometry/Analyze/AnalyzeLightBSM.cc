@@ -92,8 +92,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, HitPol0_sort, HitPol1_sort, HitPol2_sort, HitEin_sort, HitEout_sort;
       vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitScatAng_cpy, HitEta_cpy, HitPol0_cpy, HitPol1_cpy, HitPol2_cpy, HitEin_cpy, HitEout_cpy;
 
-      vector <int> HitProcId_sort, HitDetId_sort;
-      vector<int> HitProcId_cpy, HitDetId_cpy;
+      vector <int> HitProcId_sort, HitDetId_sort, HitGunId_sort;
+      vector<int> HitProcId_cpy, HitDetId_cpy, HitGunId_cpy;
 	   
       HitPosX_sort.clear();
       HitPosY_sort.clear();
@@ -108,6 +108,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitEout_sort.clear();
       HitEin_sort.clear();
       HitDetId_sort.clear();
+      HitGunId_sort.clear();
 	   
       HitPosX_cpy = *Hit_PositionX;
       HitPosY_cpy = *Hit_PositionY;
@@ -121,7 +122,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitPol2_cpy = *Hit_Pol2;
       HitEout_cpy = *Hit_Eout;
       HitEin_cpy = *Hit_Ein;
-      HitDetId_cpy = *Hit_DetId;      
+      HitDetId_cpy = *Hit_DetId;
+      HitGunId_cpy = *Hit_GunId;      
 	
       for (int iHit=0 ; iHit< nHits; iHit++){                               	 
 	auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
@@ -140,6 +142,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitEout_sort.push_back(HitEout_cpy[min_idx]);
 	HitEin_sort.push_back(HitEin_cpy[min_idx]);
 	HitDetId_sort.push_back(HitDetId_cpy[min_idx]);
+	HitGunId_sort.push_back(HitGunId_cpy[min_idx]);
 	     
 	HitTime_cpy.erase(HitTime_cpy.begin() + min_idx);
 	HitPosX_cpy.erase(HitPosX_cpy.begin() + min_idx);
@@ -154,6 +157,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitEout_cpy.erase(HitEout_cpy.begin() + min_idx);
 	HitEin_cpy.erase(HitEin_cpy.begin() + min_idx);
 	HitDetId_cpy.erase(HitDetId_cpy.begin() + min_idx);
+	HitGunId_cpy.erase(HitGunId_cpy.begin() + min_idx);
       }
 
       //Sorting done
@@ -221,6 +225,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  double Ein = HitEin_sort[iHit];
 
 	  int DetId = HitDetId_sort[iHit];
+	  int GunId = HitGunId_sort[iHit];
 
 	    
 	  double scat_theta_SD = HitScatAng_sort[iHit];
@@ -251,6 +256,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  info.push_back(scat_theta_SD_deg);
 	  info.push_back(Ein);
 	  info.push_back(DetId);
+	  info.push_back(GunId);
 
 	  if (AnniPho_scat_theta_SD > 0) {	    
 	    AnniPho.push_back(info);
@@ -386,7 +392,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	}   //end of iHit loop
 
-	enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId};
+	enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId};
 	enum AnniScat{A1, A2, S1, S2};
 
 	//convention followed:
@@ -401,13 +407,37 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  Relv4Hits.push_back(AnniPho[0]);
 	  Relv4Hits.push_back(AnniPho[1]);
 
-	  h_rough->Fill(ScatPho.size());
-	  Relv4Hits.push_back(ScatPho[0]);
-	  Relv4Hits.push_back(ScatPho[1]);
+	  //Relv4Hits.push_back(ScatPho[0]);
+	  //Relv4Hits.push_back(ScatPho[1]);
+
+	  // for (int iscat = 0; iscat<ScatPho.size(); iscat++){
+	  //   if(AnniPho[0][GunId] == ScatPho[iscat][GunId]) Relv4Hits.insert(Relv4Hits.begin() + 2, ScatPho[iscat]);
+	  //   if(AnniPho[1][GunId] == ScatPho[iscat][GunId]) Relv4Hits.insert(Relv4Hits.begin() + 3, ScatPho[iscat]);
+	    
+	  // }
+
+	  double GunId_A1 = AnniPho[0][GunId];
+	  double GunId_A2 = AnniPho[1][GunId];
+	  
+	  double GunId_S1 = ScatPho[0][GunId];
+	  double GunId_S2 = ScatPho[1][GunId];
+	  
+	   
+	  if(GunId_A1 == GunId_S1 && GunId_A2 == GunId_S2) {
+	    Relv4Hits.push_back(ScatPho[0]);
+	    Relv4Hits.push_back(ScatPho[1]);	      
+	  }
+
+	  else if(GunId_A1 == GunId_S2 && GunId_A2 == GunId_S1) {
+	    Relv4Hits.push_back(ScatPho[1]);
+	    Relv4Hits.push_back(ScatPho[0]);	      
+	  }
+	    
+	  
 	} //nAnniPho condition end
 
-	if (Relv4Hits.size()>0){
-	  //h_rough->Fill(Relv4Hits[3][Ein]);
+	if (Relv4Hits.size() == 4){
+	  h_rough->Fill(Relv4Hits[2][GunId]);
 
 	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
 	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
