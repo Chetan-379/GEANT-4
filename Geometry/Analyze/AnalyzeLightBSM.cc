@@ -183,7 +183,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	//if (HitProcId_sort[i] == 0) RejEvt = true;
       }
 
-      // if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
+      //if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
 
       h_nHits->Fill(nHitComp);
 
@@ -191,7 +191,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       //if(nHitComp >0){
       if(nHits >0){
       //if(nHitComp >1){
-	vector<vector<double>> AnniPho, ScatPho, Relv4Hits;
+	vector<vector<double>> AnniPho, ScatPho, Relv4Hits, Ana_Relv4Hits, AS_ConnHits;
 	int nHits_RaylEx = 0;
 	for (int iHit=0 ; iHit< nHits; iHit++){     //cannot calculate theta at the last hit
 	//for (int iHit=0 ; iHit < 1; iHit++){     //considering only the first hit
@@ -407,6 +407,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  Relv4Hits.push_back(AnniPho[0]);
 	  Relv4Hits.push_back(AnniPho[1]);
 
+	  Ana_Relv4Hits.push_back(AnniPho[0]);
+	  Ana_Relv4Hits.push_back(AnniPho[1]);
+
+	  AS_ConnHits.push_back(AnniPho[0]);
+	  AS_ConnHits.push_back(AnniPho[1]);
+
 	  //Relv4Hits.push_back(ScatPho[0]);
 	  //Relv4Hits.push_back(ScatPho[1]);
 
@@ -432,13 +438,17 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    Relv4Hits.push_back(ScatPho[1]);
 	    Relv4Hits.push_back(ScatPho[0]);	      
 	  }
+
+	  if(GunId_S1 != GunId_S2) {
+	    Ana_Relv4Hits.push_back(ScatPho[0]);
+	    Ana_Relv4Hits.push_back(ScatPho[1]);
+	  }
 	    
 	  
 	} //nAnniPho condition end
 
 	if (Relv4Hits.size() == 4){
-	  h_rough->Fill(Relv4Hits[2][GunId]);
-
+	 
 	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
 	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
 	  float dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
@@ -449,14 +459,111 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	  h_dt_A1S1->Fill(dt_A1S1);
 	  h_dt_A1S2->Fill(dt_A1S2);
-	  h_dt_A2S1->Fill(dt_A2S1);
+	  h_dt_A2S1->Fill(abs(dt_A2S1));
 	  h_dt_A2S2->Fill(dt_A2S2);
 	  h_dt_A1A2->Fill(dt_A1A2);
 	  h_dt_S1S2->Fill(dt_S1S2);	  
 	}
 
+	//if (Ana_Relv4Hits.size() == 4 && Ana_Relv4Hits.size() == 4){
+	if (Ana_Relv4Hits.size() == 4){	  	  
+	  // float Ana_dt_A1S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A1][time];	  
+	  // float Ana_dt_A1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[A1][time];
+	  // float Ana_dt_A2S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A2][time];
+	  // float Ana_dt_A2S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[A2][time];
+
+	  // float Ana_dt_A1A2 = Ana_Relv4Hits[A2][time] - Ana_Relv4Hits[A1][time];
+	  // float Ana_dt_S1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[S1][time];
+
+	  float Ana_dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];	  
+	  float Ana_dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
+	  float Ana_dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
+	  float Ana_dt_A2S2 = Relv4Hits[S2][time] - Relv4Hits[A2][time];
+
+	  float Ana_dt_A1A2 = Relv4Hits[A2][time] - Relv4Hits[A1][time];
+	  float Ana_dt_S1S2 = Relv4Hits[S2][time] - Relv4Hits[S1][time];
+
+	  //creating STij
+	  ROOT::Math::XYZVector PosVec_A1, PosVec_A2, PosVec_S1, PosVec_S2, test;
+	  // PosVec_A1.SetXYZ(Ana_Relv4Hits[A1][PosX], Ana_Relv4Hits[A1][PosY], Ana_Relv4Hits[A1][PosZ]);
+	  // PosVec_A2.SetXYZ(Ana_Relv4Hits[A2][PosX], Ana_Relv4Hits[A2][PosY], Ana_Relv4Hits[A2][PosZ]);
+	  // PosVec_S1.SetXYZ(Ana_Relv4Hits[S1][PosX], Ana_Relv4Hits[S1][PosY], Ana_Relv4Hits[S1][PosZ]);
+	  // PosVec_S2.SetXYZ(Relv4Hits[S2][PosX], Relv4Hits[S2][PosY], Relv4Hits[S2][PosZ]);
+
+	  PosVec_A1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
+	  PosVec_A2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
+	  PosVec_S1.SetXYZ(Relv4Hits[S1][PosX], Relv4Hits[S1][PosY], Relv4Hits[S1][PosZ]);
+	  PosVec_S2.SetXYZ(Relv4Hits[S2][PosX], Relv4Hits[S2][PosY], Relv4Hits[S2][PosZ]);
+
+	  double d_A1S1, d_A1S2, d_A2S1, d_A2S2;
+	  d_A1S1 = (PosVec_A1 - PosVec_S1).R();
+	  d_A1S2 = (PosVec_A1 - PosVec_S2).R();
+	  d_A2S1 = (PosVec_A2 - PosVec_S1).R();
+	  d_A2S2 = (PosVec_A2 - PosVec_S2).R();
 	  
-      }       // nHit >0 condition brkt end			
+
+	  double ST11, ST12, ST21, ST22;
+	  double c = TMath::C() * (1e-6);    //converting from m/s to mm/ns
+	  
+
+	  ST11 = Ana_dt_A1S1 - (d_A1S1/c);
+	  ST12 = Ana_dt_A1S2 - (d_A1S2/c);
+	  ST21 = Ana_dt_A2S1 - (d_A2S1/c);
+	  ST22 = Ana_dt_A2S2 - (d_A2S2/c);
+
+	  //h_rough->Fill(ST21);
+	 
+	  bool A1toS1 = false, A1toS2 = false;
+
+	  // if (abs(ST11 < ST21)) {A1toS1 = true;}
+	  // else if (abs(ST11 > ST21)) {A1toS2 = true;}
+	  //if (abs(ST11) > abs(ST12)) cout << "fsaldkjkf" << endl; 
+
+	  if (abs(ST11) < abs(ST12)) {A1toS1 = true;}
+	  else if (abs(ST11) > abs(ST12))  {A1toS2 = true;}
+
+	  
+	  // if (A1toS1) {
+	  //   AS_ConnHits.push_back(Ana_Relv4Hits[S1]);
+	  //   AS_ConnHits.push_back(Ana_Relv4Hits[S2]);
+	  // }
+
+	  // else if (A1toS2) {
+	  //   AS_ConnHits.push_back(Ana_Relv4Hits[S2]);
+	  //   AS_ConnHits.push_back(Ana_Relv4Hits[S1]);
+	  // }
+
+	  if (AS_ConnHits.size() != 2) cout << "\n\ncaution\n\n" << endl;
+	
+
+	  if (A1toS1) {
+	    AS_ConnHits.push_back(Relv4Hits[S1]);
+	    AS_ConnHits.push_back(Relv4Hits[S2]);
+
+	    //if(abs(AS_ConnHits[2][time] - Relv4Hits[2][time]) > 1) cout << "hfsakll" << endl; 
+	  }
+
+	  else if (A1toS2) {
+	    AS_ConnHits.push_back(Relv4Hits[S2]);
+	    AS_ConnHits.push_back(Relv4Hits[S1]);
+	  }
+
+	  //if (abs(ST11 ST21)) cout << "" << endl;
+
+	  
+	  h_rough->Fill(AS_ConnHits[S1][time]-Relv4Hits[S1][time]);
+	  //h_rough->Fill(ST11);
+	  //h_rough->Fill(Relv4Hits[A1][time]-Ana_Relv4Hits[A1][time]);
+
+	  h_Ana_dt_A1S1->Fill(Ana_dt_A1S1);
+	  h_Ana_dt_A1S2->Fill(Ana_dt_A1S2);
+	  h_Ana_dt_A2S1->Fill(Ana_dt_A2S1);
+	  h_Ana_dt_A2S2->Fill(Ana_dt_A2S2);
+	  h_Ana_dt_A1A2->Fill(Ana_dt_A1A2);
+	  h_Ana_dt_S1S2->Fill(abs(Ana_dt_S1S2));		  
+	}
+	  
+      }       // nHit >0 condition brkt end
     } //jentry loop end
 
   cout << "events with 2 or more comps: " << Comp2_evts << endl;
@@ -496,6 +603,11 @@ string AnalyzeLightBSM::MatName(int DetId){
 
   return mat;
 }
+
+// double distance(vector<double> v1, vector<double> v2){
+//   double ds;
+//   //ds = sqrt()
+// }
 
 // vector<float> AnalyzeLightBSM::SortInTime(vector<float> v){
 //   vector<float> v_cpy, v_sort;
