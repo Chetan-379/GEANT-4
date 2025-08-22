@@ -61,7 +61,9 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   hit->Add(edep, stepLength);
  
   //set position, time etc
-  G4double currentTime = step->GetPreStepPoint()->GetGlobalTime();
+  //G4double currentTime = step->GetPreStepPoint()->GetGlobalTime();
+  G4double currentTime = step->GetPostStepPoint()->GetGlobalTime();
+  
   G4double TrkLen = step->GetTrack()->GetTrackLength();
   G4int DetId = touchable->GetVolume()->GetCopyNo();
   G4double scat_theta = -1000;
@@ -118,7 +120,21 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
       //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
       //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
+
+      //doing some checks===================================================================================
+      // if (Ein == 0.511) G4cout << "point of origin: " << step->GetPreStepPoint()->GetPosition() << G4endl;
+      // if (proc == "compt" && Ein == 0.511){
+      // 	double t1 = step->GetPreStepPoint()->GetGlobalTime();
+      // 	double t2 = step->GetPosStepPoint()->GetGlobalTime();
+
+      // 	double ds = 
+
+      // 	d
+      // }
       
+      //====================================================================================================
+
+         
       if(summary){  
       G4cout << "polarization vector before scattering: " << prePol << G4endl;
       G4cout << "polarization vector after scattering: " << postPol << "\n\n";
@@ -162,7 +178,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetEin(Ein);
     hit->SetEout(Eout);
     
-
     fHitsCollection->insert(hit);
   }
   return true;
