@@ -1,12 +1,12 @@
-In this version, most of the changes are made in the Analyzer script and the Primary generator script.
+In this version, Scripts are modified for studying two back to back photons:
+- In the primary generator file another photon gun is added to shoot photons in the opposite direction to first one.
+- All the hits in an event are analyzed after sorting them in the ascending order of time.
+- In the Analyzer script a working machinery is added to calculate the scattering angle in a semirealistic way using the method mentioned in the JPET paper.
 
--Definition of nHit variable (to calculate no. of Hits in the event) is updated to include only the events where 1st hit is from Compton Scattering.
--Added in the Analyzer script to analyze all the events into different categories based on location of hits. e.g 1st hit in plastic 2nd in BGO etc.
+- IMPROVEMENTS NEEDED:
+  - In this version of Analyzer, the 4 photon event yield necessary to calculate theta is too low. need to improve on that.
+  - Randomizing the hits in time is needed.
 
--In the primary generator file, randomized the incident photon momentum direction in the XY plane and also along the axis of the cylinder.
--Also randomized the direction of polarisation of incident photon in the plane perpendicular to the momentum direction.
-
-Note: The 2d distribution of Analzer theta Vs step theta won't behave as expected. To see the expected behaviour change the 'nHitComp>0' to 'nHitComp>1' in the Analyzer script.
 
 =======To run the simulation:
 - `mkdir build`
