@@ -173,14 +173,14 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       ///////////////////////////////////////////////////////////////////////////
       
       bool incrs_nHit = false;
-      //bool RejEvt = false;
+      bool RejEvt = false;
 	
       if (nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
 
       for (int i = 0; i< HitTime_sort.size(); i++){
 	if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
 	//if(incrs_nHit) nHitComp++;
-	//if (HitProcId_sort[i] == 0) RejEvt = true;
+	if (HitProcId_sort[i] == 0) RejEvt = true;
       }
 
       //if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
@@ -253,7 +253,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  info.push_back(PosX);
 	  info.push_back(PosY);
 	  info.push_back(PosZ);
-	  info.push_back(scat_theta_SD_deg);
+	  //info.push_back(scat_theta_SD_deg);
+	  info.push_back(scat_theta_SD);
 	  info.push_back(Ein);
 	  info.push_back(DetId);
 	  info.push_back(GunId);
@@ -273,9 +274,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  float Pol0 = HitPol0_sort[iHit];
 	  float Pol1 = HitPol1_sort[iHit];
 	  float Pol2 = HitPol2_sort[iHit];
-
-	  
-	 	    
+	  	 	    
 	  h_diff_Ana_SD->Fill(Ang_diff);
 	  h_posX_posY ->Fill(PosX, PosY);
 	  h_polX_polY ->Fill(Pol0, Pol1);
@@ -451,9 +450,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  h_dt_A2S2->Fill(dt_A2S2);
 	  h_dt_A1A2->Fill(dt_A1A2);
 	  h_dt_S1S2->Fill(dt_S1S2);	  
-	  //}
-	
-	  //if (Ana_Relv4Hits.size() == 4){	  	  
+
 	  float Ana_dt_A1S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A1][time];	  
 	  float Ana_dt_A1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[A1][time];
 	  float Ana_dt_A2S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A2][time];
@@ -502,8 +499,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    AS_ConnHits.push_back(Ana_Relv4Hits[S2]);
 	    AS_ConnHits.push_back(Ana_Relv4Hits[S1]);
 	  }
-	
-	  h_rough->Fill(AS_ConnHits[S1][scat_theta]-Relv4Hits[S1][scat_theta]);
+		  
 	
 	  h_Ana_dt_A1S1->Fill(Ana_dt_A1S1);
 	  h_Ana_dt_A1S2->Fill(Ana_dt_A1S2);
@@ -511,7 +507,21 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  h_Ana_dt_A2S2->Fill(Ana_dt_A2S2);
 	  h_Ana_dt_A1A2->Fill(Ana_dt_A1A2);
 	  h_Ana_dt_S1S2->Fill(abs(Ana_dt_S1S2));
+
+	  //calculating the scattering angle from the hit position
+	  ROOT::Math::XYZVector vin1, vin2, vout1, vout2;
+	  vin1.SetXYZ(AS_ConnHits[A1][PosX], AS_ConnHits[A1][PosY], AS_ConnHits[A1][PosZ]);
+	  vin2.SetXYZ(AS_ConnHits[A2][PosX], AS_ConnHits[A2][PosY], AS_ConnHits[A2][PosZ]);
+
+	  vout1.SetXYZ((AS_ConnHits[S1][PosX]-AS_ConnHits[A1][PosX]), (AS_ConnHits[S1][PosY]-AS_ConnHits[A1][PosY]), (AS_ConnHits[S1][PosZ]-AS_ConnHits[A1][PosZ]));	  
+	  vout2.SetXYZ((AS_ConnHits[S2][PosX]-AS_ConnHits[A2][PosX]), (AS_ConnHits[S2][PosY]-AS_ConnHits[A2][PosY]), (AS_ConnHits[S2][PosZ]-AS_ConnHits[A2][PosZ]));
 	  
+	  double ScatTheta1= acos((vin1.Unit()).Dot(vout1.Unit())) *180.0 / TMath::Pi();	  
+	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();
+
+	  h_rough->Fill(ScatTheta1 - AS_ConnHits[A1][scat_theta]);
+	  h_rough2D->Fill(ScatTheta1, ScatTheta2);
+
 	} //Relv4Hits.size()=4 condition end	  
       }       // nHit >0 condition brkt end
     } //jentry loop end

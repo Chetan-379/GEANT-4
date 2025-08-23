@@ -110,12 +110,12 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
     
 
-    h_rough = new TH1F("rough", "rough", 10000,-10,10);
-    h_rough->GetXaxis()->SetTitle("dt (ns)");
+    h_rough = new TH1F("rough", "rough", 100000,-1,1);
+    h_rough->GetXaxis()->SetTitle("theta(rad)");
 
-    h_rough2D = new TH2F("rough2D", "rough2D", 1000,-10,10, 1000,-10,10);
-    h_rough2D->GetXaxis()->SetTitle("ST21");
-    h_rough2D->GetYaxis()->SetTitle("ST22");
+    h_rough2D = new TH2F("Theta1VsTheta2", "Theta1VsTheta2", 100,0,200, 100,0,200);
+    h_rough2D->GetXaxis()->SetTitle("theta1_(deg)");
+    h_rough2D->GetYaxis()->SetTitle("theta2_(deg)");
     
     h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 200, -0.4, 4);  //1000->500
     h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 450, -2, 4);

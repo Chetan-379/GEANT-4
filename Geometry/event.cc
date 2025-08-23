@@ -63,7 +63,7 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitEin_vec.clear();
   HitEout_vec.clear();
   
-  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+  //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
   //if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
   //else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
@@ -119,7 +119,7 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   }
   ///////////////////////////////
 
-  G4cout << "\ntotal size of the hit collection in this event: " << ScintHC->GetSize() << G4endl;
+  //G4cout << "\ntotal size of the hit collection in this event: " << ScintHC->GetSize() << G4endl;
   
   G4int nHits = 0;
 
@@ -186,5 +186,5 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->tree->Fill();
     
   ievent++;
-  G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
+  //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
 }

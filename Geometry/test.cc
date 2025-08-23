@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   if(ui)
     {    
       UImanager->ApplyCommand("/control/execute vis.mac");
-      UImanager->ApplyCommand("/tracking/verbose 1");
+      //UImanager->ApplyCommand("/tracking/verbose 1");
       ui->SessionStart();
     }
 
@@ -57,7 +57,9 @@ int main(int argc, char** argv)
       G4String command = "/control/execute ";
       //UImanager->ApplyCommand("/tracking/verbose 1");
       G4String fileName = argv[1];       
-      UImanager->ApplyCommand(command+fileName);      
+      UImanager->ApplyCommand(command+fileName);
+
+      G4RunManager::GetRunManager()->SetVerboseLevel(0);
     }
 
   return 0;

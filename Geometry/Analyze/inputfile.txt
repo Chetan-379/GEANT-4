@@ -1,1 +1,1 @@
-src_root_files/test_randomized_100kEvts_gunTagged_TimeCorrct.root
+src_root_files/test_randomized_1MEvts_gunTagged_TimeCorrct.root
