@@ -214,9 +214,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	if(nHitG2_incrs) nHits_DiffCryst++;
       }
-
-      //if (nHits_DiffCryst ==4) h_rough->Fill(nHits_DiffCryst);
-
+     
       //if (jentry < 50) cout << "\n\nevent: " << jentry+1 << ",  new nHits in the event: " << nHits_DiffCryst << endl;
       
       //if(nHitComp >0){
@@ -284,8 +282,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  info.push_back(PosX);
 	  info.push_back(PosY);
 	  info.push_back(PosZ);
-	  //info.push_back(scat_theta_SD_deg);
-	  info.push_back(scat_theta_SD);
+	  info.push_back(scat_theta_SD_deg);	  
 	  info.push_back(Ein);
 	  info.push_back(DetId);
 	  info.push_back(GunId);
@@ -433,43 +430,57 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	
 	
-	if(AnniPho.size()==2 && nHits_RaylEx ==4) {
-	  //if(AnniPho.size()==2 && nHits_DiffCryst ==4) {	
+	bool A1_BGO = false, A2_BGO = false, A1_Scint =false, A2_Scint = false;
+	if(AnniPho.size()==2 && nHits_RaylEx ==4) {	
 	  h_nAnniPho->Fill(AnniPho.size());
-	  
-	  Relv4Hits.push_back(AnniPho[0]);
-	  Relv4Hits.push_back(AnniPho[1]);
-	  
-	  Ana_Relv4Hits.push_back(AnniPho[0]);
-	  Ana_Relv4Hits.push_back(AnniPho[1]);
+	  A1_BGO = MatName(AnniPho[0][DetId]) == "BGO";
+	  A1_Scint = MatName(AnniPho[0][DetId]) == "Scint";
 
-	  AS_ConnHits.push_back(AnniPho[0]);
-	  AS_ConnHits.push_back(AnniPho[1]);
+	  A2_Scint = MatName(AnniPho[1][DetId]) == "Scint";
+	  A2_Scint = MatName(AnniPho[1][DetId]) == "Scint";
 	  
-	  double GunId_A1 = AnniPho[0][GunId];
-	  double GunId_A2 = AnniPho[1][GunId];
+	  //if(MatName(AnniPho[0][DetId]) == "BGO" && MatName(AnniPho[1][DetId]) == "BGO"){
 	  
-	  double GunId_S1 = ScatPho[0][GunId];
-	  double GunId_S2 = ScatPho[1][GunId];	  
+	    Relv4Hits.push_back(AnniPho[0]);
+	    Relv4Hits.push_back(AnniPho[1]);
+	  
+	    Ana_Relv4Hits.push_back(AnniPho[0]);
+	    Ana_Relv4Hits.push_back(AnniPho[1]);
+
+	    AS_ConnHits.push_back(AnniPho[0]);
+	    AS_ConnHits.push_back(AnniPho[1]);	  
+	  
+	    double GunId_A1 = AnniPho[0][GunId];
+	    double GunId_A2 = AnniPho[1][GunId];
+	  
+	    double GunId_S1 = ScatPho[0][GunId];
+	    double GunId_S2 = ScatPho[1][GunId];	  
 	   
-	  if(GunId_A1 == GunId_S1 && GunId_A2 == GunId_S2) {
-	    Relv4Hits.push_back(ScatPho[0]);
-	    Relv4Hits.push_back(ScatPho[1]);	      
-	  }
+	    if(GunId_A1 == GunId_S1 && GunId_A2 == GunId_S2) {
+	      Relv4Hits.push_back(ScatPho[0]);
+	      Relv4Hits.push_back(ScatPho[1]);	      
+	    }
 
-	  else if(GunId_A1 == GunId_S2 && GunId_A2 == GunId_S1) {
-	    Relv4Hits.push_back(ScatPho[1]);
-	    Relv4Hits.push_back(ScatPho[0]);	      
-	  }
+	    else if(GunId_A1 == GunId_S2 && GunId_A2 == GunId_S1) {
+	      Relv4Hits.push_back(ScatPho[1]);
+	      Relv4Hits.push_back(ScatPho[0]);	      
+	    }
 
-	  if(GunId_S1 != GunId_S2) {
-	    Ana_Relv4Hits.push_back(ScatPho[0]);
-	    Ana_Relv4Hits.push_back(ScatPho[1]);
-	  }	    
-	  
+	    if(GunId_S1 != GunId_S2) {
+	      Ana_Relv4Hits.push_back(ScatPho[0]);
+	      Ana_Relv4Hits.push_back(ScatPho[1]);
+	    }	    
+	    //}
 	} //nAnniPho condition end
 
-	if (Relv4Hits.size() == 4){	 
+      bool A1S1_sameTile = false, A2S2_sameTile = false;
+	if (Relv4Hits.size() == 4){
+	//if (Relv4Hits.size() == 4 && (Relv4Hits[S1][DetId] == Relv4Hits[A1][DetId] && Relv4Hits[S2][DetId] == Relv4Hits[A2][DetId])){	 
+	  A1S1_sameTile = Relv4Hits[S1][DetId] == Relv4Hits[A1][DetId];
+	  A2S2_sameTile = Relv4Hits[S2][DetId] == Relv4Hits[A2][DetId];
+
+	  if((A1_BGO && A1S1_sameTile) || (A2_BGO && A2S2_sameTile)){	    
+	  
 	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
 	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
 	  float dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
@@ -553,16 +564,20 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  double ScatTheta1= acos((vin1.Unit()).Dot(vout1.Unit())) *180.0 / TMath::Pi();	  
 	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();
 
+	  double phi_ScatPlanes =-1;
+	  ROOT::Math::XYZVector n1 = vin1.Cross(vout1);
+	  ROOT::Math::XYZVector n2 = vin2.Cross(vout2);
+	  
+	  phi_ScatPlanes = acos(n1.Unit().Dot(n2.Unit())) *180.0 / TMath::Pi();
+
+	  //cout << phi_ScatPlanes << endl;
+	  //if ((ScatTheta1 >50 && ScatTheta1 <85) && (ScatTheta2 >50 && ScatTheta2 <85)) h_rough[0]->Fill(phi_ScatPlanes);
+
 	  //h_rough->Fill(ScatTheta1 - AS_ConnHits[A1][scat_theta]);
-	  h_rough2D->Fill(ScatTheta1, ScatTheta2);
+	  h_rough2D[0]->Fill(ScatTheta1, Relv4Hits[A1][scat_theta]);
 
+	  } //det mat ID matching condition end
 	} //Relv4Hits.size()=4 condition end
-
-	if (Relv4Hits.size() ==2){
-	  //h_rough2D->Fill(Relv4Hits[0][scat_theta]*180.0 / TMath::Pi(), Relv4Hits[1][scat_theta]*180.0 / TMath::Pi());
-	  //h_rough->Fill(Relv4Hits[0][scat_theta]*180.0/ TMath::Pi());
-	}
-
       }       // nHit >0 condition brkt end
     } //jentry loop end
 
