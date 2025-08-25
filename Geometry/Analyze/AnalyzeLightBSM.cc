@@ -177,16 +177,47 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	
       if (nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
 
+      vector<int> DetId_G1Hits, DetId_G2Hits;
+
       for (int i = 0; i< HitTime_sort.size(); i++){
 	if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
 	//if(incrs_nHit) nHitComp++;
 	if (HitProcId_sort[i] == 0) RejEvt = true;
+
+	if(HitProcId_sort[i] != 0){
+	if (HitGunId_sort[i] == 1) DetId_G1Hits.push_back(HitDetId_sort[i]);
+	if (HitGunId_sort[i] == 2) DetId_G2Hits.push_back(HitDetId_sort[i]);
+	}
       }
 
       //if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
 
       h_nHits->Fill(nHitComp);
 
+      int nHits_DiffCryst = 0;
+      bool nHitG1_incrs = true;
+      for (int i =0; i<DetId_G1Hits.size(); i++){
+	if (i>0){
+	  if(DetId_G1Hits[i] == DetId_G1Hits[i-1]) nHitG1_incrs = false;
+	  else nHitG1_incrs = true;
+	}
+
+	if(nHitG1_incrs) nHits_DiffCryst++;
+      }
+
+      bool nHitG2_incrs = true;
+      for (int i =0; i<DetId_G2Hits.size(); i++){
+	if (i>0){
+	  if(DetId_G2Hits[i] == DetId_G2Hits[i-1]) nHitG2_incrs = false;
+	  else nHitG2_incrs = true;
+	}
+
+	if(nHitG2_incrs) nHits_DiffCryst++;
+      }
+
+      //if (nHits_DiffCryst ==4) h_rough->Fill(nHits_DiffCryst);
+
+      //if (jentry < 50) cout << "\n\nevent: " << jentry+1 << ",  new nHits in the event: " << nHits_DiffCryst << endl;
       
       //if(nHitComp >0){
       if(nHits >0){
@@ -399,19 +430,22 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	//A2: second compton hit from Annihilation
 	//S1: first hit from Scattered photon
 	//S3: 2nd hit from Scattered photon
-	  
-	if(AnniPho.size()==2 && nHits_RaylEx ==4) {
-	  h_nAnniPho->Fill(AnniPho.size());
 
+	
+	
+	if(AnniPho.size()==2 && nHits_RaylEx ==4) {
+	  //if(AnniPho.size()==2 && nHits_DiffCryst ==4) {	
+	  h_nAnniPho->Fill(AnniPho.size());
+	  
 	  Relv4Hits.push_back(AnniPho[0]);
 	  Relv4Hits.push_back(AnniPho[1]);
-
+	  
 	  Ana_Relv4Hits.push_back(AnniPho[0]);
 	  Ana_Relv4Hits.push_back(AnniPho[1]);
 
 	  AS_ConnHits.push_back(AnniPho[0]);
 	  AS_ConnHits.push_back(AnniPho[1]);
-
+	  
 	  double GunId_A1 = AnniPho[0][GunId];
 	  double GunId_A2 = AnniPho[1][GunId];
 	  
@@ -519,10 +553,16 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  double ScatTheta1= acos((vin1.Unit()).Dot(vout1.Unit())) *180.0 / TMath::Pi();	  
 	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();
 
-	  h_rough->Fill(ScatTheta1 - AS_ConnHits[A1][scat_theta]);
+	  //h_rough->Fill(ScatTheta1 - AS_ConnHits[A1][scat_theta]);
 	  h_rough2D->Fill(ScatTheta1, ScatTheta2);
 
-	} //Relv4Hits.size()=4 condition end	  
+	} //Relv4Hits.size()=4 condition end
+
+	if (Relv4Hits.size() ==2){
+	  //h_rough2D->Fill(Relv4Hits[0][scat_theta]*180.0 / TMath::Pi(), Relv4Hits[1][scat_theta]*180.0 / TMath::Pi());
+	  //h_rough->Fill(Relv4Hits[0][scat_theta]*180.0/ TMath::Pi());
+	}
+
       }       // nHit >0 condition brkt end
     } //jentry loop end
 
