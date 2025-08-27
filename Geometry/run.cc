@@ -34,6 +34,10 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Hit_Pol2", &HitPol2);
   tree->Branch("Hit_Eout", &HitEout);
   tree->Branch("Hit_Ein", &HitEin);
+  tree->Branch("Hit_ScatMomX", &HitScatMomX);
+  tree->Branch("Hit_ScatMomY", &HitScatMomY);
+  tree->Branch("Hit_ScatMomZ", &HitScatMomZ);
+
 
   hfile = hfile = TFile::Open("test.root","RECREATE");
 }
@@ -48,4 +52,3 @@ void MyRunAction::EndOfRunAction(const G4Run*)
   hfile->Close();
   G4cout << "Run Ended !!" << G4endl;
 }
-

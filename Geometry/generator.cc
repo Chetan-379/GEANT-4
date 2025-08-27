@@ -22,8 +22,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4ThreeVector XAxis(1,0,0);
   
   mom = mom.rotate(0.6044*((2*G4UniformRand()) - 1.0), XAxis);   //first randomizing in z
-  mom = mom.rotate(2*CLHEP::pi * G4UniformRand(), ZAxis);        //then randomizing in xy plane 
-  
+  mom = mom.rotate(2*CLHEP::pi * G4UniformRand(), ZAxis);        //then randomizing in xy plane   
 
   fParticleGun->SetParticlePosition(pos);
   gParticleGun->SetParticlePosition(pos);

@@ -42,6 +42,7 @@ public:
   void SetPolarisation(G4ThreeVector pol);
   void SetEout(G4double Eout);
   void SetEin(G4double Ein);
+  void SetScatMom(G4ThreeVector mom);
     
   
   // get methods
@@ -58,6 +59,7 @@ public:
   G4ThreeVector GetPolarisation() const;
   G4double GetEout() const;
   G4double GetEin() const;
+  G4ThreeVector GetScatMom() const;
 
   
 private:
@@ -72,6 +74,7 @@ private:
   G4double fScat = 10000.;
   G4double fEta = 10000.;
   G4double fEin = -10000, fEout = -10000;
+  G4ThreeVector fScatMom;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -170,6 +173,11 @@ inline G4double CellHit::GetEin() const
 inline G4double CellHit::GetEout() const
 {
   return fEout;
+}
+
+inline G4ThreeVector CellHit::GetScatMom() const
+{
+  return fScatMom;
 }
 
 

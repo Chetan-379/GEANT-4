@@ -75,6 +75,12 @@ void CellHit::SetEin(G4double Ein)
   fEin = Ein;
 }
 
+void CellHit::SetScatMom(G4ThreeVector mom)
+{
+  fScatMom = mom;
+}
+
+
 
 
 

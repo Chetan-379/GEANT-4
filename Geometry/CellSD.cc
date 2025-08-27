@@ -74,6 +74,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double Ein = step->GetPreStepPoint()->GetKineticEnergy();
   G4double Eout = step->GetPostStepPoint()->GetKineticEnergy();
   G4double GunID = -1;
+  //G4ThreeVector ScatMom = step->GetPostStepPoint()->GetMomentumDirection();
     
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
@@ -177,6 +178,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetPolarisation(prePol);
     hit->SetEin(Ein);
     hit->SetEout(Eout);
+    hit->SetScatMom(vout);
     
     fHitsCollection->insert(hit);
   }

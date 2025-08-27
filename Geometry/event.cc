@@ -62,8 +62,12 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
   HitPol2_vec.clear();
   HitEin_vec.clear();
   HitEout_vec.clear();
+  HitScatMomX_vec.clear();
+  HitScatMomY_vec.clear();
+  HitScatMomZ_vec.clear();
   
-  //G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+  
+  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
  
   //if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
   //else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
@@ -149,7 +153,12 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
     HitPol2_vec.push_back((ScintHit->GetPolarisation())[2]);
 
     HitEin_vec.push_back(ScintHit->GetEin());
-    HitEout_vec.push_back(ScintHit->GetEout());   
+    HitEout_vec.push_back(ScintHit->GetEout());
+
+    HitScatMomX_vec.push_back((ScintHit->GetScatMom())[0]);
+    HitScatMomY_vec.push_back((ScintHit->GetScatMom())[1]);
+    HitScatMomZ_vec.push_back((ScintHit->GetScatMom())[2]);
+
   }
 
   if (ievent == chkEvt) G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
@@ -182,6 +191,10 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitPol2 = HitPol2_vec;
   runObject->HitEout = HitEout_vec;
   runObject->HitEin = HitEin_vec;
+  runObject->HitScatMomX = HitScatMomX_vec;
+  runObject->HitScatMomY = HitScatMomY_vec;
+  runObject->HitScatMomZ = HitScatMomZ_vec;
+  
   
   runObject->tree->Fill();
     

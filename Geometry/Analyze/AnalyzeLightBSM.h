@@ -52,11 +52,14 @@ class AnalyzeLightBSM : public NtupleVariables{
 
   TH1I *h_nAnniPho;
 
-  TH1F *h_rough;
-  TH2F *h_rough2D;
+  TH1F *h_rough[5];
+  TH2F *h_rough2D[5];
 
   TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
-  TH1F *h_Ana_dt_A1S1, *h_Ana_dt_A1S2, *h_Ana_dt_A2S1, *h_Ana_dt_A2S2, *h_Ana_dt_A1A2, *h_Ana_dt_S1S2;
+
+  TH1F *h_dPhi, *h_dEta;
+  TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2;
+  //TH1F *h_Ana_dt_A1S1, *h_Ana_dt_A1S2, *h_Ana_dt_A2S1, *h_Ana_dt_A2S2, *h_Ana_dt_A1A2, *h_Ana_dt_S1S2;
  
   TFile *oFile;
 };
@@ -105,31 +108,58 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
    h_PolZ_Ana_SD->SetYTitle("PolZ_SD");
    
    h_Pol_Ana = new TH1F("Pol_Ana", "Pol_Ana", 240,-1.2,1.2);
+   
+   h_nAnniPho = new TH1I("nAnniPho", "nAnniPho", 10,0,10);
 
-    h_nAnniPho = new TH1I("nAnniPho", "nAnniPho", 10,0,10);
-
+   
     
+    h_dEta = new TH1F("dEta", "dEta", 400, 0, 400);
 
-    h_rough = new TH1F("nHits_rx", "nHits_rx", 20,0,20);
-    h_rough->GetXaxis()->SetTitle("nHits_rx");
+    h_dPhi = new TH1F("DelPhi", "DelPhi", 100,0,200);
+    h_dPhi->GetXaxis()->SetTitle("DelPhi (deg)");
 
-    h_rough2D = new TH2F("Theta1VsTheta2", "Theta1VsTheta2", 100,0,200, 100,0,200);
-    h_rough2D->GetXaxis()->SetTitle("theta1_(deg)");
-    h_rough2D->GetYaxis()->SetTitle("theta2_(deg)");
+    h_Eta1VsEta2 = new TH2F("Eta1VsEta2", "Eta1VsEta2", 100,-200,200, 100,-200,200);
+    h_Eta1VsEta2->GetXaxis()->SetTitle("Eta1_(deg)");
+    h_Eta1VsEta2->GetYaxis()->SetTitle("Eta2_(deg)");
+
+    h_Theta1vsTheta2 = new TH2F("Theta1vsTheta2", "Theta1vsTheta2", 90,0,180, 90,0,180);
+    h_Theta1vsTheta2->GetXaxis()->SetTitle("theta1_(deg)");
+    h_Theta1vsTheta2->GetYaxis()->SetTitle("theta2_(deg)");
     
-    h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 200, -0.4, 4);  //1000->500
-    h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 450, -2, 4);
-    h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 450, -2, 4);
-    h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 200, -0.4, 4); 
-    h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 200, -0.1, 4);
-    h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 200, -0.1, 4);
+    h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 400, -4, 4);  //1000->500
+    h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 400, -4, 4);
+    h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 400, -4, 4);
+    h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 400, -4, 4); 
+    h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 400, -4, 4);
+    h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 400, -4, 4);
 
-    h_Ana_dt_A1S1 = new TH1F("Ana_dt_A1S1", "Ana_dt_A1S1", 1000, -5, 5);
-    h_Ana_dt_A1S2 = new TH1F("Ana_dt_A1S2", "Ana_dt_A1S2", 1000, -5, 5);
-    h_Ana_dt_A2S1 = new TH1F("Ana_dt_A2S1", "Ana_dt_A2S1", 1000, -5, 5);
-    h_Ana_dt_A2S2 = new TH1F("Ana_dt_A2S2", "Ana_dt_A2S2", 1000, -5, 5); 
-    h_Ana_dt_A1A2 = new TH1F("Ana_dt_A1A2", "Ana_dt_A1A2", 1000, -5, 5);
-    h_Ana_dt_S1S2 = new TH1F("Ana_dt_S1S2", "Ana_dt_S1S2", 1000, -5, 5); 
+    h_rough[0] = new TH1F("rough", "rough", 200,0,200);
+    h_rough[0]->GetXaxis()->SetTitle("angle (deg)");
+
+
+    h_rough[1] = new TH1F("scat_theta1_sim", "scat_theta1_sim", 100,0,200);
+    h_rough[1]->GetXaxis()->SetTitle("scat_theta1_sim");
+
+
+    h_rough2D[0] = new TH2F("rough2D_0", "rough2D_0", 100,0,200, 200,-200,200);
+    h_rough2D[0]->GetXaxis()->SetTitle("ThetaAna_(deg)");
+    h_rough2D[0]->GetYaxis()->SetTitle("ThetaSim_(deg)");
+
+    h_rough2D[1] = new TH2F("Theta1vsTheta2_Ana", "Theta1vsTheta2_Ana", 90,0,180, 90,0,180);
+    h_rough2D[1]->GetXaxis()->SetTitle("theta1_(deg)");
+    h_rough2D[1]->GetYaxis()->SetTitle("theta2_(deg)");
+
+    h_rough2D[2] = new TH2F("Theta1vsTheta2_Sim", "Theta1vsTheta2_Sim", 100,0,200, 100,0,200);
+    h_rough2D[2]->GetXaxis()->SetTitle("theta1_(deg)");
+    h_rough2D[2]->GetYaxis()->SetTitle("theta2_(deg)");
+
+
+    // h_Ana_dt_A1S1 = new TH1F("Ana_dt_A1S1", "Ana_dt_A1S1", 1000, -5, 5);
+    // h_Ana_dt_A1S2 = new TH1F("Ana_dt_A1S2", "Ana_dt_A1S2", 1000, -5, 5);
+    // h_Ana_dt_A2S1 = new TH1F("Ana_dt_A2S1", "Ana_dt_A2S1", 1000, -5, 5);
+    // h_Ana_dt_A2S2 = new TH1F("Ana_dt_A2S2", "Ana_dt_A2S2", 1000, -5, 5); 
+    // h_Ana_dt_A1A2 = new TH1F("Ana_dt_A1A2", "Ana_dt_A1A2", 1000, -5, 5);
+    // h_Ana_dt_S1S2 = new TH1F("Ana_dt_S1S2", "Ana_dt_S1S2", 1000, -5, 5); 
     
 
 
