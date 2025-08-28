@@ -52,6 +52,10 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_Pol2;
   vector<double>  *Hit_Eout;
   vector<double>  *Hit_Ein;
+  vector<double>  *Hit_ScatMomX;
+  vector<double>  *Hit_ScatMomY;
+  vector<double>  *Hit_ScatMomZ;
+
   
    // List of branches
   TBranch         *b_positionX;   //!
@@ -77,6 +81,10 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Hit_Pol2;
   TBranch         *b_Hit_Eout;
   TBranch         *b_Hit_Ein;
+  TBranch         *b_Hit_ScatMomX;
+  TBranch         *b_Hit_ScatMomY;
+  TBranch         *b_Hit_ScatMomZ;
+
   
   
   
@@ -129,6 +137,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    Hit_Pol2 =0;
    Hit_Eout =0;
    Hit_Ein =0;
+   Hit_ScatMomX =0;
+   Hit_ScatMomY =0;
+   Hit_ScatMomZ =0;
 
    
    
@@ -162,6 +173,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Hit_Pol2", &Hit_Pol2, &b_Hit_Pol2);
    fChain->SetBranchAddress("Hit_Eout", &Hit_Eout, &b_Hit_Eout);
    fChain->SetBranchAddress("Hit_Ein", &Hit_Ein, &b_Hit_Ein);
+   fChain->SetBranchAddress("Hit_ScatMomX", &Hit_ScatMomX, &b_Hit_ScatMomX);
+   fChain->SetBranchAddress("Hit_ScatMomY", &Hit_ScatMomY, &b_Hit_ScatMomY);
+   fChain->SetBranchAddress("Hit_ScatMomZ", &Hit_ScatMomZ, &b_Hit_ScatMomZ);
 
    Notify();
 }

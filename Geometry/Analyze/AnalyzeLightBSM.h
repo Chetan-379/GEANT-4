@@ -57,7 +57,7 @@ class AnalyzeLightBSM : public NtupleVariables{
 
   TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
 
-  TH1F *h_dPhi, *h_dEta;
+  TH1F *h_dPhi, *h_dPhi_Truth, *h_dEta;
   TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2;
   //TH1F *h_Ana_dt_A1S1, *h_Ana_dt_A1S2, *h_Ana_dt_A2S1, *h_Ana_dt_A2S2, *h_Ana_dt_A1A2, *h_Ana_dt_S1S2;
  
@@ -115,8 +115,11 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     
     h_dEta = new TH1F("dEta", "dEta", 400, 0, 400);
 
-    h_dPhi = new TH1F("DelPhi", "DelPhi", 100,0,200);
+    h_dPhi = new TH1F("DelPhi", "DelPhi", 100,-1,200);
     h_dPhi->GetXaxis()->SetTitle("DelPhi (deg)");
+
+    h_dPhi_Truth = new TH1F("DelPhi_Truth", "DelPhi_Truth", 100,-1,200);
+    
 
     h_Eta1VsEta2 = new TH2F("Eta1VsEta2", "Eta1VsEta2", 100,-200,200, 100,-200,200);
     h_Eta1VsEta2->GetXaxis()->SetTitle("Eta1_(deg)");
@@ -141,11 +144,11 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     h_rough[1]->GetXaxis()->SetTitle("scat_theta1_sim");
 
 
-    h_rough2D[0] = new TH2F("rough2D_0", "rough2D_0", 100,0,200, 200,-200,200);
+    h_rough2D[0] = new TH2F("rough2D_0", "rough2D_0", 100,0,200, 100,0,200);
     h_rough2D[0]->GetXaxis()->SetTitle("ThetaAna_(deg)");
     h_rough2D[0]->GetYaxis()->SetTitle("ThetaSim_(deg)");
 
-    h_rough2D[1] = new TH2F("Theta1vsTheta2_Ana", "Theta1vsTheta2_Ana", 90,0,180, 90,0,180);
+    h_rough2D[1] = new TH2F("rough2D_1", "rough2D_1", 100,0,200, 100,0,200);
     h_rough2D[1]->GetXaxis()->SetTitle("theta1_(deg)");
     h_rough2D[1]->GetYaxis()->SetTitle("theta2_(deg)");
 

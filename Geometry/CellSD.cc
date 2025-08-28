@@ -118,6 +118,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       eta = vout.azimAngle(prePol,vin);
       //eta = vout.azimAngle(polPlane,vin);
 
+      
       //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
       //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
       //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));

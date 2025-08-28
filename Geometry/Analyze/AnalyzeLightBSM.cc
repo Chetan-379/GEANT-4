@@ -91,8 +91,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       //sorting the hits in the ascending order of time
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, HitPol0_sort, HitPol1_sort, HitPol2_sort, HitEin_sort, HitEout_sort;
-      vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitPolX_cpy, HitPolY_cpy, HitPolZ_cpy, HitScatAng_cpy, HitEta_cpy, HitPol0_cpy, HitPol1_cpy, HitPol2_cpy, HitEin_cpy, HitEout_cpy;
+      vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, HitPol0_sort, HitPol1_sort, HitPol2_sort, HitEin_sort, HitEout_sort, HitScatMomX_sort, HitScatMomY_sort, HitScatMomZ_sort;
+      vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitPol0_cpy, HitPol1_cpy, HitPol2_cpy, HitScatAng_cpy, HitEta_cpy, HitEin_cpy, HitEout_cpy, HitScatMomX_cpy, HitScatMomY_cpy, HitScatMomZ_cpy;
 
       vector <int> HitProcId_sort, HitDetId_sort, HitGunId_sort;
       vector<int> HitProcId_cpy, HitDetId_cpy, HitGunId_cpy;
@@ -111,6 +111,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitEin_sort.clear();
       HitDetId_sort.clear();
       HitGunId_sort.clear();
+      HitScatMomX_sort.clear();
+      HitScatMomY_sort.clear();
+      HitScatMomZ_sort.clear();	
+
 	   
       HitPosX_cpy = *Hit_PositionX;
       HitPosY_cpy = *Hit_PositionY;
@@ -125,7 +129,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitEout_cpy = *Hit_Eout;
       HitEin_cpy = *Hit_Ein;
       HitDetId_cpy = *Hit_DetId;
-      HitGunId_cpy = *Hit_GunId;      
+      HitGunId_cpy = *Hit_GunId;
+      HitScatMomX_cpy = *Hit_ScatMomX;
+      HitScatMomY_cpy = *Hit_ScatMomY;
+      HitScatMomZ_cpy = *Hit_ScatMomZ;
 	
       for (int iHit=0 ; iHit< nHits; iHit++){                               	 
 	auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
@@ -145,6 +152,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitEin_sort.push_back(HitEin_cpy[min_idx]);
 	HitDetId_sort.push_back(HitDetId_cpy[min_idx]);
 	HitGunId_sort.push_back(HitGunId_cpy[min_idx]);
+	HitScatMomX_sort.push_back(HitScatMomX_cpy[min_idx]);
+	HitScatMomY_sort.push_back(HitScatMomY_cpy[min_idx]);
+	HitScatMomZ_sort.push_back(HitScatMomZ_cpy[min_idx]);
 	     
 	HitTime_cpy.erase(HitTime_cpy.begin() + min_idx);
 	HitPosX_cpy.erase(HitPosX_cpy.begin() + min_idx);
@@ -160,6 +170,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitEin_cpy.erase(HitEin_cpy.begin() + min_idx);
 	HitDetId_cpy.erase(HitDetId_cpy.begin() + min_idx);
 	HitGunId_cpy.erase(HitGunId_cpy.begin() + min_idx);
+	HitScatMomX_cpy.erase(HitScatMomX_cpy.begin() + min_idx);
+	HitScatMomY_cpy.erase(HitScatMomY_cpy.begin() + min_idx);
+	HitScatMomZ_cpy.erase(HitScatMomZ_cpy.begin() + min_idx);
       }
 
       //Sorting done
@@ -190,13 +203,18 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	info.push_back(HitPol0_sort[i]);
 	info.push_back(HitPol1_sort[i]);
 	info.push_back(HitPol2_sort[i]);
+	info.push_back(HitScatMomX_sort[i]);
+	info.push_back(HitScatMomY_sort[i]);
+	info.push_back(HitScatMomZ_sort[i]);
+
 
 	Hits.push_back(info);
        }
 
-       enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId, Eta, Pol_X, Pol_Y, Pol_Z};
+       enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId, Eta, Pol_X, Pol_Y, Pol_Z, ScatMomX, ScatMomY, ScatMomZ};
 
 
+       //if(jentry ==1) cout << "\n\nvout: " << Hits[0][ScatMomX] << ", " << Hits[0][ScatMomY] << ", " << Hits[0][ScatMomZ] << endl;
       
       bool incrs_nHit = false;
       bool RejEvt = false;
@@ -536,19 +554,15 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  vout2.SetXYZ((AS_ConnHits[S2][PosX]-AS_ConnHits[A2][PosX]), (AS_ConnHits[S2][PosY]-AS_ConnHits[A2][PosY]), (AS_ConnHits[S2][PosZ]-AS_ConnHits[A2][PosZ]));
 	  
 	  double ScatTheta1= acos((vin1.Unit()).Dot(vout1.Unit())) *180.0 / TMath::Pi();	  
-	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();	  
+	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();
+
 	    
 	  double phi_ScatPlanes =-1;
-	  ROOT::Math::XYZVector Exact_vin1, Exact_vin2, Exact_vout1, Exact_vout2;
-	  Exact_vin1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
-	  Exact_vin2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
-
-	  Exact_vout1.SetXYZ((Relv4Hits[S1][PosX]-Relv4Hits[A1][PosX]), (Relv4Hits[S1][PosY]-Relv4Hits[A1][PosY]), (Relv4Hits[S1][PosZ]-Relv4Hits[A1][PosZ]));	  
-	  Exact_vout2.SetXYZ((Relv4Hits[S2][PosX]-Relv4Hits[A2][PosX]), (Relv4Hits[S2][PosY]-Relv4Hits[A2][PosY]), (Relv4Hits[S2][PosZ]-Relv4Hits[A2][PosZ]));
 	  
-	  double dEta = Relv4Hits[A1][Eta]-Relv4Hits[A2][Eta];
-	  ROOT::Math::XYZVector n1 = Exact_vin1.Cross(Exact_vout1);
-	  ROOT::Math::XYZVector n2 = Exact_vin2.Cross(Exact_vout2);
+	  
+
+	  ROOT::Math::XYZVector n1 = vin1.Cross(vout1);
+	  ROOT::Math::XYZVector n2 = vin2.Cross(vout2);
 
 	  //h_dEta->Fill(abs(Relv4Hits[A1][Eta]-Relv4Hits[A2][Eta]));
 
@@ -569,7 +583,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	 // }
 	  
 	 
-	  h_dEta->Fill(abs(dEta));
+	  
 	  h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
 	  
 	  //cout << phi_ScatPlanes << endl;
@@ -587,10 +601,31 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	} //Relv4Hits.size()=4 condition end
 
 	 if(Relv4Hits.size() >=2) {
-	//   h_rough2D[2]->Fill(Relv4Hits[A1][scat_theta], Relv4Hits[A2][scat_theta]);
-	   //h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
-	//   h_rough[1]->Fill(Relv4Hits[A1][scat_theta]);
-	   h_rough2D[0]->Fill(Relv4Hits[A1][Eta], Relv4Hits[A1][scat_theta]);
+	   ROOT::Math::XYZVector Exact_vin1, Exact_vin2, Exact_vout1, Exact_vout2;
+	   Exact_vin1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
+	   Exact_vin2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
+
+	   Exact_vout1.SetXYZ(Relv4Hits[A1][ScatMomX], Relv4Hits[A1][ScatMomY], Relv4Hits[A1][ScatMomZ]);
+	   Exact_vout2.SetXYZ(Relv4Hits[A2][ScatMomX], Relv4Hits[A2][ScatMomY], Relv4Hits[A2][ScatMomZ]);
+
+	   double Scat_truth1 = (Exact_vin1.Unit()).Dot(Exact_vout1.Unit())*180.0 / TMath::Pi();
+	   double Scat_truth2 = (Exact_vin2.Unit()).Dot(Exact_vout2.Unit())*180.0 / TMath::Pi();
+
+	   h_rough2D[0]->Fill(Scat_truth1, Relv4Hits[A1][scat_theta]);
+	   h_rough2D[1]->Fill(Scat_truth2, Relv4Hits[A2][scat_theta]);
+
+	 
+	   double phi_ScatPlanes_truth = -1;
+	   ROOT::Math::XYZVector n1_truth = (Exact_vin1.Unit()).Cross(Exact_vout1.Unit());
+	   ROOT::Math::XYZVector n2_truth = (Exact_vin2.Unit()).Cross(Exact_vout2.Unit());
+
+	   phi_ScatPlanes_truth = acos(n1_truth.Unit().Dot(n2_truth.Unit())) *180.0 / TMath::Pi();
+
+	   if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) h_dPhi_Truth->Fill(phi_ScatPlanes_truth);
+
+	   double dEta = Relv4Hits[A1][Eta]-Relv4Hits[A2][Eta];
+	   h_dEta->Fill(abs(dEta));
+	   
 	 }
 	
       }       // nHit >0 condition brkt end
