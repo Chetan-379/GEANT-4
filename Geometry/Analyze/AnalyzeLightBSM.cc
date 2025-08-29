@@ -207,14 +207,14 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	info.push_back(HitScatMomY_sort[i]);
 	info.push_back(HitScatMomZ_sort[i]);
 
-
 	Hits.push_back(info);
        }
 
        enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId, Eta, Pol_X, Pol_Y, Pol_Z, ScatMomX, ScatMomY, ScatMomZ};
 
 
-       //if(jentry ==1) cout << "\n\nvout: " << Hits[0][ScatMomX] << ", " << Hits[0][ScatMomY] << ", " << Hits[0][ScatMomZ] << endl;
+       // if(jentry <10 && Hits.size()>0) {cout << "\n\nvout: " << Hits[0][ScatMomX] << ", " << Hits[0][ScatMomY] << ", " << Hits[0][ScatMomZ] << endl;
+       // 	 cout << "ScatPos: " << Hits[0][PosX] << ", " << Hits[0][PosY] << ", " << Hits[0][PosZ] << endl;}
       
       bool incrs_nHit = false;
       bool RejEvt = false;
@@ -462,9 +462,6 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 		Relv4Hits.push_back(ScatPho[0]);	      
 	      }
 
-	    
-
-	      //if(GunId_S1 != GunId_S2) {
 	      if(GunId_S1 != GunId_S2) {
 		Ana_Relv4Hits.push_back(ScatPho[0]);
 		Ana_Relv4Hits.push_back(ScatPho[1]);
@@ -475,10 +472,6 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	
 	if (Relv4Hits.size() == 4){
 	//if (Relv4Hits.size() >= 4){
-
-	  //if(A1_Scint && A2_Scint){
-	  //if((A1_BGO && A1S1_sameTile) || (A2_BGO && A2S2_sameTile)){	    
-	  
 	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
 	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
 	  float dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
@@ -502,13 +495,21 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  float Ana_dt_A1A2 = Ana_Relv4Hits[A2][time] - Ana_Relv4Hits[A1][time];
 	  float Ana_dt_S1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[S1][time];
 
+	  // float Ana_dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];	  
+	  // float Ana_dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
+	  // float Ana_dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
+	  // float Ana_dt_A2S2 = Relv4Hits[S2][time] - Relv4Hits[A2][time];
+
+	  // float Ana_dt_A1A2 = Relv4Hits[A2][time] - Relv4Hits[A1][time];
+	  // float Ana_dt_S1S2 = Relv4Hits[S2][time] - Relv4Hits[S1][time];
+	  
 	  //creating STij
 	  ROOT::Math::XYZVector PosVec_A1, PosVec_A2, PosVec_S1, PosVec_S2, test;
 	  PosVec_A1.SetXYZ(Ana_Relv4Hits[A1][PosX], Ana_Relv4Hits[A1][PosY], Ana_Relv4Hits[A1][PosZ]);
 	  PosVec_A2.SetXYZ(Ana_Relv4Hits[A2][PosX], Ana_Relv4Hits[A2][PosY], Ana_Relv4Hits[A2][PosZ]);
 	  PosVec_S1.SetXYZ(Ana_Relv4Hits[S1][PosX], Ana_Relv4Hits[S1][PosY], Ana_Relv4Hits[S1][PosZ]);
-	  PosVec_S2.SetXYZ(Relv4Hits[S2][PosX], Relv4Hits[S2][PosY], Relv4Hits[S2][PosZ]);
-       
+	  PosVec_S2.SetXYZ(Ana_Relv4Hits[S2][PosX], Ana_Relv4Hits[S2][PosY], Ana_Relv4Hits[S2][PosZ]);
+	  
 	  double d_A1S1, d_A1S2, d_A2S1, d_A2S2;
 	  d_A1S1 = (PosVec_A1 - PosVec_S1).R();
 	  d_A1S2 = (PosVec_A1 - PosVec_S2).R();
@@ -524,6 +525,17 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  ST21 = Ana_dt_A2S1 - (d_A2S1/c);
 	  ST22 = Ana_dt_A2S2 - (d_A2S2/c);
 
+	  //h_STij->Fill(ST11,ST21);
+	  h_STij->Fill(ST12,ST22);
+
+	  // h_rough[0]->Fill(ST11);
+	  // h_rough[0]->Fill(ST12);
+
+	  h_rough[0]->Fill(Ana_Relv4Hits[S1][GunId]);
+	  h_rough[0]->Fill(Ana_Relv4Hits[S2][GunId]);
+
+	  h_rough[1]->Fill(ST21);
+	  h_rough[1]->Fill(ST22);
 	  bool A1toS1 = false, A1toS2 = false;
 
 	  if (abs(ST11) < abs(ST21)) {A1toS1 = true;}
@@ -584,7 +596,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  
 	 
 	  
-	  h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
+	  
 	  
 	  //cout << phi_ScatPlanes << endl;
 	  //if ((ScatTheta1 >50 && ScatTheta1 <85) && (ScatTheta2 >50 && ScatTheta2 <85)) h_rough[0]->Fill(phi_ScatPlanes);
@@ -595,12 +607,19 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  //h_rough2D[0]->Fill(ScatTheta2, Relv4Hits[A2][scat_theta]);
 	  h_Theta1vsTheta2->Fill(Relv4Hits[A1][scat_theta], Relv4Hits[A2][scat_theta]);
 
+	  h_ThetaSimAna->Fill(ScatTheta1, Relv4Hits[A1][scat_theta]);
+	  h_ThetaSimAna->Fill(ScatTheta2, Relv4Hits[A2][scat_theta]);
+
+	   // cout << "A1 Pos: (" << Relv4Hits[A1][PosX] << "," << Relv4Hits[A1][PosY] << "," << Relv4Hits[A1][PosZ] << ")\n"; 
+	   // cout << "Hit1 Pos: (" << Hits[A1][PosX] << "," << Hits[A1][PosY] << "," << Hits[A1][PosZ] << ")\n";
+	   // cout << "Hit2 Pos: (" << Hits[A2][PosX] << "," << Hits[A2][PosY] << "," << Hits[A2][PosZ] << ")\n\n";
 	  
 
 	  // } //det mat ID matching condition end
 	} //Relv4Hits.size()=4 condition end
 
-	 if(Relv4Hits.size() >=2) {
+	if(Relv4Hits.size() >=2) {
+	//if(Relv4Hits.size() ==2) {
 	   ROOT::Math::XYZVector Exact_vin1, Exact_vin2, Exact_vout1, Exact_vout2;
 	   Exact_vin1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
 	   Exact_vin2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
@@ -608,33 +627,45 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	   Exact_vout1.SetXYZ(Relv4Hits[A1][ScatMomX], Relv4Hits[A1][ScatMomY], Relv4Hits[A1][ScatMomZ]);
 	   Exact_vout2.SetXYZ(Relv4Hits[A2][ScatMomX], Relv4Hits[A2][ScatMomY], Relv4Hits[A2][ScatMomZ]);
 
-	   double Scat_truth1 = (Exact_vin1.Unit()).Dot(Exact_vout1.Unit())*180.0 / TMath::Pi();
-	   double Scat_truth2 = (Exact_vin2.Unit()).Dot(Exact_vout2.Unit())*180.0 / TMath::Pi();
+	   double Scat_truth1 = (Exact_vout1).Dot(Exact_vin1.Unit())*180.0 / TMath::Pi();
+	   double Scat_truth2 = (Exact_vout2.Unit()).Dot(Exact_vin2.Unit())*180.0 / TMath::Pi();
 
-	   h_rough2D[0]->Fill(Scat_truth1, Relv4Hits[A1][scat_theta]);
+	   
+	   //h_rough[0]->Fill(Scat_truth1);
+	   
+	   //h_rough2D[0]->Fill(Scat_truth1, Relv4Hits[A1][scat_theta]);
 	   h_rough2D[1]->Fill(Scat_truth2, Relv4Hits[A2][scat_theta]);
 
-	 
+	   h_Eta1VsEta2_inc->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
+
+	   double dEta = abs(Relv4Hits[A1][Eta])-abs(Relv4Hits[A2][Eta]);
+	   h_dEta_inc->Fill(abs(dEta));
+
+	   
 	   double phi_ScatPlanes_truth = -1;
 	   ROOT::Math::XYZVector n1_truth = (Exact_vin1.Unit()).Cross(Exact_vout1.Unit());
 	   ROOT::Math::XYZVector n2_truth = (Exact_vin2.Unit()).Cross(Exact_vout2.Unit());
 
 	   phi_ScatPlanes_truth = acos(n1_truth.Unit().Dot(n2_truth.Unit())) *180.0 / TMath::Pi();
+      
+	   if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) {
+	     h_dPhi_Truth->Fill(phi_ScatPlanes_truth);
+	     h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
+	    
+	     h_dEta->Fill(abs(dEta));
+	   }
 
-	   if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) h_dPhi_Truth->Fill(phi_ScatPlanes_truth);
-
-	   double dEta = Relv4Hits[A1][Eta]-Relv4Hits[A2][Eta];
-	   h_dEta->Fill(abs(dEta));
+	   
 	   
 	 }
 	
       }       // nHit >0 condition brkt end
     } //jentry loop end
 
-  cout << "events with 2 or more comps: " << Comp2_evts << endl;
-  cout << "n1: " << n1 << endl;
-  cout << "n1s: " << n1s << endl;
-  cout << "n1b: " << n1b << endl;
+  // cout << "events with 2 or more comps: " << Comp2_evts << endl;
+  // cout << "n1: " << n1 << endl;
+  // cout << "n1s: " << n1s << endl;
+  // cout << "n1b: " << n1b << endl;
 }
 
 void AnalyzeLightBSM::FillHistogram(int cat, double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double pol0, double pol1, double pol2, double Ein, double Eout){

@@ -56,9 +56,10 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH2F *h_rough2D[5];
 
   TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
+  TH2F *h_STij;
 
-  TH1F *h_dPhi, *h_dPhi_Truth, *h_dEta;
-  TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2;
+  TH1F *h_dPhi, *h_dPhi_Truth, *h_dEta, *h_dEta_inc;
+  TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2, *h_Eta1VsEta2_inc, *h_ThetaSimAna;
   //TH1F *h_Ana_dt_A1S1, *h_Ana_dt_A1S2, *h_Ana_dt_A2S1, *h_Ana_dt_A2S2, *h_Ana_dt_A1A2, *h_Ana_dt_S1S2;
  
   TFile *oFile;
@@ -114,6 +115,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
    
     
     h_dEta = new TH1F("dEta", "dEta", 400, 0, 400);
+    h_dEta_inc = new TH1F("dEta_inc", "dEta_inc", 400, 0, 400);
 
     h_dPhi = new TH1F("DelPhi", "DelPhi", 100,-1,200);
     h_dPhi->GetXaxis()->SetTitle("DelPhi (deg)");
@@ -125,24 +127,39 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
     h_Eta1VsEta2->GetXaxis()->SetTitle("Eta1_(deg)");
     h_Eta1VsEta2->GetYaxis()->SetTitle("Eta2_(deg)");
 
+    h_Eta1VsEta2_inc = new TH2F("Eta1VsEta2_inc", "Eta1VsEta2_inc", 100,-200,200, 100,-200,200);
+    h_Eta1VsEta2_inc->GetXaxis()->SetTitle("Eta1_(deg)");
+    h_Eta1VsEta2_inc->GetYaxis()->SetTitle("Eta2_(deg)");
+
+    h_ThetaSimAna = new TH2F("Theta_SimAna", "Theta_SimAna", 100,0,200, 100,0,200);
+    h_ThetaSimAna->GetXaxis()->SetTitle("thetaAna_(deg)");
+    h_ThetaSimAna->GetYaxis()->SetTitle("thetaSim_(deg)");
+
     h_Theta1vsTheta2 = new TH2F("Theta1vsTheta2", "Theta1vsTheta2", 90,0,180, 90,0,180);
     h_Theta1vsTheta2->GetXaxis()->SetTitle("theta1_(deg)");
     h_Theta1vsTheta2->GetYaxis()->SetTitle("theta2_(deg)");
     
-    h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 400, -4, 4);  //1000->500
-    h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 400, -4, 4);
-    h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 400, -4, 4);
-    h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 400, -4, 4); 
-    h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 400, -4, 4);
-    h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 400, -4, 4);
+    h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 500, -5, 5);  //1000->500
+    h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 500, -5, 5);
+    h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 500, -5, 5);
+    h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 500, -5, 5); 
+    h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 500, -5, 5);
+    h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 500, -5, 5);
 
-    h_rough[0] = new TH1F("rough", "rough", 200,0,200);
-    h_rough[0]->GetXaxis()->SetTitle("angle (deg)");
+    h_STij = new TH2F("h_ST1jVsST2j", "h_ST1jVsST2j", 100,-5,5, 100,-5,5);
+    h_STij->GetXaxis()->SetTitle("ST1j (ns)");
+    h_STij->GetYaxis()->SetTitle("ST2j (ns)");
+
+    
+
+    h_rough[0] = new TH1F("rough0", "rough0", 4,0,4);
+    h_rough[0]->GetXaxis()->SetTitle("gId");
+
+    h_rough[1] = new TH1F("rough1", "rough1", 100,-5,5);
+    h_rough[1]->GetXaxis()->SetTitle("ns");
 
 
-    h_rough[1] = new TH1F("scat_theta1_sim", "scat_theta1_sim", 100,0,200);
-    h_rough[1]->GetXaxis()->SetTitle("scat_theta1_sim");
-
+    
 
     h_rough2D[0] = new TH2F("rough2D_0", "rough2D_0", 100,0,200, 100,0,200);
     h_rough2D[0]->GetXaxis()->SetTitle("ThetaAna_(deg)");

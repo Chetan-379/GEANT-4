@@ -265,7 +265,8 @@ void overlay(string pathname)
 
   vector<string> f;
  
-  f= {"out_root_files/test_check100k_out.root"};
+  //f= {"out_root_files/test_check100k_out.root"};
+  f= {"out_root_files/test_check5M_ScatMom_out.root"};
 
   
   //define your histograms to be read from here
@@ -310,7 +311,7 @@ void overlay(string pathname)
     // filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit>=2_Plastic_AnyDiffDet", "nHit>=2_Plastic_singleCrys", "nHit>=2_Plastic_diffCryst", "nHit>=2_Plastic_BGO" ,"nHit>=2_BGO_singleCrys", "nHit>=2_BGO_diffCryst", "nHit>=2_BGO_Plastic", "rest"};
 
     //filetag={"nHit>=2_Plastic_AnyDiffDet"};
-    filetag={"E_{#gamma}: 511keV, 100k Evts"};
+    filetag={"E_{#gamma}: 511keV, 5M Evts"};
     
   //filetag={"scatTheta inclusive", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
   //filetag={"all_inc", "all_inc", "all_inc"};//, "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
@@ -320,8 +321,8 @@ void overlay(string pathname)
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {4, 200, 200, 1000, 1000, 1000, 20};
-  vector<double>xmin = {-1, -200, 0, -1000, 1000, -700, 0};
+  vector<double>xmax = {10, 200, 200, 1000, 1000, 1000, 20};
+  vector<double>xmin = {-10, -200, 0, -1000, 1000, -700, 0};
 
   vector<TH1F*> hist_list;
   for (int iVar =0; iVar < variables.size(); iVar++){
@@ -350,7 +351,7 @@ void overlay(string pathname)
     //path to save the files a jpg or pdf
     vector<string> folder;   
     //folder = {"plots/A_Anydet/"};
-    folder = {"plots/A_Scint/"};
+    folder = {"plots/"};
     sprintf(full_path,"%s%s%s",pathname.c_str(),folder[0].c_str(),variables[0].c_str());
 
     cout << full_path << endl;

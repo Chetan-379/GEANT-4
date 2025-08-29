@@ -118,6 +118,17 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       eta = vout.azimAngle(prePol,vin);
       //eta = vout.azimAngle(polPlane,vin);
 
+      // if(Ein == 0.511) {
+      // 	G4ThreeVector vin_test = compt_scat_point;
+      // 	G4double theta_test = acos(vout.dot(vin_test.unit()));
+
+      // 	G4cout << "scat_theta: " << scat_theta << G4endl;
+      // 	G4cout << "theta_test: " << theta_test << G4endl;
+      // 	  };
+
+      // if(Ein == 0.511) {
+      // G4cout << "Scat Mom: " << vout << G4endl;
+      // G4cout << "Scat Pos: " << compt_scat_point;}
       
       //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
       //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
