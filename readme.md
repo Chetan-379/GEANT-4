@@ -11,6 +11,9 @@ In this version, further modifications are done for studying two back to back ph
 - `./test`
 
 ========To run the Analyzer:
+
+`cd Analyze`
+
 `make`
 
 `./analyzeLightBSM inputfile.txt outFile.root Plastic_BGO`
