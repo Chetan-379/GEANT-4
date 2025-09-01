@@ -9,3 +9,10 @@ In this version, further modifications are done for studying two back to back ph
 - `mkdir build`
 - `cmake ..`
 - `./test`
+
+========To run the Analyzer:
+`make`
+
+`./analyzeLightBSM inputfile.txt outFile.root Plastic_BGO`
+
+Note: inputfile.txt contains the name the root file containing the tree generated from the G4 Simulation. The root files mentioned there are merged together and a single output root file will be generated.
