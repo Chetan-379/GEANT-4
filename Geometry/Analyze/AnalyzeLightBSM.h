@@ -58,7 +58,7 @@ class AnalyzeLightBSM : public NtupleVariables{
   TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
   TH2F *h_STij;
 
-  TH1F *h_dPhi, *h_dPhi_Truth, *h_dEta, *h_dEta_inc;
+  TH1F *h_dPhi_inVis,*h_dPhi_outVis, *h_dEta_inVis, *h_dEta_outVis, *h_dEta_inc;
   TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2, *h_Eta1VsEta2_inc, *h_ThetaSimAna;
   //TH1F *h_Ana_dt_A1S1, *h_Ana_dt_A1S2, *h_Ana_dt_A2S1, *h_Ana_dt_A2S2, *h_Ana_dt_A1A2, *h_Ana_dt_S1S2;
  
@@ -114,13 +114,13 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
    
     
-    h_dEta = new TH1F("dEta", "dEta", 400, 0, 400);
+    h_dEta_inVis = new TH1F("dEta_inVis", "dEta_inVis", 400, 0, 400);
+    h_dEta_outVis = new TH1F("dEta_outVis", "dEta_outVis", 400, 0, 400);
+    
     h_dEta_inc = new TH1F("dEta_inc", "dEta_inc", 400, 0, 400);
 
-    h_dPhi = new TH1F("DelPhi", "DelPhi", 100,-1,200);
-    h_dPhi->GetXaxis()->SetTitle("DelPhi (deg)");
-
-    h_dPhi_Truth = new TH1F("DelPhi_Truth", "DelPhi_Truth", 100,-1,200);
+    h_dPhi_inVis = new TH1F("DelPhi_highVis", "DelPhi_highVis", 100,-1,200);
+    h_dPhi_outVis = new TH1F("DelPhi_lowVis", "DelPhi_lowVis", 100,-1,200);
     
 
     h_Eta1VsEta2 = new TH2F("Eta1VsEta2", "Eta1VsEta2", 100,-200,200, 100,-200,200);

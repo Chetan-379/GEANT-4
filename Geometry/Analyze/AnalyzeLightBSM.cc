@@ -525,7 +525,7 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  ST21 = Ana_dt_A2S1 - (d_A2S1/c);
 	  ST22 = Ana_dt_A2S2 - (d_A2S2/c);
 
-	  //h_STij->Fill(ST11,ST21);
+	  h_STij->Fill(ST11,ST21);
 	  h_STij->Fill(ST12,ST22);
 
 	  // h_rough[0]->Fill(ST11);
@@ -619,7 +619,6 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	} //Relv4Hits.size()=4 condition end
 
 	if(Relv4Hits.size() >=2) {
-	//if(Relv4Hits.size() ==2) {
 	   ROOT::Math::XYZVector Exact_vin1, Exact_vin2, Exact_vout1, Exact_vout2;
 	   Exact_vin1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
 	   Exact_vin2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
@@ -627,8 +626,8 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	   Exact_vout1.SetXYZ(Relv4Hits[A1][ScatMomX], Relv4Hits[A1][ScatMomY], Relv4Hits[A1][ScatMomZ]);
 	   Exact_vout2.SetXYZ(Relv4Hits[A2][ScatMomX], Relv4Hits[A2][ScatMomY], Relv4Hits[A2][ScatMomZ]);
 
-	   double Scat_truth1 = (Exact_vout1).Dot(Exact_vin1.Unit())*180.0 / TMath::Pi();
-	   double Scat_truth2 = (Exact_vout2.Unit()).Dot(Exact_vin2.Unit())*180.0 / TMath::Pi();
+	   double Scat_truth1 = acos((Exact_vout1).Dot(Exact_vin1.Unit()))*180.0 / TMath::Pi();
+	   double Scat_truth2 = acos((Exact_vout2.Unit()).Dot(Exact_vin2.Unit()))*180.0 / TMath::Pi();
 
 	   
 	   //h_rough[0]->Fill(Scat_truth1);
@@ -649,14 +648,18 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	   phi_ScatPlanes_truth = acos(n1_truth.Unit().Dot(n2_truth.Unit())) *180.0 / TMath::Pi();
       
 	   if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) {
-	     h_dPhi_Truth->Fill(phi_ScatPlanes_truth);
+	     //h_dPhi_Truth->Fill(phi_ScatPlanes_truth);
 	     h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
+	     h_dPhi_inVis->Fill(phi_ScatPlanes_truth);
 	    
-	     h_dEta->Fill(abs(dEta));
+	     h_dEta_inVis->Fill(abs(dEta));
 	   }
 
-	   
-	   
+	   if((Relv4Hits[A1][scat_theta] < 30 || Relv4Hits[A1][scat_theta] > 130) && (Relv4Hits[A2][scat_theta] < 30 || Relv4Hits[A2][scat_theta] > 130)) {
+	     h_dEta_outVis->Fill(abs(dEta));
+	     h_dPhi_outVis->Fill(phi_ScatPlanes_truth);
+	   }
+	   	   
 	 }
 	
       }       // nHit >0 condition brkt end

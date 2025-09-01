@@ -2,13 +2,13 @@ const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
 //TString legend_text[15] = {"\\gamma_{E}: 511keV","511keV", "1000keV"};
-TString legend_text[15] = {"dt(A1,A2)","dt(S1,S2)", "1000keV"};
+TString legend_text[15] = {"50#circ<#theta<110#circ","#theta<30#circ or #theta>1100#circ", "1000keV"};
 
 int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
 //int line_color[15] = {kBlue, kGreen+1, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
 
-int line_color[15] = {kBlue, kRed, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
+int line_color[15] = {kBlack, kBlue, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
 
 TH1F* setLastBinAsOverFlow(TH1F*, int);
 TH1F* setMyRange(TH1F*,double,double);
@@ -103,7 +103,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
 		     bool normalize=false, bool log_flag=true, bool DoRebin=false, bool save_canvas=true, char const *title="", const char* xtitile="", int rebin=-1){  
   
 
-  TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,750);//600,600,1200,1200);
+  TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,900,800);//600,600,1200,1200);
   //TCanvas *canvas_n1 = new TCanvas(tag_name, tag_name,1000,750);//600,600,1200,1200);
   //canvas_n1->Range(-60.25,-0.625,562.25,0.625);
   canvas_n1->Range(-70.25,-0.625,300.25,0.625);
@@ -112,12 +112,12 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   canvas_n1->SetBorderSize(2);
   canvas_n1->SetRightMargin(0.045);
   //canvas_n1->SetRightMargin(0.095);
-  canvas_n1->SetLeftMargin(0.12);
+  canvas_n1->SetLeftMargin(0.13);
   canvas_n1->SetTopMargin(0.06);
   canvas_n1->SetBottomMargin(0.12);
 
   
-  gStyle->SetOptStat(1);
+  gStyle->SetOptStat(0);
   
   vector<TString> legName;
   std::string leg_head_str = leg_head;
@@ -162,21 +162,21 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     hist.at(i)->SetTitle(" "); //you can change it if you want
     //setLastBinAsOverFlow(hist.at(i),0);
     //
-    hist.at(i)->GetXaxis()->SetTitleSize(0.05);
-    hist.at(i)->GetXaxis()->SetLabelSize(x_label_size);
-    hist.at(i)->GetXaxis()->SetLabelSize(0.0450);
-    //    hist.at(i)->GetXaxis()->SetRange(0,1500);
-    hist.at(i)->GetYaxis()->SetTitleSize(0.055);
-    hist.at(i)->GetYaxis()->SetLabelSize(0.05);
-    hist.at(i)->GetYaxis()->SetTitleOffset(1.2);
-    hist.at(i)->GetYaxis()->SetLabelSize(x_label_size);
-    hist.at(i)->GetXaxis()->SetTitle(xtitile); //setting the title of X axis
-
+    // hist.at(i)->GetXaxis()->SetTitleSize(0.05);
+    // hist.at(i)->GetXaxis()->SetLabelSize(x_label_size);
+    // hist.at(i)->GetXaxis()->SetLabelSize(0.0450);
+    // //    hist.at(i)->GetXaxis()->SetRange(0,1500);
+    // hist.at(i)->GetYaxis()->SetTitleSize(0.055);
+    // hist.at(i)->GetYaxis()->SetLabelSize(0.05);
+    // hist.at(i)->GetYaxis()->SetTitleOffset(1.2);
+    // hist.at(i)->GetYaxis()->SetLabelSize(x_label_size);
+    // hist.at(i)->GetXaxis()->SetTitle(xtitile); //setting the title of X axis
+    hist.at(i)->GetXaxis()->SetTitle("#phi(#circ)");
     hist.at(i)->GetXaxis()->SetTitleSize(0.05);
     hist.at(i)->GetXaxis()->SetLabelSize(0.04);
     hist.at(i)->GetYaxis()->SetLabelSize(0.04);
     hist.at(i)->GetYaxis()->SetTitleSize(0.05);
-    hist.at(i)->GetYaxis()->SetTitleOffset(1.1);
+    hist.at(i)->GetYaxis()->SetTitleOffset(1.3);
     hist.at(i)->GetXaxis()->SetTitleOffset(1.1);
 
     TLatex* textOnTop = new TLatex();
@@ -196,7 +196,7 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
     //sprintf(final_label,"%.0f events", Integral);
    
     legName.push_back(hist.at(i)->GetName());
-    leg_entry[i] = legend->AddEntry(hist.at(i), final_label, " ");
+    leg_entry[i] = legend->AddEntry(hist.at(i), final_label, "l");
     leg_entry[i]->SetTextColor(hist.at(i)->GetLineColor());
     if(hist.at(i)->GetMaximum() > ymax) ymax = hist.at(i)->GetMaximum();
     if(hist.at(i)->GetMinimum() < ymin) ymin = hist.at(i)->GetMinimum();
@@ -205,11 +205,12 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   if(ymin == 0.0) ymin = 1e-3;
   if(ymin<0.0) ymin = 1e-4;
   for(int i = 0; i < (int)hist.size(); i++) {
-    //if(!normalize) hist.at(i)->GetYaxis()->SetRangeUser(1.0,ymax*10);
+    if(normalize) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/3));
     if(!normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(1, ymax*2);
     if(!normalize && !log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/7));
     
     // else
+    
     //   hist.at(i)->GetYaxis()->SetRangeUser(0.00001,ymax*60.0);
     
     //if(!i) hist.at(i)->Draw("colz");
@@ -266,7 +267,7 @@ void overlay(string pathname)
   vector<string> f;
  
   //f= {"out_root_files/test_check100k_out.root"};
-  f= {"out_root_files/test_check5M_ScatMom_out.root"};
+  f= {"out_root_files/test_check8M_ScatMom_out.root"};
 
   
   //define your histograms to be read from here
@@ -296,7 +297,7 @@ void overlay(string pathname)
     //variables = {hname_theta, hname_eta, hname_Eout, hname_PosX, hname_PosY, hname_PosZ, hname_Time};
     //variables = {hname_ThetaVsEout};
 
-    variables = {"dt_A1A2", "dt_S1S2"};
+    variables = {"DelPhi_highVis", "DelPhi_lowVis"};
   
 
   //vector<string> variables;  
@@ -321,8 +322,8 @@ void overlay(string pathname)
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {10, 200, 200, 1000, 1000, 1000, 20};
-  vector<double>xmin = {-10, -200, 0, -1000, 1000, -700, 0};
+  vector<double>xmax = {200, 200, 200, 1000, 1000, 1000, 20};
+  vector<double>xmin = {-1, -200, 0, -1000, 1000, -700, 0};
 
   vector<TH1F*> hist_list;
   for (int iVar =0; iVar < variables.size(); iVar++){
@@ -344,7 +345,7 @@ void overlay(string pathname)
     //x axis title for all plots///
     vector<string>diff_title;
 
-    diff_title = {"dt(ns)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
+    diff_title = {"#phi (#circ)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
     // vector<string>xtitle;
     // xtitle = {diff_title[0], diff_title[1]};
 	 
@@ -355,12 +356,13 @@ void overlay(string pathname)
     sprintf(full_path,"%s%s%s",pathname.c_str(),folder[0].c_str(),variables[0].c_str());
 
     cout << full_path << endl;
-    bool logFlag = true;
+    bool logFlag = false;
+    bool NormFlag = true;
     //if (filetag[iVar] == "nHits" || filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
     //if (filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
 	 	    
     //calling generate_1Dplot which will take this vector of histograms and 
-    generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,false,true,filetag[0].c_str(),diff_title[0].c_str(),rebin[0]);
+    generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,NormFlag,logFlag,false,true,filetag[0].c_str(),diff_title[0].c_str(),rebin[0]);
     //}
 }
 //}
