@@ -1,4 +1,4 @@
-In this version, further modifications are done for studying two back to back photons:
+In this version, have cleaned the scripts and further modifications are done for studying two back to back photons:
 - hits are randomized in time.
 - following changes in Event selection:
   - if a photon does multiple scattering in a single tile count them 1 only and take the information of first interaction.
