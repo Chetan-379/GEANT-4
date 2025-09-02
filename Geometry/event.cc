@@ -143,10 +143,6 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
 
     HitScatAngle_vec.push_back(ScintHit->GetScatAngle());
 
-    //if (ScintHC->GetSize() ==1 || ScintHC->GetSize() ==2) HitScatAngle_vec.push_back(ScintHit->GetScatAngle()* 180/CLHEP::pi);
-    //if (ScintHC->GetSize() ==1)
-    //HitScatAngle_vec.push_back(ScintHit->GetScatAngle()* 180/CLHEP::pi);
-
     HitEta_vec.push_back(ScintHit->GetEta());
     HitPol0_vec.push_back((ScintHit->GetPolarisation())[0]);
     HitPol1_vec.push_back((ScintHit->GetPolarisation())[1]);

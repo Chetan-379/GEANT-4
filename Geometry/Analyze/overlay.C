@@ -1,13 +1,10 @@
 const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
-//TString legend_text[15] = {"\\gamma_{E}: 511keV","511keV", "1000keV"};
 TString legend_text[15] = {"50#circ<#theta<110#circ","#theta<30#circ or #theta>1100#circ", "1000keV"};
 
 int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
-//int line_color[15] = {kBlue, kGreen+1, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
-
 int line_color[15] = {kBlack, kBlue, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
 
 TH1F* setLastBinAsOverFlow(TH1F*, int);
@@ -266,58 +263,18 @@ void overlay(string pathname)
 
   vector<string> f;
  
-  //f= {"out_root_files/test_check100k_out.root"};
   f= {"out_root_files/test_check8M_ScatMom_out.root"};
 
   
   //define your histograms to be read from here
   string histname1[100], histname2[100], histname3[100];
 
-  vector<string> nHitCat;
-  //nHitCat = {"all_inc", "nHit0", "nHit1_S", "nHit1_B", "nHit2_S_AnyDiffDet", "nHit2_S1S1", "nHit2_S1S2", "nHit2_SB", "nHit2_B1B1", "nHit2_B1B2", "nHit2_BS", "remain"};
-  //nHitCat = {"nHit2_S_AnyDiffDet"};
-  //nHitCat = {"all_inc"};
+  vector<string> variables;
+  variables = {"DelPhi_highVis", "DelPhi_lowVis"};
   
-  //char hname_theta[100], hname_eta[100], hname_Eout[100], hname_ThetaVsEout[100], hname_PosX[100], hname_PosY[100], hname_PosZ[100], hname_Time[100]; 
-
-  
-  //for(int i=0; i< nHitCat.size(); i++){
-  ////  sprintf(hname_theta, "h_theta_%s",nHitCat[i].c_str());
-    // sprintf(hname_eta, "h_eta_%s",nHitCat[i].c_str());
-    // sprintf(hname_Eout, "h_Eout_%s",nHitCat[i].c_str());
-    // sprintf(hname_PosX, "h_hitPosX_%s",nHitCat[i].c_str());
-    // sprintf(hname_PosY, "h_hitPosY_%s",nHitCat[i].c_str());
-    // sprintf(hname_PosZ, "h_hitPosZ_%s",nHitCat[i].c_str());
-    // sprintf(hname_Time, "h_hitTime_%s",nHitCat[i].c_str());
-    //sprintf(hname_ThetaVsEout, "h_theta_Eout_%s",nHitCat[i].c_str());
-    
-    
-
-    vector<string> variables;
-    //variables = {hname_theta, hname_eta, hname_Eout, hname_PosX, hname_PosY, hname_PosZ, hname_Time};
-    //variables = {hname_ThetaVsEout};
-
-    variables = {"DelPhi_highVis", "DelPhi_lowVis"};
-  
-
-  //vector<string> variables;  
-  //variables = {"Eta_compSig", "nHits", "scat_theta", "HitTime", "HitPosX", "HitPosY", "HitPosZ"};
-  //variables = {"pol_scat_eta", "nHits", "scat_theta", "HitTime", "HitPosX", "HitPosY", "HitPosZ", "ThetaVsEta"};
-  //variables = {"h_theta_all_inc", "h_eta_all_inc", "h_Eout_all_inc"};
-
-  
- 
-  //vector<string> filetag;
-    vector<string> filetag;
-    // filetag={"all inc", "nHit==0", "nHit==1_(Plastic)", "nHit==1_(BGO)", "nHit>=2_Plastic_AnyDiffDet", "nHit>=2_Plastic_singleCrys", "nHit>=2_Plastic_diffCryst", "nHit>=2_Plastic_BGO" ,"nHit>=2_BGO_singleCrys", "nHit>=2_BGO_diffCryst", "nHit>=2_BGO_Plastic", "rest"};
-
-    //filetag={"nHit>=2_Plastic_AnyDiffDet"};
-    filetag={"E_{#gamma}: 511keV, 5M Evts"};
-    
-  //filetag={"scatTheta inclusive", "nHits", "Compt_Scat_theta", "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
-  //filetag={"all_inc", "all_inc", "all_inc"};//, "Hit_Time", "HitPosX", "HitPosY", "HitPosZ", "Theta vs Eta"};
-    //filetag = nHitCat[i]; 
- 
+  vector<string> filetag;
+  filetag={"E_{#gamma}: 511keV, 5M Evts"};
+     
   //rebin values
   vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
@@ -327,43 +284,32 @@ void overlay(string pathname)
 
   vector<TH1F*> hist_list;
   for (int iVar =0; iVar < variables.size(); iVar++){
-    //vector<TH1F*> hist_list;
-    //for(int i_file=0; i_file < f.size(); i_file++) //looping over each file
-    //{
-	TFile *root_file = new TFile(f[0].c_str()); 	    
-
-	sprintf(hist_name,"%s", variables[iVar].c_str());
-	cout<<"i_file "<< 0 <<"\t"<<iVar<<"\t"<<root_file->GetName()<< "\t" << hist_name<<endl;
-	TH1F* resp = (TH1F*)root_file->Get(hist_name); //reading hist from the TFile
-	hist_list.push_back(resp);
-	//}
-      }
+    TFile *root_file = new TFile(f[0].c_str()); 	        
+    sprintf(hist_name,"%s", variables[iVar].c_str());
+    cout<<"i_file "<< 0 <<"\t"<<iVar<<"\t"<<root_file->GetName()<< "\t" << hist_name<<endl;
+    TH1F* resp = (TH1F*)root_file->Get(hist_name); //reading hist from the TFile
+    hist_list.push_back(resp);
+  }
 	
     
-    int xrange=0.0;
+  int xrange=0.0;
 
-    //x axis title for all plots///
-    vector<string>diff_title;
+  //x axis title for all plots///
+  vector<string>diff_title;
 
-    diff_title = {"#phi (#circ)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};//, "posX(mm)", "posY(mm)", "posZ(mm)", "eta(#circ)"};
-    // vector<string>xtitle;
-    // xtitle = {diff_title[0], diff_title[1]};
+  diff_title = {"#phi (#circ)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};
 	 
-    //path to save the files a jpg or pdf
-    vector<string> folder;   
-    //folder = {"plots/A_Anydet/"};
-    folder = {"plots/"};
-    sprintf(full_path,"%s%s%s",pathname.c_str(),folder[0].c_str(),variables[0].c_str());
+  //path to save the files a jpg or pdf
+  vector<string> folder;   
+  folder = {"plots/"};
+  sprintf(full_path,"%s%s%s",pathname.c_str(),folder[0].c_str(),variables[0].c_str());
 
-    cout << full_path << endl;
-    bool logFlag = false;
-    bool NormFlag = true;
-    //if (filetag[iVar] == "nHits" || filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
-    //if (filetag[iVar] == "Hit_Time" || filetag[iVar] == "HitPosX" || filetag[iVar] == "HitPosY" || filetag[iVar] == "HitPosZ") logFlag = true;
-	 	    
-    //calling generate_1Dplot which will take this vector of histograms and 
-    generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,NormFlag,logFlag,false,true,filetag[0].c_str(),diff_title[0].c_str(),rebin[0]);
-    //}
+  cout << full_path << endl;
+  bool logFlag = false;
+  bool NormFlag = true;	 	    
+  //calling generate_1Dplot which will take this vector of histograms and 
+  generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,NormFlag,logFlag,false,true,filetag[0].c_str(),diff_title[0].c_str(),rebin[0]);
+  //}
 }
 //}
 

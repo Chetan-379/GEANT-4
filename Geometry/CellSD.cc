@@ -74,7 +74,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double Ein = step->GetPreStepPoint()->GetKineticEnergy();
   G4double Eout = step->GetPostStepPoint()->GetKineticEnergy();
   G4double GunID = -1;
-  //G4ThreeVector ScatMom = step->GetPostStepPoint()->GetMomentumDirection();
     
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
@@ -82,13 +81,7 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     if(TrackID == 1) GunID = 1;
     else if (TrackID == 2) GunID = 2;
 
-    //G4cout << "\t" << proc << " Hit Pos: " << compt_scat_point << G4endl;
-
     if (proc != "phot") {      
-      //if(step->GetPreStepPoint()->GetProcessDefinedStep() && step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName() != "Rayl"){
-      //if(proc == "compt" && step->GetPreStepPoint()->GetKineticEnergy() == 0.511) scat_theta = acos(vin.dot(vout));
-      //}
-
       scat_theta = acos(vin.dot(vout));
       
       prePol = step->GetPreStepPoint()->GetPolarization();
@@ -118,35 +111,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       eta = vout.azimAngle(prePol,vin);
       //eta = vout.azimAngle(polPlane,vin);
 
-      // if(Ein == 0.511) {
-      // 	G4ThreeVector vin_test = compt_scat_point;
-      // 	G4double theta_test = acos(vout.dot(vin_test.unit()));
-
-      // 	G4cout << "scat_theta: " << scat_theta << G4endl;
-      // 	G4cout << "theta_test: " << theta_test << G4endl;
-      // 	  };
-
-      // if(Ein == 0.511) {
-      // G4cout << "Scat Mom: " << vout << G4endl;
-      // G4cout << "Scat Pos: " << compt_scat_point;}
-      
-      //eta = acos((scatPlane.dot(polPlane))/(scatPlane.mag()*polPlane.mag()));
-      //eta = acos((scatPlane.dot(prfX_before))/(scatPlane.mag()*prfX_before.mag()));
-      //eta = std::atan2(vin.dot(prfX_before.cross(vout)), prfX_before.dot(vout));
-
-      //doing some checks===================================================================================
-      // if (Ein == 0.511) G4cout << "point of origin: " << step->GetPreStepPoint()->GetPosition() << G4endl;
-      // if (proc == "compt" && Ein == 0.511){
-      // 	double t1 = step->GetPreStepPoint()->GetGlobalTime();
-      // 	double t2 = step->GetPosStepPoint()->GetGlobalTime();
-
-      // 	double ds = 
-
-      // 	d
-      // }
-      
-      //====================================================================================================
-
          
       if(summary){  
       G4cout << "polarization vector before scattering: " << prePol << G4endl;
@@ -171,11 +135,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       
       G4cout << "\n*****" << "\n\n";
       }
-
-      // if (proc == "compt" && scat_theta*180/CLHEP::pi > 89 && scat_theta*180/CLHEP::pi < 91){
-      // G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();\
-
-      // G4cout << "\n\n***************Event with 90 deg compt: " << eventID << G4endl;}
     }
     
     hit->SetPosition(compt_scat_point);
