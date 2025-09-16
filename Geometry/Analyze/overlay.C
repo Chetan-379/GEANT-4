@@ -3,9 +3,9 @@ bool logx = false;
 //defining the legends for each plots
 TString legend_text[15] = {"50#circ<#theta<110#circ","#theta<30#circ or #theta>1100#circ", "1000keV"};
 
-int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
+int line_width[15] = {2,1,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
-int line_color[15] = {kBlack, kBlue, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
+int line_color[15] = {kRed, kBlack, kPink+5, kOrange-3, kCyan+4, kAzure+7, kSpring+8, kPink+10, kGreen + 3,kRed,kGray, kViolet -7 };
 
 TH1F* setLastBinAsOverFlow(TH1F*, int);
 TH1F* setMyRange(TH1F*,double,double);
@@ -263,7 +263,8 @@ void overlay(string pathname)
 
   vector<string> f;
  
-  f= {"out_root_files/test_check8M_ScatMom_out.root"};
+  //f= {"out_root_files/test_check8M_ScatMom_out.root"};
+  f= {"out_root_files/Final_8M_Evts_out.root"};
 
   
   //define your histograms to be read from here
@@ -273,10 +274,10 @@ void overlay(string pathname)
   variables = {"DelPhi_highVis", "DelPhi_lowVis"};
   
   vector<string> filetag;
-  filetag={"E_{#gamma}: 511keV, 5M Evts"};
+  filetag={"E_{#gamma}: 511keV, 8M Evts"};
      
   //rebin values
-  vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
+  vector<int >rebin = {2,2,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
   vector<double>xmax = {200, 200, 200, 1000, 1000, 1000, 20};

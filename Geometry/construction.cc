@@ -122,7 +122,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   //G4LogicalVolume* logicWorld = physWorld->GetLogicalVolume();
 
-  //logicWorld->SetVisAttributes(nullptr); //making the world volume visible
+  logicWorld->SetVisAttributes(nullptr); //making the world volume visible
 
     
   return physWorld;
