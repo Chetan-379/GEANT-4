@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include "G4UImanager.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
@@ -12,11 +13,19 @@
 #include "action.hh"
 int main(int argc, char** argv)
 {
+  //G4RunManager *runManager = new G4RunManager();
+
+    #ifdef G4MULTITHREADED  
+  G4MTRunManager *runManager = new G4MTRunManager();
+
+  #else
   G4RunManager *runManager = new G4RunManager();
+  #endif
+  
   runManager->SetUserInitialization(new MyDetectorConstruction());
   runManager->SetUserInitialization(new MyPhysicsList());
   runManager->SetUserInitialization(new MyActionInitialization());
-  runManager->Initialize();
+  //runManager->Initialize();
 
   G4UIExecutive *ui = 0;
   G4String gdmlFile = "";
@@ -48,7 +57,7 @@ int main(int argc, char** argv)
   if(ui)
     {    
       UImanager->ApplyCommand("/control/execute vis.mac");
-      UImanager->ApplyCommand("/tracking/verbose 1");
+      //UImanager->ApplyCommand("/tracking/verbose 1");
       ui->SessionStart();
     }
 

@@ -1,7 +1,8 @@
 /vis/open OGL
 /vis/drawVolume
-/vis/viewer/set/viewpointVector 0 0 1
-#/vis/scene/add/axes 0 0 0 500 mm
+/vis/viewer/set/viewpointVector -1 0.5 0.5
+/vis/viewer/zoom 30
+#/vis/scene/add/axes 0 0 0 50 mm
 /vis/viewer/set/autoRefresh true
 /vis/scene/add/trajectories smooth
 /vis/viewer/set/lineSegmentsPerCircle 100

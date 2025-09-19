@@ -33,6 +33,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   //   track->SetTrackStatus(fStopAndKill);
   // }
 
+  
+
   G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
     
   //=================Studying photon interaction with material===========
@@ -45,14 +47,6 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (step->GetTrack()->GetParentID() == 0){
     if (proc == "compt" || proc == "Rayl") {
       fEventAction-> Compt_edep.push_back(KE_i - KE_f);
-
-      //auto prePhoDir = step->GetPreStepPoint()->GetMomentumDirection();
-      //auto postPhoDir = step->PostStepPoint()->GetMomentumDirection();
-
-     //G4double scat_theta = prePhoDir.dot(postPhoDir);
-     
-     //if (ievent == 196) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
-     // else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
     }
     
     if (proc == "phot") {      
@@ -66,13 +60,32 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 
 
   //=================Analysing Scintillation photon======================
-  G4String processName;
-  if (track->GetCreatorProcess()) {
-    processName = track->GetCreatorProcess()->GetProcessName();
+  
+  G4AnalysisManager *man = G4AnalysisManager::Instance();   
 
-    if(particleName == "opticalphoton" && processName == "Cerenkov") track->SetTrackStatus(fStopAndKill);
+  G4String CreatorProc;
+  G4ThreeVector CreatPos = track->GetVertexPosition();
+  G4double OpPho_lmbda = 0, OpPho_Energy = 0;
+  G4ThreeVector OpPho_Pos = track->GetPosition();
+  
+  if (track->GetCreatorProcess()) {
+    CreatorProc = track->GetCreatorProcess()->GetProcessName();
+  
+    if(particleName == "opticalphoton" && CreatorProc == "Scintillation" && (OpPho_Pos[2] == 10 * mm)) {           
+      OpPho_Energy = track->GetKineticEnergy();
+      OpPho_lmbda = (1239.8e-6)/OpPho_Energy;   //unit: nm
+
+      man->FillNtupleDColumn(0, 1, CreatPos[2]);
+      man->FillNtupleDColumn(0, 0, OpPho_lmbda);
+      man->AddNtupleRow(0);
+      
+    }
   }
 }
+
+
+
+
    
 
 

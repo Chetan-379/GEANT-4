@@ -136,7 +136,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT1", G_ScintPhoEnergy, G_ScintFastArray, false, true);
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
-  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 200 / MeV);
+  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 30000 / MeV);
   G_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
@@ -145,7 +145,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   G_MPT->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
   
   L_MPT->AddProperty("SCINTILLATIONCOMPONENT1", L_ScintPhoEnergy, L_ScintFastArray, false, true);
-  L_MPT->AddConstProperty("SCINTILLATIONYIELD", 200 / MeV);
+  L_MPT->AddConstProperty("SCINTILLATIONYIELD", 30000 / MeV);
   L_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   L_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 40 * ns);
   L_MPT->AddConstProperty("SCINTILLATIONYIELD1", 1);

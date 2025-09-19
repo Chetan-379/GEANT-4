@@ -49,6 +49,7 @@ private:
   G4int ievent=1, chkEvt = 2693;
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
+  G4int decade = 0;
 
   CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
   void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;

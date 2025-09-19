@@ -19,7 +19,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 
   fParticleGun->SetParticlePosition(pos);
   fParticleGun->SetParticleMomentumDirection(mom);  
-  fParticleGun->SetParticleMomentum(511*keV);
+  //fParticleGun->SetParticleMomentum(511*keV);
+  fParticleGun->SetParticleEnergy(511*keV);
   
     
   G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
