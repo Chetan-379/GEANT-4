@@ -29,62 +29,16 @@ class NtupleVariables : public TSelector {
    Int_t           fCurrent; //!current Tree number in a TChain
 
    // Declaration of leaf types
-   vector<double>  *positionX;
-   vector<double>  *positionY;
-   vector<double>  *positionZ;
-   vector<double>  *Energy;
-   Double_t        Total_Edep;
-   Double_t        Edep_Compt;
-   Double_t        Edep_Photo;
-  vector<double>  *Hit_Edep;
-  vector<double>  *Hit_PositionX;
-  vector<double>  *Hit_PositionY;
-  vector<double>  *Hit_PositionZ;
-  vector<double>  *Hit_Time;
-  vector<double>  *Hit_TrkLen;
-  vector<int>     *Hit_DetId;
-  vector<int>     *Hit_GunId;
-  vector<int>     *Hit_ProcId;
-  vector<double>  *Hit_ScatAngle;
-  vector<double>  *Hit_Eta;
-  vector<double>  *Hit_Pol0;
-  vector<double>  *Hit_Pol1;
-  vector<double>  *Hit_Pol2;
-  vector<double>  *Hit_Eout;
-  vector<double>  *Hit_Ein;
-  vector<double>  *Hit_ScatMomX;
-  vector<double>  *Hit_ScatMomY;
-  vector<double>  *Hit_ScatMomZ;
+   Double_t        OpPho_Lambda;
+   Double_t        OpPho_Z;
+  
+
 
   
    // List of branches
-  TBranch         *b_positionX;   //!
-  TBranch         *b_positionY;   //!
-  TBranch         *b_positionZ;   //!
-  TBranch         *b_Energy;   //!
-  TBranch         *b_Total_Edep;   //!
-  TBranch         *b_Edep_Compt;   //!
-  TBranch         *b_Edep_Photo;   //!
-  TBranch         *b_Hit_Edep;
-  TBranch         *b_Hit_PositionX;
-  TBranch         *b_Hit_PositionY;
-  TBranch         *b_Hit_PositionZ;
-  TBranch         *b_Hit_Time;
-  TBranch         *b_Hit_TrkLen;
-  TBranch         *b_Hit_DetId;
-  TBranch         *b_Hit_GunId;
-  TBranch         *b_Hit_ProcId;
-  TBranch         *b_Hit_ScatAngle;
-  TBranch         *b_Hit_Eta;
-  TBranch         *b_Hit_Pol0;
-  TBranch         *b_Hit_Pol1;
-  TBranch         *b_Hit_Pol2;
-  TBranch         *b_Hit_Eout;
-  TBranch         *b_Hit_Ein;
-  TBranch         *b_Hit_ScatMomX;
-  TBranch         *b_Hit_ScatMomY;
-  TBranch         *b_Hit_ScatMomZ;
-
+  TBranch         *b_OpPho_Lambda;   //!
+  TBranch         *b_OpPho_Z;   //!
+  
   
   
   
@@ -117,30 +71,8 @@ void NtupleVariables::Init(TTree *tree, string nameData)
   // (once per file to be processed).
 
    // Set object pointer
-   positionX = 0;
-   positionY = 0;
-   positionZ = 0;
-   Energy = 0;
-   Hit_Edep = 0;
-   Hit_PositionX = 0;
-   Hit_PositionY = 0;
-   Hit_PositionZ = 0;
-   Hit_Time = 0;
-   Hit_TrkLen = 0;
-   Hit_DetId = 0;
-   Hit_GunId = 0;
-   Hit_ProcId = 0;
-   Hit_ScatAngle =0;
-   Hit_Eta =0;
-   Hit_Pol0 =0;
-   Hit_Pol1 =0;
-   Hit_Pol2 =0;
-   Hit_Eout =0;
-   Hit_Ein =0;
-   Hit_ScatMomX =0;
-   Hit_ScatMomY =0;
-   Hit_ScatMomZ =0;
-
+   OpPho_Lambda = 0;
+   OpPho_Z = 0;
    
    
    // Set branch addresses and branch pointers
@@ -149,34 +81,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fCurrent = -1;
    fChain->SetMakeClass(1);
 
-   fChain->SetBranchAddress("positionX", &positionX, &b_positionX);
-   fChain->SetBranchAddress("positionY", &positionY, &b_positionY);
-   fChain->SetBranchAddress("positionZ", &positionZ, &b_positionZ);
-   fChain->SetBranchAddress("Energy", &Energy, &b_Energy);
-   fChain->SetBranchAddress("Total_Edep", &Total_Edep, &b_Total_Edep);
-   fChain->SetBranchAddress("Edep_Compt", &Edep_Compt, &b_Edep_Compt);
-   fChain->SetBranchAddress("Edep_Photo", &Edep_Photo, &b_Edep_Photo);
-
-   fChain->SetBranchAddress("Hit_Edep", &Hit_Edep, &b_Hit_Edep);
-   fChain->SetBranchAddress("Hit_PositionX", &Hit_PositionX, &b_Hit_PositionX);
-   fChain->SetBranchAddress("Hit_PositionY", &Hit_PositionY, &b_Hit_PositionY);
-   fChain->SetBranchAddress("Hit_PositionZ", &Hit_PositionZ, &b_Hit_PositionZ);
-   fChain->SetBranchAddress("Hit_Time", &Hit_Time, &b_Hit_Time);
-   fChain->SetBranchAddress("Hit_TrkLen", &Hit_TrkLen, &b_Hit_TrkLen);
-   fChain->SetBranchAddress("Hit_DetId", &Hit_DetId, &b_Hit_DetId);
-   fChain->SetBranchAddress("Hit_GunId", &Hit_GunId, &b_Hit_GunId);
-   fChain->SetBranchAddress("Hit_ProcId", &Hit_ProcId, &b_Hit_ProcId);
-   fChain->SetBranchAddress("Hit_ScatAngle", &Hit_ScatAngle, &b_Hit_ScatAngle);
-   fChain->SetBranchAddress("Hit_Eta", &Hit_Eta, &b_Hit_Eta);
-   fChain->SetBranchAddress("Hit_Pol0", &Hit_Pol0, &b_Hit_Pol0);
-   fChain->SetBranchAddress("Hit_Pol1", &Hit_Pol1, &b_Hit_Pol1);
-   fChain->SetBranchAddress("Hit_Pol2", &Hit_Pol2, &b_Hit_Pol2);
-   fChain->SetBranchAddress("Hit_Eout", &Hit_Eout, &b_Hit_Eout);
-   fChain->SetBranchAddress("Hit_Ein", &Hit_Ein, &b_Hit_Ein);
-   fChain->SetBranchAddress("Hit_ScatMomX", &Hit_ScatMomX, &b_Hit_ScatMomX);
-   fChain->SetBranchAddress("Hit_ScatMomY", &Hit_ScatMomY, &b_Hit_ScatMomY);
-   fChain->SetBranchAddress("Hit_ScatMomZ", &Hit_ScatMomZ, &b_Hit_ScatMomZ);
-
+   fChain->SetBranchAddress("OpPho_Lambda", &OpPho_Lambda, &b_OpPho_Lambda);
+   fChain->SetBranchAddress("OpPho_Z", &OpPho_Z, &b_OpPho_Z);
+   
    Notify();
 }
 

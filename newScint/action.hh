@@ -12,11 +12,9 @@ class MyActionInitialization : public G4VUserActionInitialization
 public:
   MyActionInitialization();
   ~MyActionInitialization();
-
-  virtual void Build() const;
-  virtual void BuildForMaster() const;
-
   
+  virtual void Build() const;
+  virtual void BuildForMaster() const;  
 };
 
 #endif

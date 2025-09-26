@@ -26,41 +26,12 @@ public:
 
   virtual void BeginOfEventAction(const G4Event* event);
   virtual void EndOfEventAction(const G4Event* event);
-  bool Compt_Before_Photo = false;
-  G4int nCompt_Before_Photo;
-  std::vector<G4double> Compt_edep, Photo_edep;  
-  void AddX(G4double XCoord) {fX += 1;}
 
-  void StorePos(G4double XCoord, G4double YCoord, G4double ZCoord, G4double edep)
-  {
-    Xarray.push_back(XCoord);
-    Yarray.push_back(YCoord);
-    Zarray.push_back(ZCoord);
-    Earray.push_back(edep);
-  }
-
-  void AddEdep(G4double edep) {fEdep += edep;}
-
-  std::vector<G4double> Xarray, Yarray, Zarray, Earray;
+  G4double nOpPhotons = 0, nOpPhotons_end =0;
   
 private:
-  G4double fX;
   MyRunAction *runObject;
   G4int ievent=1, chkEvt = 2693;
-  G4double fEdep;
-  G4double compt_total_edep, photo_total_edep;
-  G4int decade = 0;
-
-  CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
-  void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
-
-  G4int fInStripHCID = -1;
-  G4int fOutStripHCID = -1;
-  G4int fOuterMostStripHCID = -1;
-
-  std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec, HitScatAngle_vec, HitEta_vec, HitEin_vec, HitEout_vec;
-  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec, HitPol0_vec, HitPol1_vec, HitPol2_vec, HitScatMomX_vec, HitScatMomY_vec, HitScatMomZ_vec;
-  std::vector<G4int> HitDetId_vec, HitGunId_vec, HitProcId_vec;
+  G4int decade = 0;  
 };
-
 #endif

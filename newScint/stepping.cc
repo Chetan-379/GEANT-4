@@ -35,50 +35,42 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 
   
 
-  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+  //G4String CreatorProc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
     
-  //=================Studying photon interaction with material===========
-  G4double edep = step->GetTotalEnergyDeposit();
-  fEventAction->AddEdep(edep);
-      
-  G4double KE_i = preStepPoint->GetKineticEnergy();
-  G4double KE_f = postStepPoint->GetKineticEnergy();
- 
-  if (step->GetTrack()->GetParentID() == 0){
-    if (proc == "compt" || proc == "Rayl") {
-      fEventAction-> Compt_edep.push_back(KE_i - KE_f);
-    }
-    
-    if (proc == "phot") {      
-      fEventAction-> Photo_edep.push_back(KE_i - KE_f);
-    }
-    
-    fEventAction->Xarray.push_back(phopos_post[0]);
-    fEventAction->Yarray.push_back(phopos_post[1]);
-    fEventAction->Zarray.push_back(phopos_post[2]);
-  }
 
 
   //=================Analysing Scintillation photon======================
-  
-  G4AnalysisManager *man = G4AnalysisManager::Instance();   
-
   G4String CreatorProc;
   G4ThreeVector CreatPos = track->GetVertexPosition();
-  G4double OpPho_lmbda = 0, OpPho_Energy = 0;
   G4ThreeVector OpPho_Pos = track->GetPosition();
+  G4double OpPho_lmbda = 0, OpPho_Energy = 0;
   
   if (track->GetCreatorProcess()) {
     CreatorProc = track->GetCreatorProcess()->GetProcessName();
-  
-    if(particleName == "opticalphoton" && CreatorProc == "Scintillation" && (OpPho_Pos[2] == 10 * mm)) {           
+
+    if(particleName == "opticalphoton" && CreatorProc == "Scintillation"){
+      G4AnalysisManager *man = G4AnalysisManager::Instance();
       OpPho_Energy = track->GetKineticEnergy();
       OpPho_lmbda = (1239.8e-6)/OpPho_Energy;   //unit: nm
-
-      man->FillNtupleDColumn(0, 1, CreatPos[2]);
-      man->FillNtupleDColumn(0, 0, OpPho_lmbda);
-      man->AddNtupleRow(0);
       
+      if(preStepPoint->GetPosition() == CreatPos){
+	fEventAction->nOpPhotons++;	
+	
+	man->FillNtupleDColumn(0, 0, OpPho_lmbda);
+	man->FillNtupleDColumn(0, 1, CreatPos[2]);
+	man->AddNtupleRow(0);
+      }
+      
+      if(OpPho_Pos[2] == 10*mm){
+	fEventAction->nOpPhotons_end++;	
+   
+	man->FillNtupleDColumn(1, 0, OpPho_lmbda);
+	man->FillNtupleDColumn(1, 1, CreatPos[2]);
+	man->FillNtupleDColumn(1, 2, OpPho_Pos[2]);
+	man->AddNtupleRow(1);
+
+	track->SetTrackStatus(fStopAndKill);
+      }	
     }
   }
 }

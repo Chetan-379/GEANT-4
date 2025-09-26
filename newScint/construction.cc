@@ -114,6 +114,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   G_MPT->AddProperty("RINDEX", G_RIPhoEnergy, G_RefractiveIdxDet);
   L_MPT->AddProperty("RINDEX", L_RIPhoEnergy, L_RefractiveIdxDet);
+  //L_MPT->AddProperty("RINDEX", G_RIPhoEnergy, G_RefractiveIdxDet);
 
   // Check that group velocity is calculated from RINDEX
   if (G_MPT->GetProperty("RINDEX")->GetVectorLength()
@@ -136,7 +137,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT1", G_ScintPhoEnergy, G_ScintFastArray, false, true);
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
-  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 30000 / MeV);
+  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
   G_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
@@ -186,9 +187,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
   logic_lyso = new G4LogicalVolume(solidDetector, lyso, "lyso_LV");          
-  G4VPhysicalVolume *phys_lyso = new G4PVPlacement(0, G4ThreeVector(0,0,5*mm), logic_lyso, "LYSO_PV", logicWorld, false, 1, true);
-  G4VisAttributes* visAttr_lyso = new G4VisAttributes(G4Colour(0.53, 0.51, 0.93,0.5));
+  G4VPhysicalVolume *phys_lyso = new G4PVPlacement(0, G4ThreeVector(0,0,5*mm), logic_lyso, "LYSO_PV", logicWorld, false, 2, true);
 
+  G4VisAttributes* visAttr_lyso = new G4VisAttributes(G4Colour(0.53, 0.51, 0.93,0.5));
   visAttr_lyso->SetForceSolid(true);
   visAttr_lyso->SetVisibility(true);  
   logic_lyso->SetVisAttributes(visAttr_lyso);
@@ -202,18 +203,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   //OpSurface->SetSigmaAlpha(0.1);
   
-  std::vector<G4double> pp = {2.0 * eV, 3.5 * eV};
-  // std::vector<G4double> specularlobe = {0.3, 0.3};
-  // std::vector<G4double> specularspike = {0.2, 0.2};
-  // std::vector<G4double> backscatter = {0.1, 0.1};
+  std::vector<G4double> pp = {1.5 * eV, 3.7 * eV};
+  //std::vector<G4double> Pho_Energy_LASurface = {2.0 * eV, 3.7 * eV};
 
   std::vector<G4double> rindex = {1.35, 1.40};
-  // std::vector<G4double> reflectivity = {0.3, 0.5};
-  // std::vector<G4double> efficiency = {0.8, 1.0};
   
-  std::vector<G4double> reflectivity = {0.5, 0.5};
-  //std::vector<G4double> reflectivity = {1, 1, 1, 1, 1, 1};
-  std::vector<G4double> efficiency = {0.5, 0.5};  
+  std::vector<G4double> reflectivity = {0.99, 0.99};
+  //std::vector<G4double> reflectivity = {1, 1};
+  //std::vector<G4double> efficiency = {0.5, 0.5};  
 
   G4MaterialPropertiesTable* SMPT_ScintAir = new G4MaterialPropertiesTable();
   
@@ -223,7 +220,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   // SMPT->AddProperty("BACKSCATTERCONSTANT", pp, backscatter);
   // SMPT->AddProperty("REFLECTIVITY", pp, reflectivity);
   SMPT_ScintAir->AddProperty("REFLECTIVITY", pp, reflectivity);
-  SMPT_ScintAir->AddProperty("EFFICIENCY", pp, efficiency);
+  //SMPT_ScintAir->AddProperty("EFFICIENCY", pp, efficiency);
   
   OpSurface_ScintAir->SetMaterialPropertiesTable(SMPT_ScintAir);
 
@@ -235,17 +232,15 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
  G4MaterialPropertiesTable* SMPT_ScintScint = new G4MaterialPropertiesTable();
  SMPT_ScintScint->AddProperty("RINDEX", pp, rindex);
  SMPT_ScintScint->AddProperty("REFLECTIVITY", pp, reflectivity);
- SMPT_ScintScint->AddProperty("EFFICIENCY", pp, efficiency);
+ //SMPT_ScintScint->AddProperty("EFFICIENCY", pp, efficiency);
 
  OpSurface_ScintScint->SetMaterialPropertiesTable(SMPT_ScintScint); 
   
  G4LogicalBorderSurface *gagg_AirBoundary = new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
  G4LogicalBorderSurface *lyso_AirBoundary = new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
-
- G4LogicalBorderSurface *gagg_lysoBoundary = new G4LogicalBorderSurface("GAGG_LYSO_Boundary", phys_gagg, phys_lyso, OpSurface_ScintScint);
-  
-  
-  
+ 
+ //G4LogicalBorderSurface *gagg_lysoBoundary = new G4LogicalBorderSurface("GAGG_LYSO_Boundary", phys_gagg, phys_lyso, OpSurface_ScintScint);
+ 
   //fScoringVolume = logicDetector;
   
   return physWorld;
