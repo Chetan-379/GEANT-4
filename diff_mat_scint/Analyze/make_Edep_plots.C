@@ -307,40 +307,35 @@ void generate_1Dplot(vector<TH1*> hist, char const *tag_name="", int xmax=-1,int
   MatName->SetTextSize(0.035);
   MatName->DrawLatexNDC(0.50,0.83, title);
  
-  // char* en_lat = new char[500];
-  // textOnTop->SetTextSize(0.04);
-  // float inlumi=energy;
-  // sprintf(en_lat,"#bf{%0.2f fb^{-1} (13 TeV)}",inlumi);
-  // textOnTop->DrawLatexNDC(0.7,0.91,en_lat);
 
  
 
   
-  char* canvas_name = new char[1000];
-  //c->Print(canvas_name);
+  char* canvas_name = new char[1000];  
   
   if(save_canvas) {
-    // sprintf(canvas_name,"%s.png",tag_name);//.png",tag_name);//_wnormalize.png",tag_name);
-    // canvas_n1->SaveAs(canvas_name);
-    sprintf(canvas_name,"%s.pdf",tag_name);
-    canvas_n1->SaveAs(canvas_name);    
+    sprintf(canvas_name,"%s.png",tag_name);   
+    canvas_n1->SaveAs(canvas_name);
+    //cout << canvas_name << endl;
+    
+    sprintf(canvas_name,"%s.pdf",tag_name);    
+    canvas_n1->SaveAs(canvas_name);
+   
+    delete canvas_n1;
   }
 }
 
-const int nfiles=100,nBG=6;                                                                                                                                                              
 
-
-void make_Edep_plots(string pathname)
+void make_Edep_plots()
 {
   char *hist_name = new char[100];
   char *full_path = new char[1000];
   char *leg_head = new char[100];
  
-  string filetag, folder, Energy, Material, Width; 
+  string filetag, folder, Energy, Material, Width;
+  int EnergyIdx;
   std::vector<std::string> rootFiles;
   vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files", "Plastic_out_root_files"};
-
-  //vector<string> Folders = {"LaBr3_out_root_files", "GAGG_out_root_files"};
 
   for (int iFolder = 0; iFolder < Folders.size(); iFolder++){
     vector<string> f;
@@ -364,18 +359,15 @@ void make_Edep_plots(string pathname)
 
     cout << "\n\nSize of the files vector is: " << f.size() << endl;
 
-    vector<int >rebin = {1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
+    vector<int >rebin = {1,1,1,1,1,1,1,1,1}; 
       
-    //x axis range
     vector<int>xmax = {700,2000,16,16,2000,2000,2000,2000};
     vector<int>xmin = {0,0,0,0,0,0,0,0};
 
     
-    for(int iFile=0; iFile < f.size(); iFile++){ //looping over each file
-      //cout << f[iFile] << endl;
+    for(int iFile=0; iFile < f.size(); iFile++){
       TFile *root_file = new TFile(f[iFile].c_str());
 
-      // Loop over all objects in the file
       vector<TH1F> HistList;
       TIter keyList(root_file ->GetListOfKeys());
       TKey* key;
@@ -393,7 +385,6 @@ void make_Edep_plots(string pathname)
 	hist_list.push_back(hist);
 	int xrange=0.0;	  
 	
-	//setting up the axis titles
 	string xtitle, ytitle, histVar;
 	bool hist_2d = false;
 	if ( histType == "TH2I" || histType == "TH2F" || histType == "TH2D") {
@@ -409,7 +400,6 @@ void make_Edep_plots(string pathname)
 
       
 
-	//specifying the folder to save the plots
 	string MainFolder;
 	bool logFlag = false;
 	bool statFlag = false;
@@ -420,14 +410,13 @@ void make_Edep_plots(string pathname)
                   
 	  TString FileId = f[iFile];
 
-	  vector<string> Energies = {"511keV", "100keV", "150keV", "300keV", "450keV", "600keV", "800keV", "1000keV"};
+	  vector<string> Energies = {"100keV", "150keV", "300keV", "450keV", "511keV", "600keV", "800keV", "1000keV"};
 	  vector<string> Materials = {"PbWO4", "BGO", "LYSO", "GAGG", "LaBr3", "Plastic"};
 	  vector<string> Widths = {"1cm", "2.5cm", "5cm", "10cm", "20cm"};      
       
 	  for(int i=0; i< Energies.size(); i++)
 	    {
-	      if(Energies[i] != "1000keV" && FileId.Contains(Energies[i])) Energy = Energies[i];
-	      else if(Energies[i] == "1000keV" && FileId.Contains(Energies[i])) Energy = "1MeV";	  
+	      if(FileId.Contains(Energies[i])) {Energy = Energies[i]; EnergyIdx = i;}	      
 	    }
 
 	  for(int i=0; i< Materials.size(); i++)
@@ -441,15 +430,10 @@ void make_Edep_plots(string pathname)
 	    }
             
 	  filetag = Material + "_" + Energy + "_" + Width;	    
-	  folder = "Chetan_Thesis_Plots_PDF/Trans_20cmX20cm/" + MainFolder + "/" + Material + "/depth_" + Width;
-                  
-	  sprintf(full_path,"%s%s/%s_%s",pathname.c_str(),folder.c_str(), histVar.c_str(),filetag.c_str());
-      
-      
-	  //cout << f[iFile] << endl;
-	  // cout << full_path << "\n";
-	  //cout << "Filetag: " << filetag << endl;
-	  // cout << "saving path: " << full_path << "\n\n";
+	  folder = "Chetan_Thesis_Plots/Trans_20cmX20cm/" + MainFolder + "/" + Material + "/depth_" + Width;
+	          
+	  sprintf(full_path,"%s/%s_%d_%s",folder.c_str(), histVar.c_str(), EnergyIdx, filetag.c_str());
+            
 	  bool Rebin = false;	  
 	  generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
 	}
