@@ -332,10 +332,14 @@ void make_Edep_plots()
   char *full_path = new char[1000];
   char *leg_head = new char[100];
  
-  string filetag, folder, Energy, Material, Width;
-  int EnergyIdx;
+  
   std::vector<std::string> rootFiles;
-  vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files", "Plastic_out_root_files"};
+
+  TH1F *h_EMeas = new TH1F("Edep_Measured", "Edep_Measured", 440, 0, 1.1);
+
+  //vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files", "Plastic_out_root_files"};
+  //vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files"};
+  vector<string> Folders = {"BGO_out_root_files"};
 
   for (int iFolder = 0; iFolder < Folders.size(); iFolder++){
     vector<string> f;
@@ -356,27 +360,56 @@ void make_Edep_plots()
       }
     }
   
-
+    
     cout << "\n\nSize of the files vector is: " << f.size() << endl;
-
+    
     vector<int >rebin = {1,1,1,1,1,1,1,1,1}; 
-      
+    
     vector<int>xmax = {700,2000,16,16,2000,2000,2000,2000};
     vector<int>xmin = {0,0,0,0,0,0,0,0};
 
+    string filetag, folder, Energy, Material, Width;
+    int EnergyIdx;
     
-    for(int iFile=0; iFile < f.size(); iFile++){
-      TFile *root_file = new TFile(f[iFile].c_str());
+
+    for(int iFile=0; iFile < f.size(); iFile++){      
+      TFile *root_file = new TFile(f[iFile].c_str(), "UPDATE");     
+      TString FileId = f[iFile];      
+      vector<string> Energies = {"100keV", "150keV", "300keV", "450keV", "511keV", "600keV", "800keV", "1000keV"};
+      vector<string> Materials = {"PbWO4", "BGO", "LYSO", "GAGG", "LaBr3", "Plastic"};
+      vector<string> Widths = {"1cm", "2.5cm", "5cm", "10cm", "20cm"};      
+      
+      for(int i=0; i< Energies.size(); i++)
+	{
+	  if(FileId.Contains(Energies[i])) {Energy = Energies[i]; EnergyIdx = i;}	      
+	}
+      
+      for(int i=0; i< Materials.size(); i++)
+	{
+	  if(FileId.Contains(Materials[i])) Material = Materials[i];
+	}
+      
+      for(int i=0; i< Widths.size(); i++)
+	{
+	  if(FileId.Contains("_" + Widths[i])) Width = Widths[i];
+	}
+      
+      filetag = Material + "_" + Energy + "_" + Width;	    
+      //folder = "Chetan_Thesis_Plots/Trans_20cmX20cm/Phot_Mat_Interact/" + Material + "/depth_" + Width;
+      folder = "test_plots/" + Material + "/depth_" + Width;
+
+      string xtitle, ytitle, histVar;
+      bool Rebin=false, logFlag=false, statFlag = false;
 
       vector<TH1F> HistList;
       TIter keyList(root_file ->GetListOfKeys());
       TKey* key;
-
+      
       while ((key = (TKey*)keyList())) {      
 	TClass *cl = gROOT->GetClass(key->GetClassName());
 	if (!cl->InheritsFrom("TH1")) continue;
 	TH1 *hist = (TH1*)key->ReadObj();
-
+	
 	string histType = key->GetClassName();
 	vector<TH1*> hist_list;
 
@@ -385,7 +418,7 @@ void make_Edep_plots()
 	hist_list.push_back(hist);
 	int xrange=0.0;	  
 	
-	string xtitle, ytitle, histVar;
+	
 	bool hist_2d = false;
 	if ( histType == "TH2I" || histType == "TH2F" || histType == "TH2D") {
 	  xtitle = string(hist->GetXaxis()->GetTitle()) + "(MeV)";
@@ -398,47 +431,84 @@ void make_Edep_plots()
 	  ytitle = "Entries";
 	  histVar = hist->GetName();}
 
-      
-
-	string MainFolder;
-	bool logFlag = false;
-	bool statFlag = false;
+      	
 	if(histId.Contains("Edep") || histId.Contains("Compt")) {
-	  MainFolder = "Phot_Mat_Interact";
+	 
 	  rebin[0] = 1;
 	  if (!hist_2d) logFlag = true;
-                  
-	  TString FileId = f[iFile];
-
-	  vector<string> Energies = {"100keV", "150keV", "300keV", "450keV", "511keV", "600keV", "800keV", "1000keV"};
-	  vector<string> Materials = {"PbWO4", "BGO", "LYSO", "GAGG", "LaBr3", "Plastic"};
-	  vector<string> Widths = {"1cm", "2.5cm", "5cm", "10cm", "20cm"};      
-      
-	  for(int i=0; i< Energies.size(); i++)
-	    {
-	      if(FileId.Contains(Energies[i])) {Energy = Energies[i]; EnergyIdx = i;}	      
-	    }
-
-	  for(int i=0; i< Materials.size(); i++)
-	    {
-	      if(FileId.Contains(Materials[i])) Material = Materials[i];
-	    }
-
-	  for(int i=0; i< Widths.size(); i++)
-	    {
-	      if(FileId.Contains("_" + Widths[i])) Width = Widths[i];
-	    }
-            
-	  filetag = Material + "_" + Energy + "_" + Width;	    
-	  folder = "Chetan_Thesis_Plots/Trans_20cmX20cm/" + MainFolder + "/" + Material + "/depth_" + Width;
-	          
+                  	          
 	  sprintf(full_path,"%s/%s_%d_%s",folder.c_str(), histVar.c_str(), EnergyIdx, filetag.c_str());
             
-	  bool Rebin = false;	  
-	  generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
+	  	  
+	  //generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
 	}
       }
-    }  
+
+      //making distribution for EMeasured
+      TH1F* hist = (TH1F*)root_file->Get("nOptical_Photons");      
+      hist->SetName("test");
+
+      // TH1F* h_EMeas = (TH1F*)root_file->Get("Total_Edep");
+      // h_EMeas->Reset();    //clearing the previous entries
+      // h_EMeas->SetName("Edep_Measured");
+      // h_EMeas->SetTitle("Edep_Measured");            
+
+      string txtFile = "Chetan_Thesis_Plots/Trans_20cmX20cm/Scintillation/Fits/txtFiles/" + Material + "/Ngamma_vs_Einc_" + Material + "_" + Width + ".txt";
+      std::ifstream infile(txtFile);
+      if (!infile.is_open()) {
+        std::cerr << "Error: Could not open file.\n";
+        return 1;
+      }
+
+      int E_Calib = 511;
+      std::map<double, double> data;  // store X as key, Y as value
+      double x, y;
+
+      while (infile >> x >> y) {
+        data[x] = y;
+      }
+      infile.close();
+     
+      auto N_Calib = data.find(E_Calib)->second;           
+      double Calib_fact = (E_Calib/N_Calib)*0.001;  //converting from keV to MeV      
+      //TH1F *h_EMeas = new TH1F("Edep_Measur", "Edep_Measur", 100, 0, 1.1);
+      h_EMeas->Reset();
+
+      int nbins = hist->GetNbinsX();
+      //cout << nbins << endl;
+      //cout << "No. of bins: " << nbins << endl;
+      for (int i = 1; i <= nbins; ++i) {
+      	double binContent = hist->GetBinContent(i);
+      	double binCenter  = hist->GetBinCenter(i);
+      	double E_Measured = Calib_fact * binCenter;
+
+	//if (Energy == "511keV" && Width == "5cm" && binContent > 0){cout << binContent << endl;}
+
+	for (int j = 1; j<=binContent; j++){
+	  h_EMeas->Fill(E_Measured);
+      	}
+      }
+
+      
+      h_EMeas->Write("", TObject::kOverwrite);
+
+
+      xtitle = "E_{Measured} (MeV)";     
+
+      vector<TH1*> h_list;
+      h_list.push_back(h_EMeas);
+
+      logFlag = true;
+	
+
+      sprintf(full_path,"%s/%s_%d_%s",folder.c_str(), "EMeasured", EnergyIdx, filetag.c_str());
+      generate_1Dplot(h_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
+
+      
+
+      root_file->Close();     
+      delete root_file;
+    }    
   }
 }
 
