@@ -335,11 +335,10 @@ void make_Edep_plots()
   
   std::vector<std::string> rootFiles;
 
-  TH1F *h_EMeas = new TH1F("Edep_Measured", "Edep_Measured", 440, 0, 1.1);
-
-  //vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files", "Plastic_out_root_files"};
+  //  TH1F *h_EMeas = new TH1F("Edep_Measured", "Edep_Measured", 440, 0, 1.1);
+  
   //vector<string> Folders = {"PbWO4_out_root_files", "BGO_out_root_files", "LYSO_out_root_files", "GAGG_out_root_files", "LaBr3_out_root_files"};
-  vector<string> Folders = {"BGO_out_root_files"};
+  vector<string> Folders = {"PbWO4_out_root_files"};
 
   for (int iFolder = 0; iFolder < Folders.size(); iFolder++){
     vector<string> f;
@@ -352,6 +351,7 @@ void make_Edep_plots()
     TIter next(files);
     TObject* obj;
 
+
     while ((obj = next())) {
       TString fname = obj->GetName();
       if (!obj->IsA()->InheritsFrom("TSystemFile")) continue;
@@ -363,11 +363,6 @@ void make_Edep_plots()
     
     cout << "\n\nSize of the files vector is: " << f.size() << endl;
     
-    vector<int >rebin = {1,1,1,1,1,1,1,1,1}; 
-    
-    vector<int>xmax = {700,2000,16,16,2000,2000,2000,2000};
-    vector<int>xmin = {0,0,0,0,0,0,0,0};
-
     string filetag, folder, Energy, Material, Width;
     int EnergyIdx;
     
@@ -377,8 +372,14 @@ void make_Edep_plots()
       TString FileId = f[iFile];      
       vector<string> Energies = {"100keV", "150keV", "300keV", "450keV", "511keV", "600keV", "800keV", "1000keV"};
       vector<string> Materials = {"PbWO4", "BGO", "LYSO", "GAGG", "LaBr3", "Plastic"};
-      vector<string> Widths = {"1cm", "2.5cm", "5cm", "10cm", "20cm"};      
+      vector<string> Widths = {"1cm", "2.5cm", "5cm", "10cm", "20cm"};
+
+      vector<int >rebin = {1,1,1,1,1,1,1,1,1}; 
       
+      vector<float>xmax = {700.,2000.,16.,16.,2000.,2000.,2000.,2000.};
+      vector<int>xmin = {0,0,0,0,0,0,0,0};
+      
+ 
       for(int i=0; i< Energies.size(); i++)
 	{
 	  if(FileId.Contains(Energies[i])) {Energy = Energies[i]; EnergyIdx = i;}	      
@@ -398,8 +399,11 @@ void make_Edep_plots()
       //folder = "Chetan_Thesis_Plots/Trans_20cmX20cm/Phot_Mat_Interact/" + Material + "/depth_" + Width;
       folder = "test_plots/" + Material + "/depth_" + Width;
 
+      TH1F *h_EMeas = new TH1F("Edep_Measured", "Edep_Measured", 800, 0, 2.0);
+
+
       string xtitle, ytitle, histVar;
-      bool Rebin=false, logFlag=false, statFlag = false;
+      bool Rebin=true, logFlag=false, statFlag = false;
 
       vector<TH1F> HistList;
       TIter keyList(root_file ->GetListOfKeys());
@@ -443,7 +447,7 @@ void make_Edep_plots()
 	  //generate_1Dplot(hist_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
 	}
       }
-
+  
       //making distribution for EMeasured
       TH1F* hist = (TH1F*)root_file->Get("nOptical_Photons");      
       hist->SetName("test");
@@ -473,6 +477,7 @@ void make_Edep_plots()
       double Calib_fact = (E_Calib/N_Calib)*0.001;  //converting from keV to MeV      
       //TH1F *h_EMeas = new TH1F("Edep_Measur", "Edep_Measur", 100, 0, 1.1);
       h_EMeas->Reset();
+      //cout << h_EMeas->Integral() << endl;
 
       int nbins = hist->GetNbinsX();
       //cout << nbins << endl;
@@ -482,7 +487,7 @@ void make_Edep_plots()
       	double binCenter  = hist->GetBinCenter(i);
       	double E_Measured = Calib_fact * binCenter;
 
-	//if (Energy == "511keV" && Width == "5cm" && binContent > 0){cout << binContent << endl;}
+	//	if (Energy == "511keV" && Width == "5cm" && binContent > 0){cout << binContent << endl;}
 
 	for (int j = 1; j<=binContent; j++){
 	  h_EMeas->Fill(E_Measured);
@@ -491,6 +496,7 @@ void make_Edep_plots()
 
       
       h_EMeas->Write("", TObject::kOverwrite);
+      hist->Write("", TObject::kOverwrite);      
 
 
       xtitle = "E_{Measured} (MeV)";     
@@ -499,13 +505,28 @@ void make_Edep_plots()
       h_list.push_back(h_EMeas);
 
       logFlag = true;
-	
+      statFlag = true;
+
+      vector<float> xMax;
+      xMax = {0.2, 0.25, 0.4, 0.55, 0.6, 0.7, 0.8, 1.1};
+
+      if (Material == "PbWO4"){
+	rebin[0] = 5;
+	if (Energy == "1000keV") xmax[0] = 2;
+	else (xmax[0] = xMax[EnergyIdx]);
+      }
+      
+      else {xmax[0] = xMax[EnergyIdx]; rebin[0] = 1;}
+
+      cout << Energy << ", " << xmax[0] << endl;
 
       sprintf(full_path,"%s/%s_%d_%s",folder.c_str(), "EMeasured", EnergyIdx, filetag.c_str());
-      generate_1Dplot(h_list,full_path,xmax[0],xmin[0],leg_head,false,logFlag,Rebin,true,filetag.c_str(),xtitle.c_str(),ytitle.c_str(),rebin[0], statFlag);
+      generate_1Dplot(h_list,full_path, xmax[0], xmin[0], leg_head, false, logFlag, Rebin, true, filetag.c_str(), xtitle.c_str(), ytitle.c_str(), rebin[0], statFlag);
 
       
-
+      delete h_EMeas;
+      delete hist;
+      
       root_file->Close();     
       delete root_file;
     }    
