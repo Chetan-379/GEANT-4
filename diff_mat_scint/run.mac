@@ -1,6 +1,0 @@
-/mydet/setTileSize 5 cm
-/run/initialize
-/analysis/setFileName output_tile1.root
-/run/beamOn 1000/gun/momentumAmp 0.511 MeV
-/run/beamOn 10000
-
