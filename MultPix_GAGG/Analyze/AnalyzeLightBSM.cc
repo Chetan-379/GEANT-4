@@ -89,8 +89,11 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       //sorting the hits in the ascending order of time
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, HitPol0_sort, HitPol1_sort, HitPol2_sort, HitEin_sort, HitEout_sort, HitScatMomX_sort, HitScatMomY_sort, HitScatMomZ_sort;
-      vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, HitPol0_cpy, HitPol1_cpy, HitPol2_cpy, HitScatAng_cpy, HitEta_cpy, HitEin_cpy, HitEout_cpy, HitScatMomX_cpy, HitScatMomY_cpy, HitScatMomZ_cpy;
+      vector<double> HitPosX_sort, HitPosY_sort, HitPosZ_sort, HitTime_sort, HitScatAng_sort, HitEta_sort, // HitPol0_sort, HitPol1_sort, HitPol2_sort,
+	HitEin_sort, HitEout_sort;// , HitScatMomX_sort, HitScatMomY_sort, HitScatMomZ_sort;
+      vector<double> HitPosX_cpy, HitPosY_cpy, HitPosZ_cpy, HitTime_cpy, // HitPol0_cpy, HitPol1_cpy, HitPol2_cpy,
+	HitScatAng_cpy, HitEta_cpy, HitEin_cpy, HitEout_cpy; // HitScatMomX_cpy, HitScatMomY_cpy, HitScatMomZ_cpy
+	
 
       vector <int> HitProcId_sort, HitDetId_sort, HitGunId_sort;
       vector<int> HitProcId_cpy, HitDetId_cpy, HitGunId_cpy;
@@ -102,16 +105,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitScatAng_sort.clear();
       HitEta_sort.clear();
       HitProcId_sort.clear();
-      HitPol0_sort.clear();
-      HitPol1_sort.clear();
-      HitPol2_sort.clear();	
       HitEout_sort.clear();
       HitEin_sort.clear();
       HitDetId_sort.clear();
       HitGunId_sort.clear();
-      HitScatMomX_sort.clear();
-      HitScatMomY_sort.clear();
-      HitScatMomZ_sort.clear();	
 
 	   
       HitPosX_cpy = *Hit_PositionX;
@@ -121,16 +118,11 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       HitScatAng_cpy = *Hit_ScatAngle;
       HitEta_cpy = *Hit_Eta;
       HitProcId_cpy = *Hit_ProcId;
-      HitPol0_cpy = *Hit_Pol0;
-      HitPol1_cpy = *Hit_Pol1;
-      HitPol2_cpy = *Hit_Pol2;
       HitEout_cpy = *Hit_Eout;
       HitEin_cpy = *Hit_Ein;
       HitDetId_cpy = *Hit_DetId;
       HitGunId_cpy = *Hit_GunId;
-      HitScatMomX_cpy = *Hit_ScatMomX;
-      HitScatMomY_cpy = *Hit_ScatMomY;
-      HitScatMomZ_cpy = *Hit_ScatMomZ;
+
 	
       for (int iHit=0 ; iHit< nHits; iHit++){                               	 
 	auto min_id_ptr = std::min_element(HitTime_cpy.begin(), HitTime_cpy.end());
@@ -143,16 +135,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitScatAng_sort.push_back(HitScatAng_cpy[min_idx]);
 	HitEta_sort.push_back(HitEta_cpy[min_idx]);
 	HitProcId_sort.push_back(HitProcId_cpy[min_idx]);
-	HitPol0_sort.push_back(HitPol0_cpy[min_idx]);
-	HitPol1_sort.push_back(HitPol1_cpy[min_idx]);
-	HitPol2_sort.push_back(HitPol2_cpy[min_idx]);
 	HitEout_sort.push_back(HitEout_cpy[min_idx]);
 	HitEin_sort.push_back(HitEin_cpy[min_idx]);
 	HitDetId_sort.push_back(HitDetId_cpy[min_idx]);
 	HitGunId_sort.push_back(HitGunId_cpy[min_idx]);
-	HitScatMomX_sort.push_back(HitScatMomX_cpy[min_idx]);
-	HitScatMomY_sort.push_back(HitScatMomY_cpy[min_idx]);
-	HitScatMomZ_sort.push_back(HitScatMomZ_cpy[min_idx]);
 	     
 	HitTime_cpy.erase(HitTime_cpy.begin() + min_idx);
 	HitPosX_cpy.erase(HitPosX_cpy.begin() + min_idx);
@@ -161,18 +147,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	HitScatAng_cpy.erase(HitScatAng_cpy.begin() + min_idx);
 	HitEta_cpy.erase(HitEta_cpy.begin() + min_idx);
 	HitProcId_cpy.erase(HitProcId_cpy.begin() + min_idx);
-	HitPol0_cpy.erase(HitPol0_cpy.begin() + min_idx);
-	HitPol1_cpy.erase(HitPol1_cpy.begin() + min_idx);
-	HitPol2_cpy.erase(HitPol2_cpy.begin() + min_idx);
 	HitEout_cpy.erase(HitEout_cpy.begin() + min_idx);
 	HitEin_cpy.erase(HitEin_cpy.begin() + min_idx);
 	HitDetId_cpy.erase(HitDetId_cpy.begin() + min_idx);
 	HitGunId_cpy.erase(HitGunId_cpy.begin() + min_idx);
-	HitScatMomX_cpy.erase(HitScatMomX_cpy.begin() + min_idx);
-	HitScatMomY_cpy.erase(HitScatMomY_cpy.begin() + min_idx);
-	HitScatMomZ_cpy.erase(HitScatMomZ_cpy.begin() + min_idx);
       }
-
+      //cout << "\n\nWorking till here!" << endl;
       //Sorting done
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -198,362 +178,93 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	info.push_back(HitDetId_sort[i]);
 	info.push_back(HitGunId_sort[i]);
 	info.push_back(HitEta_sort[i]*180.0 / TMath::Pi());
-	info.push_back(HitPol0_sort[i]);
-	info.push_back(HitPol1_sort[i]);
-	info.push_back(HitPol2_sort[i]);
-	info.push_back(HitScatMomX_sort[i]);
-	info.push_back(HitScatMomY_sort[i]);
-	info.push_back(HitScatMomZ_sort[i]);
 
 	Hits.push_back(info);
       }
-
-      enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId, Eta, Pol_X, Pol_Y, Pol_Z, ScatMomX, ScatMomY, ScatMomZ};      
-      bool incrs_nHit = false;
-      bool RejEvt = false;
-	
-      if (nHits>0 && HitProcId_sort[0] == 2) incrs_nHit = true;
-
-      vector<vector<double>> G1ScatHits, G2ScatHits;
-
-      for (int i = 0; i< HitTime_sort.size(); i++){
-	//if(incrs_nHit && HitProcId_sort[i] != 0) nHitComp++;   //excluding rayleigh hit
-	if (HitProcId_sort[i] == 0) RejEvt = true;
-
-	if(HitProcId_sort[i] != 0 && HitEin_sort[i] != 0.511){
-	  if (HitGunId_sort[i] == 1) G1ScatHits.push_back(Hits[i]);
-	  if (HitGunId_sort[i] == 2) G2ScatHits.push_back(Hits[i]);
-	}
-      }
-
-      //if (RejEvt) continue;   //rejecting the event the event with any rayl just for checking 
-
+     
+      enum hitInfo{time, PosX, PosY, PosZ, scat_theta, Ein, DetId, GunId, Eta};//, Pol_X, Pol_Y, Pol_Z, ScatMomX, ScatMomY, ScatMomZ};      
       h_nHits->Fill(nHits);  //before looking at the histogram check which kind of events you want to look for
 
-      int nScatPho = 0;
-      bool nHitG1_incrs = true;
-      vector<vector<double>> ScatPho;
-
-      for (int i =0; i<G1ScatHits.size(); i++){
-	if (i>0){
-	  if(G1ScatHits[i][DetId] == G1ScatHits[i-1][DetId]) nHitG1_incrs = false;	 
-	  else nHitG1_incrs = true;
-	}
-
-	if(nHitG1_incrs) {nScatPho++; ScatPho.push_back(G1ScatHits[i]);}
-      }
-
-      bool nHitG2_incrs = true;
-      for (int i =0; i<G2ScatHits.size(); i++){
-	if (i>0){
-	  if(G2ScatHits[i][DetId] == G2ScatHits[i-1][DetId]) nHitG2_incrs = false;
-	  else nHitG2_incrs = true;
-	}
-
-	if(nHitG2_incrs) {nScatPho++; ScatPho.push_back(G2ScatHits[i]);}
-      }
-
-      if(nHits >0){
-	vector<vector<double>> AnniPho, Relv4Hits, Ana_Relv4Hits, AS_ConnHits;
-	int nHits_RaylEx = 0;
-	for (int iHit=0 ; iHit< nHits; iHit++){
-	  v_comp.SetXYZ(0,0,0);
-	  vin.SetXYZ(0,0,0);
-	  vout.SetXYZ(0,0,0);
-	  v1.SetXYZ(0,0,0);
-	  v2.SetXYZ(0,0,0);
-
-	  v_comp.SetXYZ(HitPosX_sort[iHit], HitPosY_sort[iHit], HitPosZ_sort[iHit]);
-
-	  if(iHit == 0) v1.SetXYZ(0,0,0);            //for first hit initial point will be gun position
-	  else v1.SetXYZ(HitPosX_sort[iHit-1], HitPosY_sort[iHit-1], HitPosZ_sort[iHit-1]);
-
-	  v2.SetXYZ(HitPosX_sort[iHit+1], HitPosY_sort[iHit+1], HitPosZ_sort[iHit+1]);
-
-	  vin = v_comp - v1;
-	  vout = v2 - v_comp;
-
-	  double Scat_theta = 10000;
-	  Scat_theta = acos(vin.Dot(vout)/(vin.R()*vout.R()));	  
-	 
+      if(nHits>0){
+	for (int iHit=0 ; iHit< 1; iHit++){	 
 	  double Time = HitTime_sort[iHit];
 	  double posX = HitPosX_sort[iHit];
 	  double posY = HitPosY_sort[iHit];
 	  double posZ = HitPosZ_sort[iHit];
 
 	  double eout = HitEout_sort[iHit];	  
-	  double ein = HitEin_sort[iHit];
+	  double ein = HitEin_sort[iHit];	 
 
 	  int detId = HitDetId_sort[iHit];
 	  int gunId = HitGunId_sort[iHit];
 	    
 	  double scat_theta_SD = HitScatAng_sort[iHit];
-	  double Ang_diff = Scat_theta - scat_theta_SD;
-	  double scat_theta_deg = Scat_theta*180.0 / TMath::Pi();
-	  double scat_theta_SD_deg = scat_theta_SD*180.0 / TMath::Pi();	
+	  double scat_theta_SD_deg = scat_theta_SD*180.0 / TMath::Pi();
 
-	  string procName;
-	  if(HitProcId_sort[iHit] == 0) procName = "Rayl";
-	  if(HitProcId_sort[iHit] == 1) procName = "Photo";
-	  if(HitProcId_sort[iHit] == 2) procName = "Compt";
+	  double scat_eta = HitEta_sort[iHit];
+	  double scat_eta_deg = scat_eta*180.0 / TMath::Pi();
 
-	  float AnniPho_scat_theta_SD = -1000;
-
-	  if (procName != "Rayl") nHits_RaylEx++ ;
-	  if (procName == "Compt" && ein == 0.511) AnniPho_scat_theta_SD = scat_theta_SD;	    //be careful here, there can be rayl before compt
-
-	  float AnniPho_scat_theta_SD_deg = AnniPho_scat_theta_SD*180.0 / TMath::Pi();
-
-	  if (AnniPho_scat_theta_SD > 0) {	    
-	    AnniPho.push_back(Hits[iHit]);
-	  }
-
-	  double EtaPolScat = HitEta_sort[iHit];
-	  double EtaPolScat_deg = EtaPolScat*180.0 / TMath::Pi();
 	  int procId = HitProcId_sort[iHit];
-
-	  float Pol0 = HitPol0_sort[iHit];
-	  float Pol1 = HitPol1_sort[iHit];
-	  float Pol2 = HitPol2_sort[iHit];
-	  	 	    
-	  h_diff_Ana_SD->Fill(Ang_diff);
-	  h_posX_posY ->Fill(posX, posY);
-	  h_polX_polY ->Fill(Pol0, Pol1);
-
-	  ROOT::Math::XYZVector Pol_Ana;
-	  Pol_Ana = vin.Cross(vout)/(vin.R()*vout.R());
-
-	  h_PolX_Ana_SD->Fill(Pol_Ana.X(), Pol0);
-	  h_PolY_Ana_SD->Fill(Pol_Ana.Y(), Pol1);
-	  h_PolZ_Ana_SD->Fill(Pol_Ana.Z(), Pol2);
-
-	  h_Pol_Ana->Fill(Pol_Ana.Mag2());	 	  
-	}   //end of iHit loop
-
-	//shuffling the A1,A2 and S1,S2.
-	std::mt19937 rng(42+jentry);
-	std::shuffle(AnniPho.begin(), AnniPho.end(), rng);
-	std::shuffle(ScatPho.begin(), ScatPho.end(), rng);
-
-	enum AnniScat{A1, A2, S1, S2};
-
-	//convention followed:
-	//A1, A2: Compton hits from Annihilation (filled in [0] and [1] positon of the Hits vector 'Relv4Hits')	
-	//S1, S2:  hits from Scattered photon (filled in [0] and [1] positon of the Hits vector 'Relv4Hits')
-	
-	bool A1_BGO = false, A2_BGO = false, A1_Scint =false, A2_Scint = false;
-	if(AnniPho.size()==2 && nScatPho ==2) {
-	  h_nAnniPho->Fill(AnniPho.size());
-
-	  A1_BGO = MatName(AnniPho[0][DetId]) == "BGO";
-	  A1_Scint = MatName(AnniPho[0][DetId]) == "Scint";
-
-	  A2_Scint = MatName(AnniPho[1][DetId]) == "Scint";
-	  A2_Scint = MatName(AnniPho[1][DetId]) == "Scint";	  	
 	  
-	  Relv4Hits.push_back(AnniPho[0]);
-	  Relv4Hits.push_back(AnniPho[1]);
-	  
-	  Ana_Relv4Hits.push_back(AnniPho[0]);
-	  Ana_Relv4Hits.push_back(AnniPho[1]);
+	  string procName;
+	  if(procId == 0) procName = "Rayl";
+	  if(procId == 1) procName = "Photo";
+	  if(procId == 2) procName = "Compt";
 
-	  AS_ConnHits.push_back(AnniPho[0]);
-	  AS_ConnHits.push_back(AnniPho[1]);	  
-	  
-	  double GunId_A1 = AnniPho[0][GunId];
-	  double GunId_A2 = AnniPho[1][GunId];
+	  if(procName == "Compt" && gunId ==1 && posZ>0) FillHistogram(time, posX, posY, posZ, scat_theta_SD_deg, scat_eta_deg, ein, eout);
+	}	  	 	    	 
+      }   //end of iHit loop
 
-	  double DetId_A1 = AnniPho[0][DetId];
-	  double DetId_A2 = AnniPho[1][DetId];
-	    
-	  
-	  double GunId_S1 = ScatPho[0][GunId];
-	  double GunId_S2 = ScatPho[1][GunId];
-
-	  double DetId_S1 = ScatPho[0][DetId];
-	  double DetId_S2 = ScatPho[1][DetId];
-
-	  bool sameDet_A1S1 = DetId_A1 == DetId_S1;
-	  bool sameDet_A2S2 = DetId_A2 == DetId_S2;
-	  bool sameDet_A1S2 = DetId_A1 == DetId_S2;
-	  bool sameDet_A2S1 = DetId_A2 == DetId_S1;
-
-	  if(!sameDet_A1S1 && !sameDet_A1S2 && !sameDet_A2S2 && !sameDet_A2S1){
-	    if(GunId_A1 == GunId_S1 && GunId_A2 == GunId_S2) {
-	      Relv4Hits.push_back(ScatPho[0]);
-	      Relv4Hits.push_back(ScatPho[1]);	      
-	    }
-
-	    else if(GunId_A1 == GunId_S2 && GunId_A2 == GunId_S1) {
-	      Relv4Hits.push_back(ScatPho[1]);
-	      Relv4Hits.push_back(ScatPho[0]);	      
-	    }
-
-	    if(GunId_S1 != GunId_S2) {
-	      Ana_Relv4Hits.push_back(ScatPho[0]);
-	      Ana_Relv4Hits.push_back(ScatPho[1]);
-	    }	    
-	  } //same det condition end
-	} //AnniPho vector size condition end
-	
-	if (Relv4Hits.size() == 4){
-	  float dt_A1S1 = Relv4Hits[S1][time] - Relv4Hits[A1][time];
-	  float dt_A1S2 = Relv4Hits[S2][time] - Relv4Hits[A1][time];
-	  float dt_A2S1 = Relv4Hits[S1][time] - Relv4Hits[A2][time];
-	  float dt_A2S2 = Relv4Hits[S2][time] - Relv4Hits[A2][time];
-
-	  float dt_A1A2 = Relv4Hits[A2][time] - Relv4Hits[A1][time];
-	  float dt_S1S2 = Relv4Hits[S2][time] - Relv4Hits[S1][time];
-
-	  h_dt_A1S1->Fill(dt_A1S1);
-	  h_dt_A1S2->Fill(dt_A1S2);
-	  h_dt_A2S1->Fill(dt_A2S1);
-	  h_dt_A2S2->Fill(dt_A2S2);
-	  h_dt_A1A2->Fill(dt_A1A2);
-	  h_dt_S1S2->Fill(dt_S1S2);	  
-
-	  float Ana_dt_A1S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A1][time];	  
-	  float Ana_dt_A1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[A1][time];
-	  float Ana_dt_A2S1 = Ana_Relv4Hits[S1][time] - Ana_Relv4Hits[A2][time];
-	  float Ana_dt_A2S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[A2][time];
-
-	  float Ana_dt_A1A2 = Ana_Relv4Hits[A2][time] - Ana_Relv4Hits[A1][time];
-	  float Ana_dt_S1S2 = Ana_Relv4Hits[S2][time] - Ana_Relv4Hits[S1][time];
-	  
-	  //creating STij
-	  ROOT::Math::XYZVector PosVec_A1, PosVec_A2, PosVec_S1, PosVec_S2, test;
-	  PosVec_A1.SetXYZ(Ana_Relv4Hits[A1][PosX], Ana_Relv4Hits[A1][PosY], Ana_Relv4Hits[A1][PosZ]);
-	  PosVec_A2.SetXYZ(Ana_Relv4Hits[A2][PosX], Ana_Relv4Hits[A2][PosY], Ana_Relv4Hits[A2][PosZ]);
-	  PosVec_S1.SetXYZ(Ana_Relv4Hits[S1][PosX], Ana_Relv4Hits[S1][PosY], Ana_Relv4Hits[S1][PosZ]);
-	  PosVec_S2.SetXYZ(Ana_Relv4Hits[S2][PosX], Ana_Relv4Hits[S2][PosY], Ana_Relv4Hits[S2][PosZ]);
-	  
-	  double d_A1S1, d_A1S2, d_A2S1, d_A2S2;
-	  d_A1S1 = (PosVec_A1 - PosVec_S1).R();
-	  d_A1S2 = (PosVec_A1 - PosVec_S2).R();
-	  d_A2S1 = (PosVec_A2 - PosVec_S1).R();
-	  d_A2S2 = (PosVec_A2 - PosVec_S2).R();	  
-
-	  double ST11, ST12, ST21, ST22;
-	  double c = TMath::C() * (1e-6);    //converting from m/s to mm/ns
-	  
-	  ST11 = Ana_dt_A1S1 - (d_A1S1/c);
-	  ST12 = Ana_dt_A1S2 - (d_A1S2/c);
-	  ST21 = Ana_dt_A2S1 - (d_A2S1/c);
-	  ST22 = Ana_dt_A2S2 - (d_A2S2/c);
-
-	  h_STij->Fill(ST11,ST21);
-	  h_STij->Fill(ST12,ST22);
-
-	  bool A1toS1 = false, A1toS2 = false;
-	  if (abs(ST11) < abs(ST21)) {A1toS1 = true;}
-	  else if (abs(ST11) > abs(ST21)) {A1toS2 = true;}
-
-	  //also working
-	  // if (abs(ST11) < abs(ST12)) {A1toS1 = true;}
-	  // else if (abs(ST11) > abs(ST12))  {A1toS2 = true;}
-	  
-	  if (A1toS1) {
-	    AS_ConnHits.push_back(Ana_Relv4Hits[S1]);
-	    AS_ConnHits.push_back(Ana_Relv4Hits[S2]);
-	  }
-
-	  else if (A1toS2) {
-	    AS_ConnHits.push_back(Ana_Relv4Hits[S2]);
-	    AS_ConnHits.push_back(Ana_Relv4Hits[S1]);
-	  }
-		  
-	
-
-	  //calculating the scattering angle from the hit position
-	  ROOT::Math::XYZVector vin1, vin2, vout1, vout2;
-	  vin1.SetXYZ(AS_ConnHits[A1][PosX], AS_ConnHits[A1][PosY], AS_ConnHits[A1][PosZ]);
-	  vin2.SetXYZ(AS_ConnHits[A2][PosX], AS_ConnHits[A2][PosY], AS_ConnHits[A2][PosZ]);
-
-	  vout1.SetXYZ((AS_ConnHits[S1][PosX]-AS_ConnHits[A1][PosX]), (AS_ConnHits[S1][PosY]-AS_ConnHits[A1][PosY]), (AS_ConnHits[S1][PosZ]-AS_ConnHits[A1][PosZ]));	  
-	  vout2.SetXYZ((AS_ConnHits[S2][PosX]-AS_ConnHits[A2][PosX]), (AS_ConnHits[S2][PosY]-AS_ConnHits[A2][PosY]), (AS_ConnHits[S2][PosZ]-AS_ConnHits[A2][PosZ]));
-	  
-	  double ScatTheta1= acos((vin1.Unit()).Dot(vout1.Unit())) *180.0 / TMath::Pi();	  
-	  double ScatTheta2 = acos((vin2.Unit()).Dot(vout2.Unit())) *180.0 / TMath::Pi();
-	    
-	  double phi_ScatPlanes =-1;	  	  
-	  ROOT::Math::XYZVector n1 = vin1.Cross(vout1);
-	  ROOT::Math::XYZVector n2 = vin2.Cross(vout2);
-
-	  phi_ScatPlanes = acos(n1.Unit().Dot(n2.Unit())) *180.0 / TMath::Pi();
-	 
-	  if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) {
-	    //h_dPhi->Fill(phi_ScatPlanes);
-	    //h_dEta->Fill(abs(dEta));
-	    //h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
-	  }
-
-	  h_Theta1vsTheta2->Fill(Relv4Hits[A1][scat_theta], Relv4Hits[A2][scat_theta]);
-
-	  h_ThetaSimAna->Fill(ScatTheta1, Relv4Hits[A1][scat_theta]);
-	  h_ThetaSimAna->Fill(ScatTheta2, Relv4Hits[A2][scat_theta]);
-	} //Relv4Hits.size()==4 condition end
-
-	if(Relv4Hits.size() >=2) {
-	  ROOT::Math::XYZVector Exact_vin1, Exact_vin2, Exact_vout1, Exact_vout2;
-	  Exact_vin1.SetXYZ(Relv4Hits[A1][PosX], Relv4Hits[A1][PosY], Relv4Hits[A1][PosZ]);
-	  Exact_vin2.SetXYZ(Relv4Hits[A2][PosX], Relv4Hits[A2][PosY], Relv4Hits[A2][PosZ]);
-
-	  Exact_vout1.SetXYZ(Relv4Hits[A1][ScatMomX], Relv4Hits[A1][ScatMomY], Relv4Hits[A1][ScatMomZ]);
-	  Exact_vout2.SetXYZ(Relv4Hits[A2][ScatMomX], Relv4Hits[A2][ScatMomY], Relv4Hits[A2][ScatMomZ]);
-
-	  double Scat_truth1 = acos((Exact_vout1).Dot(Exact_vin1.Unit()))*180.0 / TMath::Pi();
-	  double Scat_truth2 = acos((Exact_vout2.Unit()).Dot(Exact_vin2.Unit()))*180.0 / TMath::Pi();
-
-	  h_Eta1VsEta2_inc->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
-
-	  double dEta = abs(Relv4Hits[A1][Eta])-abs(Relv4Hits[A2][Eta]);
-	  h_dEta_inc->Fill(abs(dEta));
-
-	   
-	  double phi_ScatPlanes_truth = -1;
-	  ROOT::Math::XYZVector n1_truth = (Exact_vin1.Unit()).Cross(Exact_vout1.Unit());
-	  ROOT::Math::XYZVector n2_truth = (Exact_vin2.Unit()).Cross(Exact_vout2.Unit());
-
-	  phi_ScatPlanes_truth = acos(n1_truth.Unit().Dot(n2_truth.Unit())) *180.0 / TMath::Pi();
       
-	  if(Relv4Hits[A1][scat_theta] > 50 && Relv4Hits[A1][scat_theta] < 110 && Relv4Hits[A2][scat_theta] > 50 && Relv4Hits[A2][scat_theta] < 110) {
-	    h_Eta1VsEta2->Fill(Relv4Hits[A1][Eta], Relv4Hits[A2][Eta]);
-	    h_dPhi_inVis->Fill(phi_ScatPlanes_truth);
-	    
-	    h_dEta_inVis->Fill(abs(dEta));
+      //--------------------Analysing the Scintillation photons at the end---------------------------
+      int nOp = 0, nOp_gen =0;
+      float EDep = 0;
+      for (int i =0; i<8; i++){
+      	for (int j =0; j<8; j++){
+      	  nOp += right_module[i][j][nOpPho];
+      	  nOp_gen += right_module[i][j][nGenOp];
+	  EDep += right_module[i][j][Edep];
+	  	  
+      	  if(right_module[i][j][nOpPho] != 0) {
+	    h_DetX_crys->Fill(right_module[i][j][DetPosX]);
+	    h_Edep_crys->Fill(right_module[i][j][Edep]);
+	    h_nOp_vs_Edep_crys->Fill(right_module[i][j][nOpPho], right_module[i][j][Edep]);
 	  }
+      	}
+      }
+      
+      // if (nOp > 0) h_nOpPho->Fill(nOp);
+      // if (nOp_gen >0) h_nOpPho_gen->Fill(nOp_gen);
+      h_nOpPho_mdl->Fill(nOp);
+      h_nOpPho_gen_mdl->Fill(nOp_gen);
 
-	  if((Relv4Hits[A1][scat_theta] < 30 || Relv4Hits[A1][scat_theta] > 130) && (Relv4Hits[A2][scat_theta] < 30 || Relv4Hits[A2][scat_theta] > 130)) {
-	    h_dEta_outVis->Fill(abs(dEta));
-	    h_dPhi_outVis->Fill(phi_ScatPlanes_truth);
-	  }
-	   	   
-	} //Relv4Hits.size>=2 condition end	
-      }       // nHit >0 condition brkt end
+      h_Edep_mdl ->Fill(EDep);
+
+      h_nOp_vs_Edep_mdl->Fill(nOp, EDep);
+      
+      
     } //jentry loop end
+
+  // TF1 *f1 = new TF1("","[0]+[1]*x",0,1);
+  // f1->SetParameters(0.,1.);
+  // f1->SetLineColor(kRed);
+  // h2->Fit(f1);
+  // h2->Draw();
+  // f1->Draw("same");
 }
 
-void AnalyzeLightBSM::FillHistogram(int cat, double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double pol0, double pol1, double pol2, double Ein, double Eout){
-  h_hitTime[cat]->Fill(time);
-  h_hitPosX[cat]->Fill(posX);
-  h_hitPosY[cat]->Fill(posY);
-  h_hitPosZ[cat]->Fill(posZ);
+void AnalyzeLightBSM::FillHistogram(double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double Ein, double Eout){
+  h_hitTime->Fill(time);
+  h_hitPosX->Fill(posX);
+  h_hitPosY->Fill(posY);
+  h_hitPosZ->Fill(posZ);
 
-  h_theta[cat]->Fill(theta_deg);
+  h_theta->Fill(theta_deg);
 
-  h_eta[cat]->Fill(eta_deg);	    
-  h_theta_eta[cat]->Fill(eta_deg, theta_deg);
+  h_eta->Fill(eta_deg);	    
 
-  h_pol0[cat]->Fill(pol0);
-  h_pol1[cat]->Fill(pol1);
-  h_pol2[cat]->Fill(pol2);
-
-  h_Ein[cat]->Fill(Ein);
-  h_Eout[cat]->Fill(Eout);
-  
-  h_theta_Eout[cat]->Fill(theta_deg, Eout);
-  
-  if(theta_deg > 50 && theta_deg < 100) h_compSigEta[cat]->Fill(eta_deg);    //taking large values of theta to see maximum variation
+  h_Ein->Fill(Ein);
+  h_Eout->Fill(Eout);
 }
 
 string AnalyzeLightBSM::MatName(int DetId){

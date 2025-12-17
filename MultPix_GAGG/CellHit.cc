@@ -80,6 +80,18 @@ void CellHit::SetScatMom(G4ThreeVector mom)
   fScatMom = mom;
 }
 
+void CellHit::SetNOpPho(G4int nOpPho)
+{
+  fnOpPho = nOpPho;
+}
+
+void CellHit::SetDetPos(G4ThreeVector DetPos)
+{
+  fDetPos = DetPos;
+}
+
+
+
 
 
 
@@ -87,16 +99,14 @@ void CellHit::SetScatMom(G4ThreeVector mom)
 void CellHit::Print()
 {
   G4cout << "Edep: " << std::setw(7) << G4BestUnit(fEdep, "Energy") << "|"
-         << " track length: " << std::setw(7) << G4BestUnit(fTrackLength, "Length") << "|"
 	 << " position: " << std::setw(7) << G4BestUnit(fPosition, "Length") << "|"
 	 << " time: " << std::setw(7) << G4BestUnit(fTime, "Time") << "|"
 	 << " DetId: " << std::setw(7) << detId << "|"
-	 << " ProcessName: " << std::setw(7) << fProcName << "|"
+	 << " ProcId: " << std::setw(7) << fProcId << "|"
 	 << " ScatAngle: " << std::setw(7) << fScat*(180/CLHEP::pi) << "|"
 	 << " eta: " << std::setw(7) << fEta*(180/CLHEP::pi) << "|"
 	 << " Ein: " << std::setw(7) << fEin << " MeV" << "|"
 	 << " Eout: " << std::setw(7) << fEout << "MeV" << "|"
-	 << " Pol: " << std::setw(7) << fPol << "|"
 	 << " GunId: " << std::setw(7) << fGunId << G4endl;
   
 }

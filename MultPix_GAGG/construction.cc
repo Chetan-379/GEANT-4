@@ -3,169 +3,210 @@
 #include <bits/stdc++.h>
 
 MyDetectorConstruction::MyDetectorConstruction()
-{}
+{
+  DefineMaterials();
+}
 
 MyDetectorConstruction::~MyDetectorConstruction()
 {}
 
-G4VPhysicalVolume *MyDetectorConstruction::Construct()
+void MyDetectorConstruction::DefineMaterials()
 {
-  // Material
-   auto nist = G4NistManager::Instance();
-   G4Material* scint = nist->FindOrBuildMaterial("G4_CESIUM_IODIDE");
-   G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
+  //-----------------Defining and Adding the Material Properties----------  
+  G4double energy[2] = {1.2398419*eV/0.9, 1.2398419*eV/0.2};
+  G4double rindexWorld[2] = {1.0, 1.0};
 
-   // Mother volume (world)
-   G4Box* solidWorld = new G4Box("World", 0.5*m, 0.5*m, 0.5*m);
-   G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, air, "World");
-   auto physWorld = new G4PVPlacement(0, {}, logicWorld, "World", 0, false, 0);
+  G4NistManager *nist = G4NistManager::Instance();
+  //worldMat = nist->FindOrBuildMaterial("G4_Galactic");
+  worldMat = nist->FindOrBuildMaterial("G4_AIR");
 
-   auto Scint_mat = new G4Material("GAGG", 6.63*g/cm3, 4);
+  G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
+  mptWorld->AddProperty("RINDEX", energy, rindexWorld, 2);
+  worldMat->SetMaterialPropertiesTable(mptWorld);
+   
+  DetectorMat = new G4Material("GAGG", 6.63*g/cm3, 4);
   
-   auto Gd = nist->FindOrBuildElement("Gd");
-   auto Al = nist->FindOrBuildElement("Al");
-   auto Ga = nist->FindOrBuildElement("Ga");
-   auto O = nist->FindOrBuildElement("O");
+  Gd = nist->FindOrBuildElement("Gd");
+  Al = nist->FindOrBuildElement("Al");
+  Ga = nist->FindOrBuildElement("Ga");
+  O = nist->FindOrBuildElement("O");
   
-   Scint_mat -> AddElement(Gd, 3);
-   Scint_mat -> AddElement(Al, 2);
-   Scint_mat -> AddElement(Ga, 3);
-   Scint_mat -> AddElement(O, 12);   
+  DetectorMat -> AddElement(Gd, 3);
+  DetectorMat -> AddElement(Al, 2);
+  DetectorMat -> AddElement(Ga, 3);
+  DetectorMat -> AddElement(O, 12);   
 
+  std::vector<G4double> RIPhoEnergy = {1.56 *eV, 2.19 *eV, 2.38 *eV, 3.47 *eV, 4.24 *eV, 4.65 *eV};
+  std::vector<G4double> RefractiveIdxDet = {1.872, 1.873, 1.870, 1.887, 1.914, 1.940};
 
-   G4double X_dim = 3*mm;
-   G4double Y_dim = 3*mm;
-   G4double Z_dim = 20*mm;
-   G4double gapThick = 0.2*mm;
+  std::vector<G4double> ScintPhoEnergy = {1.771 *eV, 1.791 *eV, 1.816 *eV, 1.834 *eV, 1.857 *eV, 1.878 *eV, 1.901 *eV, 1.916 *eV, 1.933 *eV, 1.951 *eV,
+					  1.970 *eV, 1.988 *eV, 2.010 *eV, 2.025 *eV, 2.040 *eV, 2.056 *eV, 2.074 *eV, 2.091 *eV, 2.106 *eV, 2.122 *eV,
+					  2.133 *eV, 2.143 *eV, 2.155 *eV, 2.164 *eV, 2.174 *eV, 2.181 *eV, 2.190 *eV, 2.196 *eV, 2.207 *eV, 2.217 *eV,
+					  2.230 *eV, 2.243 *eV, 2.254 *eV, 2.264 *eV, 2.274 *eV, 2.286 *eV, 2.296 *eV, 2.310 *eV, 2.319 *eV, 2.329 *eV,
+					  2.342 *eV, 2.354 *eV, 2.372 *eV, 2.389 *eV, 2.405 *eV, 2.421 *eV, 2.431 *eV, 2.444 *eV, 2.450 *eV, 2.453 *eV,
+					  2.460 *eV, 2.467 *eV, 2.471 *eV, 2.475 *eV, 2.479 *eV, 2.485 *eV, 2.491 *eV, 2.496 *eV, 2.499 *eV, 2.506 *eV,
+					  2.510 *eV, 2.515 *eV, 2.519 *eV, 2.522 *eV, 2.526 *eV, 2.531 *eV, 2.536 *eV, 2.539 *eV, 2.543 *eV, 2.548 *eV,
+					  2.557 *eV, 2.565 *eV, 2.571 *eV, 2.580 *eV, 2.589 *eV, 2.598 *eV, 2.613 *eV, 2.631 *eV, 2.645 *eV, 2.665 *eV};
 
-   G4int MatSize = 8;
-   G4double sep = 3*cm;
+  std::vector<G4double> ScintFastArray = {0.032, 0.036, 0.039, 0.045, 0.051, 0.057, 0.063, 0.069, 0.073, 0.078,
+					  0.086, 0.093, 0.104, 0.112, 0.122, 0.128, 0.140, 0.157, 0.174, 0.191,
+					  0.201, 0.214, 0.225, 0.236, 0.244, 0.253, 0.261, 0.268, 0.278, 0.289,
+					  0.301, 0.313, 0.324, 0.334, 0.343, 0.353, 0.360, 0.366, 0.374, 0.381,
+					  0.385, 0.389, 0.392, 0.392, 0.391, 0.388, 0.381, 0.373, 0.364, 0.355,
+					  0.345, 0.335, 0.324, 0.314, 0.306, 0.292, 0.279, 0.266, 0.254, 0.236,
+					  0.218, 0.204, 0.193, 0.183, 0.170, 0.157, 0.145, 0.133, 0.121, 0.110,
+					  0.099, 0.087, 0.078, 0.065, 0.051, 0.039, 0.028, 0.017, 0.008, 0.002};
+  
 
-   G4double layerX = X_dim + gapThick;
-   G4double layerY = Y_dim + gapThick;
-   
-   std::vector<G4int> PosIdx = {-1, 1};
+  std::vector<G4double> ScintSlowArray = {0.050, 0.055, 0.061, 0.069, 0.079, 0.088, 0.097, 0.107, 0.114, 0.122,
+					  0.134, 0.144, 0.161, 0.174, 0.189, 0.199, 0.217, 0.244, 0.270, 0.296,
+					  0.312, 0.332, 0.348, 0.365, 0.379, 0.392, 0.405, 0.416, 0.432, 0.448,
+					  0.466, 0.486, 0.502, 0.517, 0.533, 0.548, 0.558, 0.568, 0.579, 0.591,
+					  0.598, 0.603, 0.608, 0.608, 0.606, 0.602, 0.591, 0.578, 0.565, 0.551,
+					  0.535, 0.519, 0.503, 0.486, 0.474, 0.453, 0.433, 0.413, 0.394, 0.365,
+					  0.339, 0.317, 0.300, 0.284, 0.264, 0.244, 0.224, 0.207, 0.188, 0.171,
+					  0.153, 0.136, 0.121, 0.100, 0.079, 0.061, 0.044, 0.027, 0.013, 0.003};
 
-   for (int i =0; i<2; i++){     
-     // Big cube (mother for replicas)
-     G4Box* solidBlock = new G4Box("Block", layerX*MatSize/2, layerY*MatSize/2, Z_dim/2);
-     G4LogicalVolume* logicBlock = new G4LogicalVolume(solidBlock, Scint_mat, "Block_LV");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PosIdx[i]*((sep/2)+(Z_dim/2))), logicBlock, "Block_PV", logicWorld, false, 0);
-   
-     //replicate along X
-   G4Box* solidX = new G4Box("Xslice", layerX/2, layerY*MatSize/2, Z_dim/2);
-   G4LogicalVolume* logicX = new G4LogicalVolume(solidX, Scint_mat, "Xslice");
-   new G4PVReplica("Xrep", logicX, logicBlock, kXAxis, MatSize, layerX);
-   
-   //replicate along Y
-   G4Box* solidY = new G4Box("crystal", layerX/2, layerY/2, Z_dim/2);
-   G4LogicalVolume* logicY = new G4LogicalVolume(solidY, Scint_mat, "Scint_LV");
-   new G4PVReplica("Scint_Cryst", logicY, logicX, kYAxis, MatSize, layerY);
+  auto myMPT1 = new G4MaterialPropertiesTable();
+  
+  myMPT1->AddProperty("RINDEX", RIPhoEnergy, RefractiveIdxDet);
 
-   
-   //  // // Step 3: replicate along Z
-   // G4Box* solidZ = new G4Box("Zslice", 1*cm, 1*cm, 5*cm);
-   // G4LogicalVolume* logicCrystal = new G4LogicalVolume(solidZ, scint, "Crystal");
-   // new G4PVReplica("Zrep", logicCrystal, logicY, kZAxis, 2, 5*cm);
-
-  //-------------placing the crystals in the layers
-   auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);  // its size
-
-   auto ScintLV = new G4LogicalVolume(ScintS,  // its solid
-   				    scint,  // its material
-   				    "Scint_LV");  // its name
-   
-   auto XgapPV = new G4PVPlacement(nullptr,  // no rotation
-   				  G4ThreeVector(-(layerX/2 - X_dim/2) , (layerY/2 - Y_dim/2), 0.),  // its position
-   				  ScintLV,  // its logical volume
-   			      "Scint_PV",  // its name
-   			      logicY,  // its mother  volume
-   			      false,  // no boolean operation
-   			      0,  // copy number
-   			      true);  // checking overlaps
-
-   
-  //  auto YgapS = new G4Box("YGap", X_dim/2, gapThick/2, Z_dim/2);  // its size
-
-  //  auto YgapLV = new G4LogicalVolume(YgapS,  // its solid
-  // 				    air,  // its material
-  // 				    "YGapLV");  // its name
-   
-  //  auto YgapPV = new G4PVPlacement(nullptr,  // no rotation
-  // 				   G4ThreeVector(0 , -(Y_dim/2 - gapThick/2), 0.),  // its position
-  // 				  YgapLV,  // its logical volume
-  // 			      "YGapPV",  // its name
-  // 			      logicY,  // its mother  volume
-  // 			      false,  // no boolean operation
-  // 			      0,  // copy number
-  // 			      false);  // checking overlaps
-
-
-   // //-------------placing the gap between the crystals
-  //  auto XgapS = new G4Box("XGap", gapThick/2, Y_dim/2, Z_dim/2);  // its size
-
-  //  auto XgapLV = new G4LogicalVolume(XgapS,  // its solid
-  //  				    air,  // its material
-  //  				    "XGapLV");  // its name
-   
-  //  auto XgapPV = new G4PVPlacement(nullptr,  // no rotation
-  //  				  G4ThreeVector(-(X_dim/2 - gapThick/2) , 0., 0.),  // its position
-  //  				  XgapLV,  // its logical volume
-  //  			      "XGapPV",  // its name
-  //  			      logicY,  // its mother  volume
-  //  			      false,  // no boolean operation
-  //  			      0,  // copy number
-  //  			      true);  // checking overlaps
-
-   
-  //  auto YgapS = new G4Box("YGap", X_dim/2, gapThick/2, Z_dim/2);  // its size
-
-  //  auto YgapLV = new G4LogicalVolume(YgapS,  // its solid
-  // 				    air,  // its material
-  // 				    "YGapLV");  // its name
-   
-  //  auto YgapPV = new G4PVPlacement(nullptr,  // no rotation
-  // 				   G4ThreeVector(0 , -(Y_dim/2 - gapThick/2), 0.),  // its position
-  // 				  YgapLV,  // its logical volume
-  // 			      "YGapPV",  // its name
-  // 			      logicY,  // its mother  volume
-  // 			      false,  // no boolean operation
-  // 			      0,  // copy number
-  // 			      false);  // checking overlaps
-
-  //  //XgapLV->SetVisAttributes(G4VisAttributes::GetInvisible());
-   logicBlock->SetVisAttributes(G4VisAttributes::GetInvisible());
-   logicX->SetVisAttributes(G4VisAttributes::GetInvisible());
-   logicY->SetVisAttributes(G4VisAttributes::GetInvisible());
-
-   G4VisAttributes* VisAttr = new G4VisAttributes(G4Colour(0., 1., 1.));
-   VisAttr->SetForceSolid(true);   
-   // ScintLV->SetVisAttributes(VisAttr);
-   //YgapLV->SetVisAttributes(VisAttr);
+  // Check that group velocity is calculated from RINDEX
+  if (myMPT1->GetProperty("RINDEX")->GetVectorLength()
+      != myMPT1->GetProperty("GROUPVEL")->GetVectorLength())
+    {
+      G4ExceptionDescription ed;
+      ed << "Error calculating group velocities. Incorrect number of entries "
+	"in group velocity material property vector.";
+      G4Exception("OpNovice::OpNoviceDetectorConstruction", "OpNovice001", FatalException, ed);
     }
 
+  //myMPT1->AddProperty("ABSLENGTH", AbsPhoEnergy, AbsLength, false, true);
+
+  myMPT1->AddProperty("SCINTILLATIONCOMPONENT1", ScintPhoEnergy, ScintFastArray, false, true);
+  myMPT1->AddProperty("SCINTILLATIONCOMPONENT2", ScintPhoEnergy, ScintSlowArray, false, true);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
+  //myMPT1->AddConstProperty("SCINTILLATIONYIELD", 200 / MeV);
+  myMPT1->AddConstProperty("RESOLUTIONSCALE", 1.0);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD1", 0.392);
+  myMPT1->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
+  myMPT1->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
+
+  // Set the Birks Constant for scintillator
+  DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
+
+  //==============================================
+  DetectorMat->SetMaterialPropertiesTable(myMPT1);
+  //==============================================
+}
+
+G4VPhysicalVolume *MyDetectorConstruction::Construct()
+{
+  //------------World volume--------------
+  G4Box* solidWorld = new G4Box("WorldS", 0.5*m, 0.5*m, 0.5*m);
+  G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, worldMat, "World_LV");
+  auto physWorld = new G4PVPlacement(0, {}, logicWorld, "World_PV", 0, false, 0);
+
+
+  //------------Crystal dimensions----------
+  G4double X_dim = 3*mm;
+  G4double Y_dim = 3*mm;
+  G4double Z_dim = 20*mm;
+  G4double gapThick = 0.2*mm;
+
+  G4int MatSize = 8;
+  G4double sep = 3*cm;
+
+  G4double layerX = X_dim + gapThick;
+  G4double layerY = Y_dim + gapThick;
+   
+  std::vector<G4int> PosIdx = {-1, 1};
+
+  //====================================creating the geometry through replica==========================
+  auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2); 
+  
+  auto ScintLV = new G4LogicalVolume(ScintS, DetectorMat, "Scint_LV");
+
+  // Big cube (mother for replicas)
+  G4Box* solidBlock = new G4Box("Block", layerX*MatSize/2, layerY*MatSize/2, Z_dim/2);
+  G4LogicalVolume* logicBlock = new G4LogicalVolume(solidBlock, worldMat, "Block_LV");
+  
+  new G4PVPlacement(0, G4ThreeVector(0,0,((sep/2)+(Z_dim/2))), logicBlock, "Block_PV", logicWorld, false, 1);
+  new G4PVPlacement(0, G4ThreeVector(0,0,-1*((sep/2)+(Z_dim/2))), logicBlock, "Block_PV", logicWorld, false, -1);
+    
+  //replicate along X
+  G4Box* solidX = new G4Box("Xslice", layerX/2, layerY*MatSize/2, Z_dim/2);
+  G4LogicalVolume* logicX = new G4LogicalVolume(solidX, worldMat, "Xslice");  
+  new G4PVReplica("Xrep", logicX, logicBlock, kXAxis, MatSize, layerX);
+  
+  //replicate along Y
+  G4Box* solidY = new G4Box("Gap", layerX/2, layerY/2, Z_dim/2);
+  G4LogicalVolume* logicY = new G4LogicalVolume(solidY, worldMat, "gap_LV");
+
+  new G4PVReplica("gap_PV", logicY, logicX, kYAxis, MatSize, layerY);
+        
+  logicBlock->SetVisAttributes(G4VisAttributes::GetInvisible());
+  logicX->SetVisAttributes(G4VisAttributes::GetInvisible());
+  logicY->SetVisAttributes(G4VisAttributes::GetInvisible());   
+  
+  //-------------placing the crystals in the layers  
+  new G4PVPlacement(nullptr,
+		    G4ThreeVector(0.,0., 0.),
+		    ScintLV,
+		    "Scint_PV",
+		    logicY,
+		    false,
+		    0,
+		    true);
+  
+  
+  G4cout << "No. of volumes associated: " << ScintLV->TotalVolumeEntities() << G4endl;
+  
+  //
+  //-----------Placing the reflectors------------
+  //
+  G4OpticalSurface* OpSurface = new G4OpticalSurface("Surface_scint_air");
+  OpSurface->SetType(dielectric_metal);
+  OpSurface->SetModel(unified);
+  OpSurface->SetFinish(polished);
+  
+  std::vector<G4double> pp = {1.7*eV, 1.8*eV, 2.0*eV, 2.4*eV, 2.8*eV, 3*eV};  
+  std::vector<G4double> rindex = {1.35, 1.40};    
+  std::vector<G4double> reflectivity = {0.99, 0.99, 0.99, 0.99, 0.99, 0.99};   
+  
+  G4MaterialPropertiesTable* Surf_MPT = new G4MaterialPropertiesTable();    
+  //Surf_MPT->AddProperty("RINDEX", pp, rindex);                                                                                                                                      
+  Surf_MPT->AddProperty("REFLECTIVITY", pp, reflectivity);
+  
+  OpSurface->SetMaterialPropertiesTable(Surf_MPT);
+  
+  G4LogicalSkinSurface * ScintSurface = new G4LogicalSkinSurface("reflector",ScintLV,OpSurface);
+  
+  // G4VisAttributes* VisAttr = new G4VisAttributes(G4Colour(1., 1., 0., 0.5));
+  // VisAttr->SetForceSolid(true);   
+  // ScintLV->SetVisAttributes(VisAttr);
+  
+  
+  //==========================================================================================================
+  
+  
+
+  
+
+    
+  //}
    
   return physWorld;
 }
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-  // auto InStripSD = new CellSD("InStripSD", "InStripHitsCollection", 312);  //sensitive detector for the innermost layer
-  // G4SDManager::GetSDMpointer()->AddNewDetector(InStripSD);
-  // SetSensitiveDetector("InStripLV", InStripSD);
-  // InStripSD->SetVerboseLevel(2);
-  
-
-  // auto StripSD = new CellSD("StripSD", "StripHitsCollection", 96);
-  // G4SDManager::GetSDMpointer()->AddNewDetector(StripSD);
-  // SetSensitiveDetector("StripLV", StripSD);
-  // StripSD->SetVerboseLevel(2);
-
-  // auto OuterMostStripSD = new CellSD("OuterMostStripSD", "OuterMostStripHitsCollection", 96);
-  // G4SDManager::GetSDMpointer()->AddNewDetector(OuterMostStripSD);
-  // SetSensitiveDetector("OuterMostStripLV", OuterMostStripSD);
-  // OuterMostStripSD->SetVerboseLevel(2);
-
+  auto ScintSD = new CellSD("ScintSD", "ScintHitsCollection", 128);  //sensitive detector for the scintillator crystals
+  G4SDManager::GetSDMpointer()->AddNewDetector(ScintSD);
+  SetSensitiveDetector("Scint_LV", ScintSD);
+  ScintSD->SetVerboseLevel(2);
 
   
   //
@@ -182,6 +223,14 @@ void MyDetectorConstruction::ConstructSDandField()
   // G4AutoDelete::Register(fMagFieldMessenger);
 }
 
+  // new G4PVPlacement(nullptr,
+  // 		       G4ThreeVector(-(layerX/2 - X_dim/2) , (layerY/2 - Y_dim/2), 0.),
+  // 		       ScintLV,
+  // 		       "Scint_PV",
+  // 		       logicY,
+  // 		       false,
+  // 		       gapPV->GetCopyNo(),
+  // 		       true);
 
 
 
@@ -200,109 +249,72 @@ void MyDetectorConstruction::ConstructSDandField()
 
 
 //==================BACK UP===================================
+ //--------------------------Working Don't edit----------------------------------------------------------------------------------
+  // //creating the geomtery using for loop
+  // auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);
+  // auto ScintLV = new G4LogicalVolume(ScintS, DetectorMat, "Scint_LV");
 
-//-----------MAking CZT Material---------------
-//G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_BGO");
-//G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
-
-// G4Element *Cd = nist->FindOrBuildElement("G4_Cd");
-// G4Element *Zn = nist->FindOrBuildElement("G4_Zn");
-// G4Element *Te = nist->FindOrBuildElement("G4_Te");
-
-//  G4Material *DetectorMat = new G4Material("CdZnTe", 5.76*g/cm3, 3);
-// G4cout << "\n\nworking till here\n\n" << G4endl;
-//  DetectorMat->AddElement(Cd, 40*perCent);
-//   G4cout << "\n\nworking till here\n\n" << G4endl;
-//  DetectorMat->AddElement(Zn, 10*perCent);
-//   G4cout << "\n\nworking till here\n\n" << G4endl;
-//  DetectorMat->AddElement(Te, 50*perCent);
-//   G4cout << "\n\nworking till here\n\n" << G4endl;
-
-
-// ============================ Working for adding the grid (Don't edit or remove)===================================================================================================
-// G4Box *solidDetector = new G4Box("solidDetector", 2.5* cm, 2.5* cm, 2.5* cm);
-// G4Material *DetectorMat = nist->FindOrBuildMaterial("G4_Si");
-
-// DetectorMat->SetMaterialPropertiesTable(mptWorld);
-  
-// logicDetector = new G4LogicalVolume(solidDetector, DetectorMat, "logicalDetector");
-  
-// //G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
-     
-// G4int Pos[2] = {-1,1};
-
-// // new_rotmX.rotateX(90 * deg);
-// // new_rotmY.rotateY(90 * deg);  
-// // new_rotmZ.rotateZ(90 * deg);
-
-// //std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
-// G4ThreeVector position;
-  
-// for (G4int s=0; s<3; s++){     
-//   for (G4int i=0; i<2; i++){
-//     for (G4int j=0; j<4; j++){
-// 	for (G4int k=0; k<4; k++){
-// 	  if(s==0) position = G4ThreeVector((-10 + (2.5*((2*j)+1))) * cm, Pos[i]*12.5 * cm, (-10 + (2.5*((2*k)+1))) * cm);
-// 	  if(s==1) position = G4ThreeVector(Pos[i]*12.5 * cm, (-10 + (2.5*((2*j)+1))) * cm, (-10 + (2.5*((2*k)+1))) * cm);
-// 	  if(s==2) position = G4ThreeVector((-10 + (2.5*((2*j)+1))) * cm, (-10 + (2.5*((2*k)+1))) * cm, Pos[i]*12.5 * cm);
-// 	  // if (i==1) position = G4ThreeVector(Pos[j]*0.125*m,0.0, 0.0);
-// 	  // if (i ==2) position = G4ThreeVector(0.0, 0.0, Pos[j]*0.125*m);
-	
-// 	  //G4Transform3D transform = G4Transform3D(new_rotm[i], position);
-// 	  G4VPhysicalVolume *physDetector = new G4PVPlacement(0, position, logicDetector, "physDetector", logicWorld, false, (j+1)*(k+1), true);
-// 	}
-//     }
-//   }
-// }
-  
-  
-
-// ============================Working for cuboidal volumes Don't Edit===================================================================================================
-// G4Box *solidRadiator = new G4Box("solidRadiator", 0.1*m, 0.1*m, 0.025*m);
-// G4Material *RadiatorMat = nist->FindOrBuildMaterial("G4_Si");
-
-// RadiatorMat->SetMaterialPropertiesTable(mptWorld);
-  
-// G4LogicalVolume *logicRadiator = new G4LogicalVolume(solidRadiator, RadiatorMat, "logicalRadiator");
-  
-// G4RotationMatrix new_rotmX, new_rotmY, new_rotmZ;
-     
-// G4int Pos[2] = {-1,1};
-
-// new_rotmX.rotateX(90 * deg);
-// new_rotmY.rotateY(90 * deg);  
-// new_rotmZ.rotateZ(90 * deg);
-
-// std::vector<G4RotationMatrix> new_rotm = {new_rotmX, new_rotmY, new_rotmZ};
-// G4ThreeVector position;
-  
-// for (G4int i=0; i<3; i++){     
-//   for (G4int j=0; j<2; j++){
+  // for (int i =0; i<MatSize; i++){
+  //   for (int j=0; j<MatSize; j++){
+  //     for (int k =0; k<2; k++){
+  //     // auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);
+  //     // auto ScintLV = new G4LogicalVolume(ScintS, DetectorMat, "Scint_LV");
       
-//     if (i==0) position = G4ThreeVector(0.0,Pos[j]*0.125*m, 0.0);
-//     if (i==1) position = G4ThreeVector(Pos[j]*0.125*m,0.0, 0.0);
-//     if (i ==2) position = G4ThreeVector(0.0, 0.0, Pos[j]*0.125*m);
-     
-//     G4Transform3D transform = G4Transform3D(new_rotm[i], position);
-//     G4VPhysicalVolume *physRadiator = new G4PVPlacement(transform, logicRadiator, "physRadiator", logicWorld, false, (i+1)*(j+1), true);
-//   }
-    
-// }
-  
-//===============================================================================================================================================
+  //     // new G4PVPlacement(nullptr,
+  //     // 			G4ThreeVector(((-7/2)+i)*(X_dim+gapThick), ((-7/2)+i)*(X_dim+gapThick),PosIdx[k]*(sep/2+Z_dim/2)),
+  //     // 			ScintLV,
+  //     // 			"Scint_PV",
+  //     // 			logicWorld,
+  //     // 			false,
+  //     // 			PosIdx[k]*(i+1+(10*(j+1))),
+  //     // 			true);
 
+  //     new G4PVPlacement(nullptr,
+  // 			G4ThreeVector(((-7/2)+i)*(X_dim+gapThick), ((7/2)-j)*(X_dim+gapThick),PosIdx[k]*(sep/2+Z_dim/2)),
+  // 			ScintLV,
+  // 			"Scint_PV",
+  // 			logicWorld,
+  // 			false,
+  // 			PosIdx[k]*(i+1+(10*(j+1))),
+  // 			true);
 
-//-------------------Definining Radioactive Source Volume------------
-// //spherical Radioactive source
-// G4double sourceRadius = 1. * mm;
-  
-// G4Sphere *solidSource = new G4Sphere("solidSource", 0.0, sourceRadius, 0.0, 360. * deg, 0.0, 180. * deg);
-// G4LogicalVolume *logicSource = new G4LogicalVolume(solidSource, matNa22, "logicSource");
-// G4VPhysicalVolume * physSource = new G4PVPlacement(0, G4ThreeVector(0., 0., 0. * cm), logicSource, "physSource", logicWorld, false, 0, true);
+  //     // new G4PVPlacement(nullptr,
+  //     // 			G4ThreeVector(-1*((2*i+1)/2)*(X_dim+gapThick), -1*((2*j+1)/2)*(Y_dim+gapThick),PosIdx[k]*(sep/2+Z_dim/2)),
+  //     // 			ScintLV,
+  //     // 			"Scint_PV",
+  //     // 			logicWorld,
+  //     // 			false,
+  //     // 			PosIdx[k]*(i+1+(10*(j+1))),
+  //     // 			true);
 
-// G4VisAttributes *sourceVisAtt = new G4VisAttributes(G4Color(1.0, 0.0, 1.0, 0.5));
-// sourceVisAtt->SetForceSolid(true);
-// logicSource->SetVisAttributes(sourceVisAtt);
+  //     // //
+  //     // //-----------Placing the reflectors------------
+  //     // //
+  //     // G4OpticalSurface* OpSurface = new G4OpticalSurface("Surface_scint_air");
+  //     // OpSurface->SetType(dielectric_metal);
+  //     // OpSurface->SetModel(unified);
+  //     // OpSurface->SetFinish(polished);
+      
+  //     // std::vector<G4double> pp = {1.7*eV, 1.8*eV, 2.0*eV, 2.4*eV, 2.8*eV, 3*eV};  
+  //     // std::vector<G4double> rindex = {1.35, 1.40};    
+  //     // std::vector<G4double> reflectivity = {0.99, 0.99, 0.99, 0.99, 0.99, 0.99};   
+      
+  //     // G4MaterialPropertiesTable* Surf_MPT = new G4MaterialPropertiesTable();    
+  //     // //Surf_MPT->AddProperty("RINDEX", pp, rindex);                                                                                                                                      
+  //     // Surf_MPT->AddProperty("REFLECTIVITY", pp, reflectivity);
+      
+  //     // OpSurface->SetMaterialPropertiesTable(Surf_MPT);
+      
+  //     // G4LogicalSkinSurface * ScintSurface = new G4LogicalSkinSurface("reflector",ScintLV,OpSurface);
+  //     // new G4LogicalBorderSurface("reflector1", ScintPV, gapPV, OpSurface);
+  //     // new G4LogicalBorderSurface("reflector2", ScintPV, physWorld, OpSurface);
+  //     }
+  //   }
+  // }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------   
+ 
+
  
 
 

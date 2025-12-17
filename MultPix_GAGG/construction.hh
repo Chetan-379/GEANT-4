@@ -19,6 +19,8 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4PhysicalVolumeStore.hh"
 #include "G4PVReplica.hh"
+#include "G4OpticalSurface.hh"
+#include "G4LogicalSkinSurface.hh"
 
 #include "globals.hh"
 
@@ -31,13 +33,19 @@ class MyDetectorConstruction : public G4VUserDetectorConstruction
 public:
   MyDetectorConstruction();
   ~MyDetectorConstruction();
-
-  //G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
   
   virtual G4VPhysicalVolume *Construct();
 
 private:
   virtual void ConstructSDandField();
+  G4Material *worldMat, *DetectorMat;
+
+  G4Element *Gd, *Al, *Ga, *O;
+
+  // G4LogicalVolume ScintLV;
+  // G4Box ScintS;
+
+  void DefineMaterials();
   
  
 };

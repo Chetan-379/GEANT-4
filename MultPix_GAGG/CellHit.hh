@@ -43,6 +43,9 @@ public:
   void SetEout(G4double Eout);
   void SetEin(G4double Ein);
   void SetScatMom(G4ThreeVector mom);
+
+  void SetNOpPho(G4int);
+  void SetDetPos(G4ThreeVector);
     
   
   // get methods
@@ -60,6 +63,9 @@ public:
   G4double GetEout() const;
   G4double GetEin() const;
   G4ThreeVector GetScatMom() const;
+  
+  G4int GetNOpPho() const;
+  G4ThreeVector GetDetPos() const;
 
   
 private:
@@ -75,6 +81,10 @@ private:
   G4double fEta = 10000.;
   G4double fEin = -10000, fEout = -10000;
   G4ThreeVector fScatMom;
+
+  G4int fnOpPho= 0;
+  G4ThreeVector fDetPos;
+  
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -179,6 +189,19 @@ inline G4ThreeVector CellHit::GetScatMom() const
 {
   return fScatMom;
 }
+
+
+inline G4int CellHit::GetNOpPho() const
+{
+  return fnOpPho;
+}
+
+inline G4ThreeVector CellHit::GetDetPos() const
+{
+  return fDetPos;
+}
+
+
 
 
 

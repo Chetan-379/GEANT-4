@@ -7,6 +7,7 @@
 #include "TH2.h"
 #include "TTree.h"
 #include "TFile.h"
+#include "CellHit.hh"
 
 #include "G4Run.hh"
 
@@ -24,13 +25,17 @@ public:
   std::vector<double> X, Y, Z, E;
   G4double Total_E, Total_Compt_Edep, Photo_Edep;
 
-  std::vector<G4double> HitEdep, HitTime, HitTrklen, HitScatAngle, HitEta, HitPol0, HitPol1, HitPol2, HitEout, HitEin, HitScatMomX, HitScatMomY, HitScatMomZ;
+  G4int nOpPhotons = 0;
+
+  std::vector<G4double> HitEdep, HitTime, HitScatAngle, HitEta, HitEout, HitEin;
   std::vector<G4double> HitPosX, HitPosY, HitPosZ;
   std::vector<G4int> HitDetId, HitGunId, HitProcId;
- 
-private:
-  
-  
+
+  //std::vector<std::vector<G4int>> Module1, Module2;
+  G4float Module1[8][8][5], Module2[8][8][5];
+
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
+  //CellHit Block1[8][8], Block2[8][8];
 };
 
 #endif

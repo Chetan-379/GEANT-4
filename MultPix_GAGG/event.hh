@@ -42,6 +42,9 @@ public:
   void AddEdep(G4double edep) {fEdep += edep;}
 
   std::vector<G4double> Xarray, Yarray, Zarray, Earray;
+  G4double matrix1[8][8], matrix2[8][8], matrix1_gen[8][8], matrix2_gen[8][8];
+
+  CellHit module1[8][8];
   
 private:
   G4double fX;
@@ -53,13 +56,16 @@ private:
   CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
   void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
 
-  G4int fInStripHCID = -1;
-  G4int fOutStripHCID = -1;
-  G4int fOuterMostStripHCID = -1;
+  // G4int fInStripHCID = -1;
+  // G4int fOutStripHCID = -1;
+  // G4int fOuterMostStripHCID = -1;
+  G4int fScintHCID = -1;
 
-  std::vector<G4double> HitEdep_vec, HitTime_vec, HitTrkLen_vec, HitScatAngle_vec, HitEta_vec, HitEin_vec, HitEout_vec;
-  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec, HitPol0_vec, HitPol1_vec, HitPol2_vec, HitScatMomX_vec, HitScatMomY_vec, HitScatMomZ_vec;
+  std::vector<G4double> HitEdep_vec, HitTime_vec, HitScatAngle_vec, HitEta_vec, HitEin_vec, HitEout_vec;
+  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
   std::vector<G4int> HitDetId_vec, HitGunId_vec, HitProcId_vec;
+
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
 };
 
 #endif

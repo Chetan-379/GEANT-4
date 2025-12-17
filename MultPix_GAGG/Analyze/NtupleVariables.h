@@ -41,20 +41,15 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_PositionY;
   vector<double>  *Hit_PositionZ;
   vector<double>  *Hit_Time;
-  vector<double>  *Hit_TrkLen;
   vector<int>     *Hit_DetId;
   vector<int>     *Hit_GunId;
   vector<int>     *Hit_ProcId;
   vector<double>  *Hit_ScatAngle;
   vector<double>  *Hit_Eta;
-  vector<double>  *Hit_Pol0;
-  vector<double>  *Hit_Pol1;
-  vector<double>  *Hit_Pol2;
   vector<double>  *Hit_Eout;
   vector<double>  *Hit_Ein;
-  vector<double>  *Hit_ScatMomX;
-  vector<double>  *Hit_ScatMomY;
-  vector<double>  *Hit_ScatMomZ;
+  Float_t         right_module[8][8][5];
+  Float_t         left_module[8][8][5];
 
   
    // List of branches
@@ -70,20 +65,15 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Hit_PositionY;
   TBranch         *b_Hit_PositionZ;
   TBranch         *b_Hit_Time;
-  TBranch         *b_Hit_TrkLen;
   TBranch         *b_Hit_DetId;
   TBranch         *b_Hit_GunId;
   TBranch         *b_Hit_ProcId;
   TBranch         *b_Hit_ScatAngle;
   TBranch         *b_Hit_Eta;
-  TBranch         *b_Hit_Pol0;
-  TBranch         *b_Hit_Pol1;
-  TBranch         *b_Hit_Pol2;
   TBranch         *b_Hit_Eout;
   TBranch         *b_Hit_Ein;
-  TBranch         *b_Hit_ScatMomX;
-  TBranch         *b_Hit_ScatMomY;
-  TBranch         *b_Hit_ScatMomZ;
+  TBranch         *b_Module1;   //!
+  TBranch         *b_Module2;   //!                                                    
 
   
   
@@ -126,20 +116,23 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    Hit_PositionY = 0;
    Hit_PositionZ = 0;
    Hit_Time = 0;
-   Hit_TrkLen = 0;
+   // Hit_TrkLen = 0;
    Hit_DetId = 0;
    Hit_GunId = 0;
    Hit_ProcId = 0;
    Hit_ScatAngle =0;
    Hit_Eta =0;
-   Hit_Pol0 =0;
-   Hit_Pol1 =0;
-   Hit_Pol2 =0;
+   // Hit_Pol0 =0;
+   // Hit_Pol1 =0;
+   // Hit_Pol2 =0;
    Hit_Eout =0;
    Hit_Ein =0;
-   Hit_ScatMomX =0;
-   Hit_ScatMomY =0;
-   Hit_ScatMomZ =0;
+   // Hit_ScatMomX =0;
+   // Hit_ScatMomY =0;
+   // Hit_ScatMomZ =0;
+
+   // left_module;
+   // right_module =0;
 
    
    
@@ -162,21 +155,18 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Hit_PositionY", &Hit_PositionY, &b_Hit_PositionY);
    fChain->SetBranchAddress("Hit_PositionZ", &Hit_PositionZ, &b_Hit_PositionZ);
    fChain->SetBranchAddress("Hit_Time", &Hit_Time, &b_Hit_Time);
-   fChain->SetBranchAddress("Hit_TrkLen", &Hit_TrkLen, &b_Hit_TrkLen);
    fChain->SetBranchAddress("Hit_DetId", &Hit_DetId, &b_Hit_DetId);
    fChain->SetBranchAddress("Hit_GunId", &Hit_GunId, &b_Hit_GunId);
    fChain->SetBranchAddress("Hit_ProcId", &Hit_ProcId, &b_Hit_ProcId);
    fChain->SetBranchAddress("Hit_ScatAngle", &Hit_ScatAngle, &b_Hit_ScatAngle);
    fChain->SetBranchAddress("Hit_Eta", &Hit_Eta, &b_Hit_Eta);
-   fChain->SetBranchAddress("Hit_Pol0", &Hit_Pol0, &b_Hit_Pol0);
-   fChain->SetBranchAddress("Hit_Pol1", &Hit_Pol1, &b_Hit_Pol1);
-   fChain->SetBranchAddress("Hit_Pol2", &Hit_Pol2, &b_Hit_Pol2);
    fChain->SetBranchAddress("Hit_Eout", &Hit_Eout, &b_Hit_Eout);
    fChain->SetBranchAddress("Hit_Ein", &Hit_Ein, &b_Hit_Ein);
-   fChain->SetBranchAddress("Hit_ScatMomX", &Hit_ScatMomX, &b_Hit_ScatMomX);
-   fChain->SetBranchAddress("Hit_ScatMomY", &Hit_ScatMomY, &b_Hit_ScatMomY);
-   fChain->SetBranchAddress("Hit_ScatMomZ", &Hit_ScatMomZ, &b_Hit_ScatMomZ);
 
+   fChain->SetBranchAddress("right_module", right_module, &b_Module1);
+   fChain->SetBranchAddress("left_module", left_module, &b_Module2);
+
+ 
    Notify();
 }
 

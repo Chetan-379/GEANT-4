@@ -29,7 +29,7 @@ public:
   Long64_t LoadTree(Long64_t entry);
   void     EventLoop(const char *,const char *,const char *);
   void     BookHistogram(const char *);
-  void FillHistogram(int, double, double, double, double, double, double, double, double, double, double, double);
+  void FillHistogram(double, double, double, double, double, double, double, double);
   string MatName(int);
   void print(Long64_t);
 
@@ -39,29 +39,21 @@ public:
   TH2D *h_ScatAng_SDvsAna;
   TH1D *h_diff_Ana_SD;
   TH1I *h_nHits;
-  TH1D *h_compSigEta[15], *h_hitTime[15];
-  TH1D *h_theta[15], *h_eta[15];
-  TH2D *h_theta_eta[15];
-  TH1F *h_pol0[15], *h_pol1[15], *h_pol2[15];
-  TH1F *h_hitPosX[15], *h_hitPosY[15], *h_hitPosZ[15];
-  TH1F *h_Eout[15], *h_Ein[15];
-  TH2D *h_theta_Eout[15];
-  TH2F *h_posX_posY, *h_polX_polY;
-  TH1F *h_Pol_Ana;
-  TH2F *h_PolX_Ana_SD, *h_PolY_Ana_SD, *h_PolZ_Ana_SD;
+  
+  TH1D *h_theta, *h_eta;
+  TH1D *h_hitTime;
+  TH1F *h_hitPosX, *h_hitPosY, *h_hitPosZ;
+  TH1F *h_Eout, *h_Ein;
+  TH2D *h_theta_Eout;
 
-  TH1I *h_nAnniPho;
+  TH1I *h_nOpPho_crys, *h_nOpPho_gen_crys, *h_nOpPho_mdl, *h_nOpPho_gen_mdl;
+  TH1F *h_DetX_crys, *h_Edep_crys, *h_Edep_mdl;
 
-  // TH1F *h_rough[5];
-  // TH2F *h_rough2D[5];
-
-  TH1F *h_dt_A1S1, *h_dt_A1S2, *h_dt_A2S1, *h_dt_A2S2, *h_dt_A1A2, *h_dt_S1S2;
-  TH2F *h_STij;
-
-  TH1F *h_dPhi_inVis,*h_dPhi_outVis, *h_dEta_inVis, *h_dEta_outVis, *h_dEta_inc;
-  TH2F *h_Theta1vsTheta2, *h_Eta1VsEta2, *h_Eta1VsEta2_inc, *h_ThetaSimAna;
- 
+  TH2D *h_nOp_vs_Edep_crys, *h_nOp_vs_Edep_mdl;
+   
   TFile *oFile;
+
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep=4};
 };
 #endif
 
@@ -74,92 +66,52 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
   h_Compt_Edep = new TH1D("Compton_Edep","Edep_via_Compton",100,0,1.1);
   h_Photo_Edep = new TH1D("Photo_Edep","Edep_via_Photoelecric",100,0,1.1);
+  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,1.1);
    
   h_ComptVsPhoto_Edep = new TH2D("ComptVsPho","Compt_vs_Photo_Edep",100,0.,1.1, 100,0.,1.1);
   h_ComptVsPhoto_Edep->SetXTitle("Comp_Edep");
   h_ComptVsPhoto_Edep->SetYTitle("PhotoElectric_Edep");
-    
-  h_Total_Edep = new TH1D("Total_Edep","Total_Edep",100,0,1.1);
-   
-  h_ScatAng_SDvsAna = new TH2D("ScatAng_SDvsAna","ScatAng_SDvsAna",316,0.,3.16, 316,0.,3.16);
-  h_ScatAng_SDvsAna->SetXTitle("Theta_Ana(rad)");
-  h_ScatAng_SDvsAna->SetYTitle("Theta_SD(rad)");
-   
-  h_diff_Ana_SD = new TH1D("diff_Ana_SD", "diff_Ana_SD", 632,-3.16,3.16);
-   
-  h_posX_posY = new TH2F("XposVsYpos","XposVsYpos",1200,-600,600, 1200,-600,600);
-  h_posX_posY->SetXTitle("X_Pos (mm)");
-  h_posX_posY->SetYTitle("Y_Pos (mm)");
-   
-  h_polX_polY = new TH2F("XpolVsYpol","XpolVsYpol",120,-1.2,1.2, 120,-1.2,1.2);
-  h_polX_polY->SetXTitle("X_Pol");
-  h_polX_polY->SetYTitle("Y_Pol");
-   
-  h_PolX_Ana_SD = new TH2F("PolX_AnaVsSD","PolX_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
-  h_PolX_Ana_SD->SetXTitle("PolX_Ana");
-  h_PolX_Ana_SD->SetYTitle("PolX_SD");
-
-  h_PolY_Ana_SD = new TH2F("PolY_AnaVsSD","PolY_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
-  h_PolY_Ana_SD->SetXTitle("PolY_Ana");
-  h_PolY_Ana_SD->SetYTitle("PolY_SD");
-    
-  h_PolZ_Ana_SD = new TH2F("PolZ_AnaVsSD","PolZ_AnaVsSD",240,-1.2,1.2, 240,-1.2,1.2);
-  h_PolZ_Ana_SD->SetXTitle("PolZ_Ana");
-  h_PolZ_Ana_SD->SetYTitle("PolZ_SD");
-   
-  h_Pol_Ana = new TH1F("Pol_Ana", "Pol_Ana", 240,-1.2,1.2);
-   
-  h_nAnniPho = new TH1I("nAnniPho", "nAnniPho", 10,0,10);
-
-  h_dEta_inVis = new TH1F("dEta_inVis", "dEta_inVis", 400, 0, 400);
-  h_dEta_outVis = new TH1F("dEta_outVis", "dEta_outVis", 400, 0, 400);
-    
-  h_dEta_inc = new TH1F("dEta_inc", "dEta_inc", 400, 0, 400);
-
-  h_dPhi_inVis = new TH1F("DelPhi_highVis", "DelPhi_highVis", 100,-1,200);
-  h_dPhi_outVis = new TH1F("DelPhi_lowVis", "DelPhi_lowVis", 100,-1,200);
-    
-
-  h_Eta1VsEta2 = new TH2F("Eta1VsEta2", "Eta1VsEta2", 100,-200,200, 100,-200,200);
-  h_Eta1VsEta2->GetXaxis()->SetTitle("Eta1_(deg)");
-  h_Eta1VsEta2->GetYaxis()->SetTitle("Eta2_(deg)");
-
-  h_Eta1VsEta2_inc = new TH2F("Eta1VsEta2_inc", "Eta1VsEta2_inc", 100,-200,200, 100,-200,200);
-  h_Eta1VsEta2_inc->GetXaxis()->SetTitle("Eta1_(deg)");
-  h_Eta1VsEta2_inc->GetYaxis()->SetTitle("Eta2_(deg)");
-
-  h_ThetaSimAna = new TH2F("Theta_SimAna", "Theta_SimAna", 100,0,200, 100,0,200);
-  h_ThetaSimAna->GetXaxis()->SetTitle("thetaAna_(deg)");
-  h_ThetaSimAna->GetYaxis()->SetTitle("thetaSim_(deg)");
-
-  h_Theta1vsTheta2 = new TH2F("Theta1vsTheta2", "Theta1vsTheta2", 90,0,180, 90,0,180);
-  h_Theta1vsTheta2->GetXaxis()->SetTitle("theta1_(deg)");
-  h_Theta1vsTheta2->GetYaxis()->SetTitle("theta2_(deg)");
-    
-  h_dt_A1S1 = new TH1F("dt_A1S1", "dt_A1S1", 500, -5, 5);  //1000->500
-  h_dt_A1S2 = new TH1F("dt_A1S2", "dt_A1S2", 500, -5, 5);
-  h_dt_A2S1 = new TH1F("dt_A2S1", "dt_A2S1", 500, -5, 5);
-  h_dt_A2S2 = new TH1F("dt_A2S2", "dt_A2S2", 500, -5, 5); 
-  h_dt_A1A2 = new TH1F("dt_A1A2", "dt_A1A2", 500, -5, 5);
-  h_dt_S1S2 = new TH1F("dt_S1S2", "dt_S1S2", 500, -5, 5);
-
-  h_STij = new TH2F("h_ST1jVsST2j", "h_ST1jVsST2j", 100,-5,5, 100,-5,5);
-  h_STij->GetXaxis()->SetTitle("ST1j (ns)");
-  h_STij->GetYaxis()->SetTitle("ST2j (ns)");
-
-  // h_rough[0] = new TH1F("rough0", "rough0", 4,0,4);
-  // h_rough[0]->GetXaxis()->SetTitle("gId");
-
-  // h_rough2D[0] = new TH2F("rough2D_0", "rough2D_0", 100,0,200, 100,0,200);
-  // h_rough2D[0]->GetXaxis()->SetTitle("ThetaAna_(deg)");
-  // h_rough2D[0]->GetYaxis()->SetTitle("ThetaSim_(deg)");
-
 
   double bin_edges[16];
   for (int j = 0; j <= 15; ++j) {
     bin_edges[j] = j - 0.5;
   }    
-  h_nHits = new TH1I("nHits", "nHits", 15, bin_edges);  
+  h_nHits = new TH1I("nHits", "nHits", 15, bin_edges);
+
+  h_hitTime = new TH1D("h_hitTime", "h_hitTime", 1000,0 ,10);
+  
+  h_hitPosX = new TH1F("h_hitPosX", "h_hitPosX", 250,-700 ,700);
+  h_hitPosY = new TH1F("h_hitPosY", "h_hitPosY", 250,-700 ,700);
+  h_hitPosZ = new TH1F("h_hitPosZ", "h_hitPosZ", 250,-700 ,700);      
+  
+  h_theta = new TH1D("h_theta", "h_theta", 100,0, 200);
+  h_theta->GetXaxis()->SetTitle("theta (deg)");
+  
+  h_eta = new TH1D("h_eta", "h_eta", 200, -200, 200);
+  h_eta->GetXaxis()->SetTitle("eta (deg)");
+
+  h_Eout = new TH1F("h_Eout", "h_Eout", 260, 0, 0.520);
+  h_Eout->GetXaxis()->SetTitle("Eout (MeV)");
+  
+  h_Ein = new TH1F("h_Ein", "h_Ein", 260, 0, 0.520);
+  h_Ein->GetXaxis()->SetTitle("Ein (MeV)");
+
+  h_DetX_crys = new TH1F("h_DetPosX_crys", "h_DetPosX_crys",1000,-40,40);
+
+  h_nOpPho_crys = new TH1I("h_nOpPho_cryst", "h_nOpPho_cryst",3000,0,30000);
+  h_nOpPho_gen_crys = new TH1I("h_nOpPho_gen_cryst", "h_nOpPho_gen_cryst",3000,0,30000);
+  
+  h_nOpPho_mdl = new TH1I("h_nOpPho_mdl", "h_nOpPho_mdl",3000,0,30000);
+  h_nOpPho_gen_mdl = new TH1I("h_nOpPho_gen_mdl", "h_nOpPho_gen_mdl",3000,0,30000);
+  
+
+  h_Edep_crys = new TH1F ("h_Edep_cryst", "h_Edep_cryst", 100,0,1.1);
+  h_nOp_vs_Edep_crys = new TH2D("nOp_vs_Edep_cryst", "nOp_vs_Edep_cryst",3000,0,30000, 100,0.,1.1);
+
+  h_Edep_mdl = new TH1F ("h_Edep_mdl", "h_Edep_mdl", 100,0,1.1);
+  h_nOp_vs_Edep_mdl = new TH2D("nOp_vs_Edep_mdl", "nOp_vs_Edep_mdl",3000,0,30000, 100,0.,1.1);
+
+
 }
 
 

@@ -65,7 +65,8 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double currentTime = step->GetPostStepPoint()->GetGlobalTime();
   
   G4double TrkLen = step->GetTrack()->GetTrackLength();
-  G4int DetId = touchable->GetVolume()->GetCopyNo();
+  //G4int DetId = touchable->GetVolume()->GetCopyNo();
+  G4int DetId = 999;
   G4double scat_theta = -1000;
   G4ThreeVector vin = step->GetPreStepPoint()->GetMomentumDirection();
   G4ThreeVector vout = step->GetPostStepPoint()->GetMomentumDirection();
@@ -74,7 +75,17 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4double Ein = step->GetPreStepPoint()->GetKineticEnergy();
   G4double Eout = step->GetPostStepPoint()->GetKineticEnergy();
   G4double GunID = -1;
-    
+
+  G4String currentVolume =  step->GetTrack()->GetVolume()->GetName();
+  
+  G4TouchableHistory* theTouchable = (G4TouchableHistory*) (step->GetPostStepPoint()->GetTouchable());
+  G4String VolName = theTouchable->GetVolume()->GetName();
+  
+  //G4cout << "Name of the Volume is: "<< VolName << G4endl;
+
+  //auto test = theTouchable->GetVolume(1);
+  if (VolName == "Scint_PV") DetId = (10*(theTouchable->GetVolume(1)->GetCopyNo()+1)+(theTouchable->GetVolume(2)->GetCopyNo()+1)) * theTouchable->GetVolume(3)->GetCopyNo();
+      
   if ((proc == "compt" || proc == "phot" || proc == "Rayl") && ParentID == 0) {
     compt_scat_point = step->GetPostStepPoint()->GetPosition();
 
@@ -86,7 +97,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
       
       prePol = step->GetPreStepPoint()->GetPolarization();
       auto postPol = step->GetPostStepPoint()->GetPolarization();
-
       
       auto scatPlane = vin.cross(vout);
       auto polPlane = vin.cross(prePol);
@@ -141,8 +151,6 @@ G4bool CellSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     hit->SetTime(currentTime);
     hit->SetDetectorID(DetId);
     hit->SetGunID(GunID);
-    hit->SetTrackLength(TrkLen);
-    hit->SetProcName(proc);
     hit->SetProcId(procId);
     hit->SetScatAngle(scat_theta);
     hit->SetEta(eta);
