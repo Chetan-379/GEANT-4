@@ -217,40 +217,63 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
       
       //--------------------Analysing the Scintillation photons at the end---------------------------
-      int nOp = 0, nOp_gen =0;
-      float EDep = 0;
+      int nOp_mdl = 0, nOp_gen_mdl =0;
+      int nOp_crys = 0, nOp_gen_crys =0;
+      float EDep_mdl = 0, EDep_crys = 0, DetX = 0, EDep_mdl_check =0;
+      float Edep_diff =0;
+      
       for (int i =0; i<8; i++){
       	for (int j =0; j<8; j++){
-      	  nOp += right_module[i][j][nOpPho];
-      	  nOp_gen += right_module[i][j][nGenOp];
-	  EDep += right_module[i][j][Edep];
-	  	  
-      	  if(right_module[i][j][nOpPho] != 0) {
-	    h_DetX_crys->Fill(right_module[i][j][DetPosX]);
-	    h_Edep_crys->Fill(right_module[i][j][Edep]);
-	    h_nOp_vs_Edep_crys->Fill(right_module[i][j][nOpPho], right_module[i][j][Edep]);
+	  nOp_crys = right_module[i][j][nOpPho];
+	  nOp_gen_crys = right_module[i][j][nGenOp];
+	  EDep_crys = right_module[i][j][Edep];
+	  DetX = right_module[i][j][DetPosX];
+
+	  if(nOp_crys != 0) {	    
+	    h_DetX_crys->Fill(DetX);
+	    h_nOpPho_crys->Fill(nOp_crys);
+	    h_Edep_crys->Fill(EDep_crys);
+	    h_nOp_vs_Edep_crys->Fill(nOp_crys, EDep_crys);
 	  }
+			  
+      	  nOp_mdl += nOp_crys;
+      	  nOp_gen_mdl += nOp_gen_crys;
+	  EDep_mdl += EDep_crys;
+
+	  EDep_mdl_check += EDep_crys + left_module[i][j][Edep]; 
       	}
       }
       
+      h_nOpPho_mdl->Fill(nOp_mdl);
+      h_nOpPho_gen_mdl->Fill(nOp_gen_mdl);
+      //h_Edep_mdl ->Fill(EDep_mdl);
+      //h_Edep_mdl ->Fill(EDep_mdl_check);
+
+      h_nOp_vs_Edep_mdl->Fill(nOp_mdl, EDep_mdl);
+
+      Edep_diff = Total_Edep - EDep_mdl;
+
+      if (abs(Edep_diff) > 0.000001) {
+	h_Edep_diff->Fill(Edep_diff);
+	}
+
+      if (abs(Edep_diff)<0.000001) h_Edep_mdl ->Fill(EDep_mdl);
+
+      
+
       // if (nOp > 0) h_nOpPho->Fill(nOp);
       // if (nOp_gen >0) h_nOpPho_gen->Fill(nOp_gen);
-      h_nOpPho_mdl->Fill(nOp);
-      h_nOpPho_gen_mdl->Fill(nOp_gen);
 
-      h_Edep_mdl ->Fill(EDep);
-
-      h_nOp_vs_Edep_mdl->Fill(nOp, EDep);
-      
+      //if(EDep_mdl >= 0.444 && EDep_mdl <= 0.477) cout << jentry << endl;
       
     } //jentry loop end
 
-  // TF1 *f1 = new TF1("","[0]+[1]*x",0,1);
-  // f1->SetParameters(0.,1.);
-  // f1->SetLineColor(kRed);
-  // h2->Fit(f1);
-  // h2->Draw();
-  // f1->Draw("same");
+  // TF1 *fitfunc_mdl = new TF1("FitFunc_mdl","[0]+[1]*x",0,20000);
+  // fitfunc_mdl->SetParameters(0.0002,0.);
+  // fitfunc_mdl->SetLineColor(kRed);
+  // h_nOp_vs_Edep_mdl->Fit(fitfunc_mdl);
+  // h_nOp_vs_Edep_mdl->Draw();
+  // fitfunc_mdl->Draw("same");
 }
 
 void AnalyzeLightBSM::FillHistogram(double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double Ein, double Eout){

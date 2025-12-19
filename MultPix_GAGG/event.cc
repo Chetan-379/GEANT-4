@@ -76,9 +76,16 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
       runObject->Module1[i][j][Edep]=0;
       runObject->Module2[i][j][Edep]=0;
     }
+
+    runObject->Edep_truth = 0;
+    runObject->nPtcl_out = 0;
+    runObject->E_outPtcl =0;
+    runObject->E_verify =0;
   }
   
   G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
+  //if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+  //else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
  
 }
 
@@ -154,6 +161,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitEta = HitEta_vec;
   runObject->HitEout = HitEout_vec;
   runObject->HitEin = HitEin_vec;
+
+  runObject->E_verify = runObject->E_outPtcl + runObject->Edep_truth;
   
   runObject->tree->Fill();
 
@@ -173,8 +182,8 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   //       }
   //       G4cout << G4endl;                      // New line after each row
   //   }
-
   
+  //if (ievent == chkEvt) G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
   ievent++;
   //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
 }

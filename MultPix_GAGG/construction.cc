@@ -98,7 +98,7 @@ void MyDetectorConstruction::DefineMaterials()
   DetectorMat->GetIonisation()->SetBirksConstant(0. * mm / MeV);
 
   //==============================================
-  DetectorMat->SetMaterialPropertiesTable(myMPT1);
+  //DetectorMat->SetMaterialPropertiesTable(myMPT1);
   //==============================================
 }
 

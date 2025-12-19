@@ -50,6 +50,8 @@ public:
   TH1F *h_DetX_crys, *h_Edep_crys, *h_Edep_mdl;
 
   TH2D *h_nOp_vs_Edep_crys, *h_nOp_vs_Edep_mdl;
+
+  TH1F* h_Edep_diff;
    
   TFile *oFile;
 
@@ -111,7 +113,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_Edep_mdl = new TH1F ("h_Edep_mdl", "h_Edep_mdl", 100,0,1.1);
   h_nOp_vs_Edep_mdl = new TH2D("nOp_vs_Edep_mdl", "nOp_vs_Edep_mdl",3000,0,30000, 100,0.,1.1);
 
-
+  h_Edep_diff = new TH1F ("h_Edep_diff", "h_Edep_diff", 1000,0.,0.5);
 }
 
 

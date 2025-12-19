@@ -93,7 +93,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       
 	if (module_Idx == -1){
 	  fEventAction->matrix2_gen[row_Idx][col_Idx]++;
-	  fRunAction->Module1[row_Idx][col_Idx][nGenOp]++;
+	  //fRunAction->Module1[row_Idx][col_Idx][nGenOp]++;
+	  fRunAction->Module2[row_Idx][col_Idx][nGenOp]++;
 	}
       }
     
@@ -120,11 +121,24 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       }
     }
 
-    else if (particleName != "opticalphoton"){
-      if(module_Idx == 1) fRunAction->Module1[row_Idx][col_Idx][Edep] += edep;
+    //else if (particleName != "opticalphoton"){
+      if(module_Idx == 1) {
+	fRunAction->Module1[row_Idx][col_Idx][Edep] += edep;
+      }
+      
       if(module_Idx == -1) fRunAction->Module2[row_Idx][col_Idx][Edep] += edep;      
-    }      
+      //}      
+  }  
+
+  fRunAction->Edep_truth += edep;  
+  
+  if(parentId !=0 && (postStepPoint->GetStepStatus() == fWorldBoundary)) {
+    fRunAction->nPtcl_out++;
+    fRunAction->E_outPtcl += track->GetKineticEnergy(); 
   }
+
+  // if(parentId == 0 && track->GetNextVolume() && track->GetNextVolume()->GetName( )== "OutOfWorld") G4cout << "\nParticle leaving the World" << G4endl;
+
 }
            
   
