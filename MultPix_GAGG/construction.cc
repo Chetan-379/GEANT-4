@@ -147,9 +147,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
   new G4PVReplica("gap_PV", logicY, logicX, kYAxis, MatSize, layerY);
         
-  logicBlock->SetVisAttributes(G4VisAttributes::GetInvisible());
-  logicX->SetVisAttributes(G4VisAttributes::GetInvisible());
-  logicY->SetVisAttributes(G4VisAttributes::GetInvisible());   
+  // logicBlock->SetVisAttributes(G4VisAttributes::GetInvisible());
+  // logicX->SetVisAttributes(G4VisAttributes::GetInvisible());
+  // logicY->SetVisAttributes(G4VisAttributes::GetInvisible());   
   
   //-------------placing the crystals in the layers  
   new G4PVPlacement(nullptr,
@@ -184,9 +184,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   
   G4LogicalSkinSurface * ScintSurface = new G4LogicalSkinSurface("reflector",ScintLV,OpSurface);
   
-  // G4VisAttributes* VisAttr = new G4VisAttributes(G4Colour(1., 1., 0., 0.5));
-  // VisAttr->SetForceSolid(true);   
-  // ScintLV->SetVisAttributes(VisAttr);
+  G4VisAttributes* VisAttr = new G4VisAttributes(G4Colour(1., 1., 0., 0.5));
+  VisAttr->SetForceSolid(true);   
+  //ScintLV->SetVisAttributes(VisAttr);
   
   
   //==========================================================================================================

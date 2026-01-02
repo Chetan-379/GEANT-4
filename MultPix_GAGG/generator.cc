@@ -51,7 +51,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   gParticleGun->SetParticlePolarization(pol2);
   
   fParticleGun->GeneratePrimaryVertex(anEvent);    
-  //gParticleGun->GeneratePrimaryVertex(anEvent);
+  gParticleGun->GeneratePrimaryVertex(anEvent);
   
   // G4cout << "\n\nMomentum direction of the 1st incident photons: " << fParticleGun->GetParticleMomentumDirection () << G4endl;
   // G4cout << "polarisation vector (EF direction) of the 1st incident photons: " << fParticleGun->GetParticlePolarization() << "\n\n";

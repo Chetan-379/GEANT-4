@@ -45,11 +45,14 @@ public:
   G4double matrix1[8][8], matrix2[8][8], matrix1_gen[8][8], matrix2_gen[8][8];
 
   CellHit module1[8][8];
+  G4int ievent=1;
+
+  G4int chkEvt = 0;
   
 private:
   G4double fX;
   MyRunAction *runObject;
-  G4int ievent=1, chkEvt = 4386;
+
   G4double fEdep;
   G4double compt_total_edep, photo_total_edep;
 
@@ -65,7 +68,12 @@ private:
   std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
   std::vector<G4int> HitDetId_vec, HitGunId_vec, HitProcId_vec;
 
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
+  std::vector<G4int> E_eOut_vec, E_phoOut_vec;
+
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5};
+
+  std::vector<int> tgt_evt = {130, 180, 813, 999, 1499, 1973, 2511, 3174, 4044, 4314};
+
 };
 
 #endif

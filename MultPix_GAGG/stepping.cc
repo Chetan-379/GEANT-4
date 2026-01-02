@@ -57,11 +57,10 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   
   G4TouchableHistory* postTouch = (G4TouchableHistory*) (postStepPoint->GetTouchable());
   G4TouchableHistory* preTouch = (G4TouchableHistory*) (preStepPoint->GetTouchable());
+
+  G4TouchableHistory* postTouch_tst = (G4TouchableHistory*) (track->GetTouchable());
   
   G4String VolName= preTouch->GetVolume()->GetName();
-
-  auto history = preTouch->GetHistory();
-  G4int depth = history->GetDepth(); 
   
   G4String creatProc;
   if (track->GetCreatorProcess()) creatProc = track->GetCreatorProcess()->GetProcessName();
@@ -70,15 +69,42 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4ThreeVector prePos = preStepPoint->GetPosition();
 
   G4ThreeVector DetPos;
+  auto history = preTouch->GetHistory();
+  G4int depth = history->GetDepth(); 
+
+   G4cout << "pre step Point: " << prePos << G4endl;
+   G4cout << "Post step Point: " << postStepPoint->GetPosition() << G4endl;
  
   if (VolName == "Scint_PV"){
     DetId = (10*(preTouch->GetVolume(1)->GetCopyNo()+1)+preTouch->GetVolume(2)->GetCopyNo()+1) * preTouch->GetVolume(3)->GetCopyNo();   
     
-    G4int row_Idx, col_Idx, module_Idx;
+    G4int row_Idx, col_Idx, module_Idx, row_test, col_test;   
     
     row_Idx = preTouch->GetVolume(1)->GetCopyNo();
     col_Idx = preTouch->GetVolume(2)->GetCopyNo();
+
+    // row_test = postTouch_tst->GetVolume(0)->GetCopyNo();
+    // col_test = postTouch_tst->GetVolume(2)->GetCopyNo();
+    
     module_Idx = preTouch->GetVolume(3)->GetCopyNo();
+
+    // if(particleName == "e-") {
+      G4cout << "\nrow: " << row_Idx << G4endl;
+      G4cout << "col: " << col_Idx << G4endl;
+
+      G4cout << "\nrow_test: " << row_test << G4endl;
+      G4cout << "col_test: " << col_test << G4endl;
+
+      G4cout << "\nDetPos: " << preStepPoint->GetTouchable()->GetTranslation() << G4endl;
+
+      for (int i = 0; i < depth; ++i) {
+	G4cout << "[" << i << "] "
+	       << history->GetVolume(i)->GetName()
+	       << " copy=" << history->GetVolume(i)->GetCopyNo()
+	       << G4endl;
+}
+
+      //}
     
     DetPos =  preTouch->GetTranslation();
 
@@ -121,25 +147,73 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       }
     }
 
-    //else if (particleName != "opticalphoton"){
+    //    else if (particleName != "opticalphoton"){
       if(module_Idx == 1) {
+	// G4cout << "\nwhile updating Edep" << G4endl;
+	// G4cout << "row: " << row_Idx << G4endl;
+	// G4cout << "col: " << col_Idx << G4endl;
+
 	fRunAction->Module1[row_Idx][col_Idx][Edep] += edep;
       }
       
       if(module_Idx == -1) fRunAction->Module2[row_Idx][col_Idx][Edep] += edep;      
-      //}      
-  }  
+      //}
 
-  fRunAction->Edep_truth += edep;  
+     double scatAngle, E_scatGamma;
+     //if (particleName == "gamma" && proc == "compt") {
+     if (particleName == "gamma" && (proc == "compt" || proc == "phot")) {
+       auto secondaries = step->GetSecondaryInCurrentStep();
+       
+       if (secondaries->size()>0){
+	 auto scat_e_E = (*secondaries)[0]->GetKineticEnergy();	 	 
+	 //if (preStepPoint->GetKineticEnergy() == 0.511){
+	 //auto sec_ptcl_name = (*secondaries)[0]->GetParticleDefinition()->GetParticleName();
+	 //G4cout << "secondary particle name: " << sec_ptcl_name << G4endl;
+	   scatAngle = acos(1-(0.511*((1/(0.511-scat_e_E)) - (1/0.511))));
+	   fRunAction->scat_theta = scatAngle*180/CLHEP::pi;
+	   
+	   if(module_Idx == 1) fRunAction->Module1[row_Idx][col_Idx][E_elec] += scat_e_E;   
+	   if(module_Idx == -1) fRunAction->Module2[row_Idx][col_Idx][E_elec] += scat_e_E;  
+
+	   //G4cout << "sec e E: " << scat_e_E << G4endl;
+	   
+	   
+	   //}
+       }
+     }     
+  }  
   
+  fRunAction->Edep_truth += edep;  
+
+  //Don't pay attention here---------------------------------------------------------------------------------
   if(parentId !=0 && (postStepPoint->GetStepStatus() == fWorldBoundary)) {
+    //if(parentId ==0 && (postStepPoint->GetStepStatus() == fWorldBoundary)) {
     fRunAction->nPtcl_out++;
-    fRunAction->E_outPtcl += track->GetKineticEnergy(); 
+    fRunAction->E_outPtcl += track->GetKineticEnergy();
+
+    if (particleName == "e-") {
+      fRunAction->nSec_e++;
+      fRunAction->E_eOut.push_back(track->GetKineticEnergy());     
+      //G4cout << "\n sec e out !!" << G4endl;
+    }
+    
+    else if (particleName == "gamma"){
+      fRunAction->nSec_pho++;
+      fRunAction->E_phoOut.push_back(track->GetKineticEnergy());
+    }
+
+    // if(particleName == "gamma" || particleName == "e-") fEventAction->chkEvt = fEventAction->ievent;
+    //-------------------------------------------------------------------------------------------------------
   }
 
   // if(parentId == 0 && track->GetNextVolume() && track->GetNextVolume()->GetName( )== "OutOfWorld") G4cout << "\nParticle leaving the World" << G4endl;
 
+  //checking to reconstruct the scattering angle
+
 }
+
+
+
            
   
    

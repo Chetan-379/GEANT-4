@@ -75,18 +75,32 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
 
       runObject->Module1[i][j][Edep]=0;
       runObject->Module2[i][j][Edep]=0;
-    }
 
-    runObject->Edep_truth = 0;
-    runObject->nPtcl_out = 0;
-    runObject->E_outPtcl =0;
-    runObject->E_verify =0;
+      runObject->Module1[i][j][E_elec]=0;
+      runObject->Module2[i][j][E_elec]=0;
+    }   
   }
+
+   runObject->Edep_truth = 0;
+   runObject->nPtcl_out = 0;
+   runObject->E_outPtcl =0;
+   runObject->E_verify =0;
+   runObject->nSec_e = 0;
+   runObject->nSec_pho = 0;
+   
+   runObject->E_eOut.clear();
+   runObject->E_phoOut.clear();
+
+   G4cout << "\n=====================event No.: " << ievent << "====================" << G4endl;    
+   // for (int i =0; i<tgt_evt.size(); i++){
+   //   if (ievent == tgt_evt[i]) {     
+   //     G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
   
-  G4cout << "=====================event No.: " << ievent << "====================" << G4endl;
-  //if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
-  //else G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
- 
+   //   }     
+   //   //else  G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");
+   // }
+   
+   
 }
 
 void MyEventAction::EndOfEventAction(const G4Event* event)
@@ -163,27 +177,52 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   runObject->HitEin = HitEin_vec;
 
   runObject->E_verify = runObject->E_outPtcl + runObject->Edep_truth;
+
+  // runObject->E_elec_out = E_eOut_vec;
+  // runObject->E_pho_out = E_phoOut_vec;
   
   runObject->tree->Fill();
 
   //G4cout << "\n\nsize of the matrix is: " << sizeof(matrix1) / sizeof(matrix1[0][0]) << G4endl;
-  // G4cout << "\v============= MATRIX 1 Edep: =============" << G4endl;
+  // G4cout << "\v============= right module Edep: =============" << G4endl;
   //  for (int i = 0; i < 8; i++) {          // Loop over rows
   //       for (int j = 0; j < 8; j++) {      // Loop over columns
-  // 	  G4cout << std::setw(6) << runObject->Module1[i][j][Edep] << " ";
+  // 	  G4int precision = 0;
+  // 	  if (runObject->Module1[i][j][Edep] ==0) precision = 0;
+  // 	  if (runObject->Module1[i][j][Edep] !=0) precision = 3;
+  // 	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module1[i][j][Edep] << " ";
   //       }
   //       G4cout << G4endl;                      // New line after each row
   //   }
 
-  //  G4cout << "\n\n\v============= MATRIX 2 Edep: =============" << G4endl;
+  //    G4cout << "\n\n\v============= right module nOpPho: =============" << G4endl;
   //  for (int i = 0; i < 8; i++) {          // Loop over rows
   //       for (int j = 0; j < 8; j++) {      // Loop over columns
-  // 	  G4cout << std::setw(6) << runObject->Module2[i][j][Edep] << " ";
+  // 	  G4int precision = 0;
+  // 	  if (runObject->Module1[i][j][nOpPho] ==0) precision = 0;
+  // 	  if (runObject->Module1[i][j][nOpPho] !=0) precision = 1;
+  // 	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module1[i][j][nOpPho] << " ";
+  //       }
+  //       G4cout << G4endl;                      // New line after each row
+  //   }
+
+  // G4cout << "\n\n\v============= right module  elec_E: =============" << G4endl;
+  //  for (int i = 0; i < 8; i++) {          // Loop over rows
+  //       for (int j = 0; j < 8; j++) {      // Loop over columns
+  // 	  G4int precision = 0;
+  // 	  if (runObject->Module1[i][j][E_elec] ==0) precision = 0;
+  // 	  if (runObject->Module1[i][j][E_elec] !=0) precision = 3;
+  // 	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module1[i][j][E_elec] << " ";
   //       }
   //       G4cout << G4endl;                      // New line after each row
   //   }
   
-  //if (ievent == chkEvt) G4EventManager::GetEventManager()->KeepTheCurrentEvent();    
+  //if (ievent == chkEvt) G4EventManager::GetEventManager()->KeepTheCurrentEvent();
+  // for (int i =0; i<tgt_evt.size(); i++){
+  //   if (ievent == tgt_evt[i]) {     
+  //     G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 0");     
+  //   }        
+  // }
   ievent++;
   //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
 }

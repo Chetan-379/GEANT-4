@@ -19,7 +19,8 @@ public:
 private:
   MyEventAction *fEventAction;
   MyRunAction *fRunAction;
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
+  //enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5};
 };
 
 #endif

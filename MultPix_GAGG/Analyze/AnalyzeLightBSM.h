@@ -10,6 +10,7 @@
 #include "TH3.h"
 #include <TProfile.h>
 #include "TFile.h"
+#include "TF1.h"
 #include "TLorentzVector.h"
 #include "TDirectory.h"
 #include"TGraphErrors.h"
@@ -32,7 +33,7 @@ public:
   void FillHistogram(double, double, double, double, double, double, double, double);
   string MatName(int);
   void print(Long64_t);
-
+  float GetScatAngle(float);
   //define histograms here
   TH1D *h_Compt_Edep, *h_Photo_Edep, *h_Total_Edep, *h_Total_Edep_fine_binned;
   TH2D *h_ComptVsPhoto_Edep;
@@ -51,11 +52,22 @@ public:
 
   TH2D *h_nOp_vs_Edep_crys, *h_nOp_vs_Edep_mdl;
 
-  TH1F* h_Edep_diff;
+  TH1F* h_Edep_diff, *h_Edep_scat, *h_Edep_abs;
+
+  TH2F* h_Edep_true_Vs_reco_crys, *h_Edep_scatVsabs;
+
+  TH1I* h_nHits_mdl;
+
+  TH2F* h_DetXvsDetY;
+
+  TH1F* h_theta_reco, *h_theta_truth;
+
+  TH2F* h_elecE_vs_Edep_crys;
    
   TFile *oFile;
 
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep=4};
+  //enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep=4};
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5};
 };
 #endif
 
@@ -108,12 +120,34 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   
 
   h_Edep_crys = new TH1F ("h_Edep_cryst", "h_Edep_cryst", 100,0,1.1);
-  h_nOp_vs_Edep_crys = new TH2D("nOp_vs_Edep_cryst", "nOp_vs_Edep_cryst",3000,0,30000, 100,0.,1.1);
+  h_nOp_vs_Edep_crys = new TH2D("nOp_vs_Edep_cryst", "nOp_vs_Edep_cryst", 100,0.,1.1, 3000,0,30000);
 
   h_Edep_mdl = new TH1F ("h_Edep_mdl", "h_Edep_mdl", 100,0,1.1);
-  h_nOp_vs_Edep_mdl = new TH2D("nOp_vs_Edep_mdl", "nOp_vs_Edep_mdl",3000,0,30000, 100,0.,1.1);
+  h_nOp_vs_Edep_mdl = new TH2D("nOp_vs_Edep_mdl", "nOp_vs_Edep_mdl", 100,0.,1.1, 3000,0,30000);
 
   h_Edep_diff = new TH1F ("h_Edep_diff", "h_Edep_diff", 1000,0.,0.5);
+
+  h_Edep_true_Vs_reco_crys = new TH2F("Edep_TrueVsReco_cryst", "Edep_TrueVsReco_cryst", 100,0.,1.1, 100,0,1.1);
+  h_Edep_true_Vs_reco_crys->GetXaxis()->SetTitle("Edep_{truth} (MeV)");
+  h_Edep_true_Vs_reco_crys->GetYaxis()->SetTitle("Edep_{reco} (MeV)");
+
+  h_nHits_mdl = new TH1I("h_nHits_mdl", "h_nHits_mdl", 10,0,10);
+
+  h_DetXvsDetY = new TH2F("DetXvsDetY", "DetXvsDetY", 100,-40,40, 100,-40,40);
+
+  h_theta_reco = new TH1F("h_theta_reco", "h_theta_reco", 400,0,200);
+  h_theta_truth = new TH1F("h_theta_truth", "h_theta_truth", 400,0,200);
+
+  h_elecE_vs_Edep_crys= new TH2F("scat_ElecVsEdep", "scat_ElecVsEdep", 100,0.,1.1, 100,0.,1.1);
+  h_elecE_vs_Edep_crys->GetXaxis()->SetTitle("Edep_truth (MeV)");
+  h_elecE_vs_Edep_crys->GetYaxis()->SetTitle("E_scat_elec (MeV)");
+
+  h_Edep_scat = new TH1F("Edep_scat_truth", "Edep_scat_truth", 100,0,0.8);
+  h_Edep_abs = new TH1F("Edep_abs_truth", "Edep_abs_truth", 100,0,0.8);
+
+  h_Edep_scatVsabs = new TH2F("Edep_scatVsabs", "Edep_scatVsabs", 100,0,0.8, 100,0,0.8);
+  h_Edep_scatVsabs->GetXaxis()->SetTitle("scat_Edep (MeV)");
+  h_Edep_scatVsabs->GetYaxis()->SetTitle("abs_Edep (MeV)");
 }
 
 
@@ -151,7 +185,7 @@ Bool_t AnalyzeLightBSM::FillChain(TChain *chain, const TString &inputFileList) {
   while(1) {
     infile >> buffer;
     if(!infile.good()) break;
-    //std::cout << "Adding tree from " << buffer.c_str() << std::endl;                                                              
+    //std::cout << "Adding tree from " << buffer.c_str() << std::endl;                   
     chain->Add(buffer.c_str());
   }
   std::cout << "No. of Entries in this tree : " << chain->GetEntries() << std::endl;
@@ -159,7 +193,7 @@ Bool_t AnalyzeLightBSM::FillChain(TChain *chain, const TString &inputFileList) {
 }
 
 Long64_t AnalyzeLightBSM::LoadTree(Long64_t entry) {
-  // Set the environment to read one entry                                                                                          
+  // Set the environment to read one entry
   if (!fChain) return -5;
   Long64_t centry = fChain->LoadTree(entry);
   if (centry < 0) return centry;

@@ -32,12 +32,18 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Hit_Eta", &HitEta);
   tree->Branch("Hit_Eout", &HitEout);
   tree->Branch("Hit_Ein", &HitEin);
-  tree->Branch("right_module", Module1, "Module1[8][8][5]/F");
-  tree->Branch("left_module", Module2, "Module2[8][8][5]/F");
+  tree->Branch("right_module", Module1, "Module1[8][8][6]/F");
+  tree->Branch("left_module", Module2, "Module2[8][8][6]/F");
+
   tree->Branch("Edep_truch", &Edep_truth);
   tree->Branch("nPtcl_OutDet", &nPtcl_out);
   tree->Branch("E_outPtcl", &E_outPtcl);
   tree->Branch("E_verify", &E_verify);
+  tree->Branch("nSec_e", &nSec_e);
+  tree->Branch("nSec_pho", &nSec_pho);
+  tree->Branch("E_elec_out", &E_eOut);
+  tree->Branch("E_pho_out", &E_phoOut);
+  tree->Branch("ScatTheta", &scat_theta);
   
   hfile = hfile = TFile::Open("test.root","RECREATE");
 }

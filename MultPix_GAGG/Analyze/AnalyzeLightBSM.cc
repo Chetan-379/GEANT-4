@@ -58,9 +58,12 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
   int n1s = 0, n1 =0;
   int n1b =0;
+
+  int nEvts2Hits = 0;
    
   for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
+      // cout << "----------event No.: " << jentry+1 << "-----------" << endl;
       int nHitComp = 0;
       double progress = 10.0 * jentry / (1.0 * nentries);
       int k = int (progress);
@@ -219,46 +222,123 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       //--------------------Analysing the Scintillation photons at the end---------------------------
       int nOp_mdl = 0, nOp_gen_mdl =0;
       int nOp_crys = 0, nOp_gen_crys =0;
-      float EDep_mdl = 0, EDep_crys = 0, DetX = 0, EDep_mdl_check =0;
+      float EDep_mdl = 0, EDep_crys = 0, DetX = 0, DetY = 0, EDep_mdl_check =0;
       float Edep_diff =0;
+      float Edep_reco_crys =0.;
+      float E_scatElec =0;
+
+      int nHits_mdl=0, nHits_mdl_truth=0;
+
+      vector<float> Hit_Edep_reco, Hit_Edep_truth, Hit_DetX, Hit_DetY, Hit_DetZ;
+
+      float scat_Edep=0, abs_Edep=0, theta_reco =0, theta_truth =0;
       
       for (int i =0; i<8; i++){
       	for (int j =0; j<8; j++){
 	  nOp_crys = right_module[i][j][nOpPho];
 	  nOp_gen_crys = right_module[i][j][nGenOp];
 	  EDep_crys = right_module[i][j][Edep];
+
 	  DetX = right_module[i][j][DetPosX];
+	  DetY = right_module[i][j][DetPosY];
+
+	  E_scatElec = right_module[i][j][E_elec];
 
 	  if(nOp_crys != 0) {	    
 	    h_DetX_crys->Fill(DetX);
 	    h_nOpPho_crys->Fill(nOp_crys);
 	    h_Edep_crys->Fill(EDep_crys);
-	    h_nOp_vs_Edep_crys->Fill(nOp_crys, EDep_crys);
+	    h_nOp_vs_Edep_crys->Fill(EDep_crys, nOp_crys);
+	    Edep_reco_crys = (1/21988.2) * nOp_crys;
+	    h_Edep_true_Vs_reco_crys->Fill(EDep_crys, Edep_reco_crys);
+	    h_DetXvsDetY->Fill(DetX, DetY);
+	    
+	    nHits_mdl++;
+
+	    Hit_Edep_reco.push_back(Edep_reco_crys);
+	    Hit_DetX.push_back(DetX);
+	    Hit_DetY.push_back(DetY);	   
 	  }
 			  
       	  nOp_mdl += nOp_crys;
       	  nOp_gen_mdl += nOp_gen_crys;
 	  EDep_mdl += EDep_crys;
 
-	  EDep_mdl_check += EDep_crys + left_module[i][j][Edep]; 
+	  EDep_mdl_check += EDep_crys + left_module[i][j][Edep];
+
+	  if(EDep_crys > 0.0001){	    
+	    nHits_mdl_truth ++;
+	    Hit_Edep_truth.push_back(EDep_crys);
+	    h_elecE_vs_Edep_crys->Fill(EDep_crys, E_scatElec);
+
+	    //if(abs(EDep_crys - E_scatElec) < 0.001){
+	      //auto theta_truth = GetScatAngle(EDep_crys); 
+	      //h_theta_truth->Fill(theta_truth*180/ TMath::Pi());
+	    //}
+	  }
       	}
+      }
+
+
+
+
+      //Calculating theta using truth Edep
+      //if(nHits_mdl_truth==2){
+      if(nHits_mdl_truth==2){
+	cout << "Evt with 2 hits: " << jentry+1 << endl;
+	nEvts2Hits++;
+	if(Hit_Edep_truth[0]+Hit_Edep_truth[1] <0.512 && Hit_Edep_truth[0]+Hit_Edep_truth[1] >=0.510){
+
+	  float scat_Edep =0, abs_Edep =0;
+	  if (Hit_Edep_truth[0] < Hit_Edep_truth[1]){
+	    scat_Edep = Hit_Edep_truth[0];
+	    abs_Edep = Hit_Edep_truth[1];
+	  }
+	  
+	  else if (Hit_Edep_truth[1] < Hit_Edep_truth[0]){
+	    scat_Edep = Hit_Edep_truth[1];
+	    abs_Edep = Hit_Edep_truth[0];
+	  }
+	  theta_truth = GetScatAngle(scat_Edep);
+	  
+	  if (scat_Edep < 0.25 && abs_Edep > 0.25){	    
+	    if(theta_truth >0) h_theta_truth->Fill(theta_truth*180/ TMath::Pi());
+	  }
+	  
+	  // h_Edep_scat->Fill(scat_Edep);
+	  // h_Edep_abs->Fill(abs_Edep);
+	  // h_Edep_scatVsabs->Fill(scat_Edep, abs_Edep);
+
+	  if (Hit_Edep_truth[0] < Hit_Edep_truth[1]){
+	    h_Edep_scat->Fill(Hit_Edep_truth[0]);
+	    h_Edep_abs->Fill(Hit_Edep_truth[1]);
+	    h_Edep_scatVsabs->Fill(Hit_Edep_truth[0], Hit_Edep_truth[1]);
+	  }
+	  
+	  else if (Hit_Edep_truth[1] < Hit_Edep_truth[0]){
+	    h_Edep_scat->Fill(Hit_Edep_truth[1]);
+	    h_Edep_abs->Fill(Hit_Edep_truth[0]);
+	    h_Edep_scatVsabs->Fill(Hit_Edep_truth[1], Hit_Edep_truth[0]);
+	  }
+	}
+	
+	
+      }
+
+      //Calculating theta using reco Edep
+      if(nHits_mdl==2) {
+	if(Hit_Edep_reco[0]+Hit_Edep_reco[1] <0.512 && Hit_Edep_reco[0]+Hit_Edep_reco[1] >=0.510){	
+	  if (Hit_Edep_reco[0] < Hit_Edep_reco[1]) theta_reco = GetScatAngle(Hit_Edep_reco[0]);
+	  else if (Hit_Edep_reco[1] < Hit_Edep_reco[0]) theta_reco = GetScatAngle(Hit_Edep_reco[1]);  
+	  h_theta_reco->Fill(theta_reco*180/ TMath::Pi());	  
+	}
       }
       
       h_nOpPho_mdl->Fill(nOp_mdl);
       h_nOpPho_gen_mdl->Fill(nOp_gen_mdl);
-      //h_Edep_mdl ->Fill(EDep_mdl);
-      //h_Edep_mdl ->Fill(EDep_mdl_check);
-
-      h_nOp_vs_Edep_mdl->Fill(nOp_mdl, EDep_mdl);
-
-      Edep_diff = Total_Edep - EDep_mdl;
-
-      if (abs(Edep_diff) > 0.000001) {
-	h_Edep_diff->Fill(Edep_diff);
-	}
-
-      if (abs(Edep_diff)<0.000001) h_Edep_mdl ->Fill(EDep_mdl);
-
+      h_Edep_mdl ->Fill(EDep_mdl);
+      h_nOp_vs_Edep_mdl->Fill(EDep_mdl, nOp_mdl);             
+      h_nHits_mdl->Fill(nHits_mdl);     
       
 
       // if (nOp > 0) h_nOpPho->Fill(nOp);
@@ -268,12 +348,20 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       
     } //jentry loop end
 
-  // TF1 *fitfunc_mdl = new TF1("FitFunc_mdl","[0]+[1]*x",0,20000);
-  // fitfunc_mdl->SetParameters(0.0002,0.);
-  // fitfunc_mdl->SetLineColor(kRed);
-  // h_nOp_vs_Edep_mdl->Fit(fitfunc_mdl);
-  // h_nOp_vs_Edep_mdl->Draw();
-  // fitfunc_mdl->Draw("same");
+  cout << "No. of events with exactly 2 Hits: " << nEvts2Hits << endl;
+
+  cout << "\nTheta: " << GetScatAngle(0.1)*180/TMath::Pi() << endl;
+
+  //fitting the 2d histogram to convert nOp to MeV
+  
+  //TF1 *fitfunc_crys = new TF1("FitFunc_mdl","[0]+[1]*x",0,20000);
+  // TF1 fitfunc_crys = new TF1(h_nOp_vs_Edep_crys->Fit("pol1"));
+  // //fitfunc_crys->SetParameters(0.0002,22000);
+  // fitfunc_crys->SetLineColor(kRed);  
+  // h_nOp_vs_Edep_crys->Draw();
+  // fitfunc_crys->Draw("same");
+
+  //h_nOp_vs_Edep_crys->Fit("pol1");
 }
 
 void AnalyzeLightBSM::FillHistogram(double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double Ein, double Eout){
@@ -297,6 +385,12 @@ string AnalyzeLightBSM::MatName(int DetId){
   else if (DetId/ 1000 >=1 && DetId/ 4000 <1) mat = "Scint";
 
   return mat;
+}
+
+float AnalyzeLightBSM::GetScatAngle(float E_dep){
+  //double scatAngle = acos(1-(0.511*((1/(0.511-E_dep)) - (1/0.511))));
+  double scatAngle = acos(1-(0.5*((1/(0.5-E_dep)) - (1/0.5))));
+  return scatAngle;
 }
 
 

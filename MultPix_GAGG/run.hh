@@ -32,11 +32,15 @@ public:
   std::vector<G4int> HitDetId, HitGunId, HitProcId;
 
   //std::vector<std::vector<G4int>> Module1, Module2;
-  G4float Module1[8][8][5], Module2[8][8][5], Edep_truth, E_outPtcl=0., E_verify=0;
+  G4float Module1[8][8][6], Module2[8][8][6], Edep_truth, E_outPtcl=0., E_verify=0;
 
-  G4int nPtcl_out =0;  
+  G4int nPtcl_out =0, nSec_e=0, nSec_pho =0;
 
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};  
+  std::vector<G4double> E_eOut, E_phoOut;
+
+  G4float scat_theta;
+  
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5};  
   //CellHit Block1[8][8], Block2[8][8];
 };
 

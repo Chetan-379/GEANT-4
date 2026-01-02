@@ -48,8 +48,8 @@ class NtupleVariables : public TSelector {
   vector<double>  *Hit_Eta;
   vector<double>  *Hit_Eout;
   vector<double>  *Hit_Ein;
-  Float_t         right_module[8][8][5];
-  Float_t         left_module[8][8][5];
+  Float_t         right_module[8][8][6];
+  Float_t         left_module[8][8][6];
 
   
    // List of branches
@@ -132,9 +132,17 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    // Hit_ScatMomZ =0;
 
    // left_module;
-   // right_module =0;
-
    
+   // right_module[0][0] =0;
+
+   // for (int i =0; i< 8; i++){
+   //      for (int j =0; j< 8; j++){
+   // 	  //for (int k =0; k< 8; k++){
+   // 	  left_module[i][j] = Float_t(0.);
+   // 	       right_module[i][j] = Float_t(0.);
+   // 	       //}
+   // 	}
+   // }
    
    // Set branch addresses and branch pointers
    if (!tree) return;
