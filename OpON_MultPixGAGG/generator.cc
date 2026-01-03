@@ -49,11 +49,11 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4ThreeVector gammaMom2 = fParticleGun->GetParticleMomentumDirection();
   G4int sign = (G4UniformRand() < 0.5) ? -1 : 1;
   
-  // G4ThreeVector pol2 = pol1;
-  // pol2 = pol2.rotate(sign*CLHEP::pi / 2.0, gammaMom1);
+  G4ThreeVector pol2 = pol1;
+  pol2 = pol2.rotate(sign*CLHEP::pi / 2.0, gammaMom1);
 
-  G4ThreeVector pol2 = gammaMom2.orthogonal().unit();  
-  pol2 = pol2.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom2);     //randomizing the photon polarisation 
+  // G4ThreeVector pol2 = gammaMom2.orthogonal().unit();  
+  // pol2 = pol2.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom2);     //randomizing the photon polarisation 
   
   gParticleGun->SetParticlePolarization(pol2);
   
