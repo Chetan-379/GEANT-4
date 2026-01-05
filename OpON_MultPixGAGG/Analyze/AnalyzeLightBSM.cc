@@ -337,14 +337,21 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	h_nOp_vs_Edep_mdl[mdl]->Fill(EDep_truth_mdl[mdl], nOp_mdl[mdl]);	
       }       
       
-      
+      //-------------for getting the sigma in the sum case
+      if(nHits_mdl_truth[r]==2 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] <0.5111 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] >0.5109){
+      	  h_nOpPho_mdl_sum[r]->Fill(Hit_nOp_indv[r][0]+Hit_nOp_indv[r][1]);
+	  h_nOpPho_gen_mdl_sum[r]->Fill(Hit_nOp_gen_indv[r][0]+Hit_nOp_gen_indv[r][1]);
+      }
+
+      if(nHits_mdl_truth[l]==2 && Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] <0.5111 && Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] >0.5109){
+	h_nOpPho_mdl_sum[l]->Fill(Hit_nOp_indv[l][0]+Hit_nOp_indv[l][1]);
+	h_nOpPho_gen_mdl_sum[l]->Fill(Hit_nOp_gen_indv[l][0]+Hit_nOp_gen_indv[l][1]);
+      }
+
 //===============================Calculating theta using truth Edep====================================
       if(nHits_mdl_truth[r]==2 && nHits_mdl_truth[l]==2){      
-  	if(Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] <0.512 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] >=0.510){
-	  h_nOpPho_mdl_sum[r]->Fill(Hit_nOp_indv[r][0]+Hit_nOp_indv[r][1]);
-	  h_nOpPho_gen_mdl_sum[r]->Fill(Hit_nOp_gen_indv[r][0]+Hit_nOp_gen_indv[r][1]);	  
+  	if(Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] <0.511 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] >=0.510){
 	  if(Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] <0.512 && Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] >=0.510){
-
 	    float scat_Edep[2] ={0}, abs_Edep[2] ={0}, theta[2] = {9999};
 	    int scat_idx[2] ={99}, abs_idx[2] ={99};
 	    double phi[2] ={999}, dPix[2] = {99999};
