@@ -52,32 +52,35 @@ public:
   TH1F *h_Eout, *h_Ein;
   TH2D *h_theta_Eout;
 
-  TH1I *h_nOpPho_crys[2], *h_nOpPho_gen_crys[2], *h_nOpPho_mdl[2], *h_nOpPho_gen_mdl[2];
-  TH1F *h_DetX_crys[2], *h_Edep_crys[2], *h_Edep_mdl[2];
+  TH1I *h_nOpPho_crys_inc[2], *h_nOpPho_gen_crys_inc[2], *h_nOpPho_mdl_inc[2], *h_nOpPho_gen_mdl_inc[2];
+  TH1I *h_nOpPho_crys_indv[2], *h_nOpPho_gen_crys_indv[2], *h_nOpPho_mdl_indv[2], *h_nOpPho_gen_mdl_indv[2];
+  TH1I *h_nOpPho_crys_sum[2], *h_nOpPho_gen_crys_sum[2], *h_nOpPho_mdl_sum[2], *h_nOpPho_gen_mdl_sum[2];
+
+
+  TH1F *h_DetX_crys[2], *h_Edep_truth_crys[2], *h_Edep_truth_mdl[2], *h_Edep_reco_mdl[2], *h_Edep_reco_crys[2];
 
   TH2D *h_nOp_vs_Edep_crys[2], *h_nOp_vs_Edep_mdl[2];
 
-  TH1F* h_Edep_diff[2], *h_Edep_scat[2], *h_Edep_abs[2];
+  TH1F* h_Edep_diff[2], *h_Edep_scat_truth[2], *h_Edep_abs_truth[2], *h_Edep_scat_reco[2], *h_Edep_abs_reco[2];
 
-  TH2F* h_Edep_true_Vs_reco_crys[2], *h_Edep_scatVsabs[2];
+  TH2F* h_Edep_true_Vs_reco_crys[2], *h_Edep_scatVsabs_truth[2], *h_Edep_scatVsabs_reco[2], *h_DetXvsDetY_truth[2], *h_DetXvsDetY_reco[2];
 
-  TH1I* h_nHits_mdl[2];
+  TH1I *h_nHits_truth_mdl[2], *h_nHits_reco_mdl[2];
 
-  TH2F* h_DetXvsDetY[2];
-
-  TH1F* h_theta_reco[2], *h_theta_truth[2], *h_scatElec_E[2], *h_phi_truth[2], *h_dPix[2];
+  TH1F* h_theta_reco[2], *h_theta_truth[2], *h_scatElec_E[2], *h_phi_truth[2], *h_phi_reco[2], *h_dPix_truth[2], *h_dPix_reco[2];
 
   TH2F* h_elecE_vs_Edep_crys[2], *h_elecE_vs_scatEdep[2];
 
-  TH1F *h_dPhi_truth, *h_dPhi_rmBkg_truth;
+  TH1F *h_dPhi_truth, *h_dPhi_reco;
 
-  TH2F *h_Phi1_vs_Phi2_truth;
+  TH2F *h_Phi1_vs_Phi2_truth, *h_Phi1_vs_Phi2_reco;
    
   TFile *oFile;
 
-  //enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep=4};
   enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar =6};
 };
+
+enum sigma_check{inc=0, hitIndv=1, hitSum=2};
 #endif
 
 #ifdef AnalyzeLightBSM_cxx
@@ -122,49 +125,132 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   //------------Histograms for the crystals and modules----------------------
   vector<string> ModName = {"right", "left"};
   
-  char hname_DetPosX_crys[50], hname_nOpPho_cryst[50], hname_nOpPho_gen_cryst[50], hname_nOpPho_mdl[50], hname_nOpPho_gen_mdl[50], hname_Edep_cryst[50], hname_nOp_vs_Edep_cryst[50], hname_Edep_mdl[50], hname_nOp_vs_Edep_mdl[50], hname_Edep_diff[50], hname_Edep_TrueVsReco_cryst[50], hname_nHits_mdl[50], hname_DetXvsDetY[50], hname_theta_reco[50], hname_theta_truth[50], hname_scat_ElecVsEdep[50], hname_scat_ElecVSscat_Edep[50], hname_Edep_scat_truth[50], hname_Edep_abs_truth[50], hname_Edep_scatVsabs[50], hname_scat_elec_E[50], hname_phi_truth[50], hname_dPix[50];
+  char hname_nOpPho_cryst_inc[50], hname_nOpPho_gen_cryst_inc[50], hname_nOpPho_mdl_inc[50], hname_nOpPho_gen_mdl_inc[50], hname_nOpPho_cryst_indv[50], hname_nOpPho_gen_cryst_indv[50], hname_nOpPho_mdl_indv[50], hname_nOpPho_gen_mdl_indv[50], hname_nOpPho_cryst_sum[50], hname_nOpPho_gen_cryst_sum[50], hname_nOpPho_mdl_sum[50], hname_nOpPho_gen_mdl_sum[50];
+
+  char hname_DetPosX_crys[50], hname_Edep_truth_cryst[50], hname_Edep_reco_cryst[50], hname_nOp_vs_Edep_cryst[50], hname_Edep_truth_mdl[50], hname_Edep_reco_mdl[50], hname_nOp_vs_Edep_mdl[50], hname_Edep_diff[50], hname_Edep_TrueVsReco_cryst[50], hname_nHits_truth_mdl[50], hname_nHits_reco_mdl[50], hname_DetXvsDetY_truth[50], hname_DetXvsDetY_reco[50], hname_theta_reco[50], hname_theta_truth[50], hname_scat_ElecVsEdep[50], hname_scat_ElecVSscat_Edep[50], hname_Edep_scat_truth[50], hname_Edep_abs_truth[50],  hname_Edep_scat_reco[50], hname_Edep_abs_reco[50], hname_Edep_scatVsabs_truth[50], hname_Edep_scatVsabs_reco[50], hname_scat_elec_E[50], hname_phi_truth[50], hname_phi_reco[50], hname_dPix_truth[50], hname_dPix_reco[50];
 
   for (int i=0; i<2; i++){
+  
+  sprintf(hname_nOpPho_cryst_inc, "%s_nOpPho_cryst_inc",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_cryst_inc, "%s_nOpPho_gen_cryst_inc",ModName[i].c_str());
+  sprintf(hname_nOpPho_mdl_inc, "%s_nOpPho_mdl_inc",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_mdl_inc, "%s_nOpPho_gen_mdl_inc",ModName[i].c_str());
+  
+  sprintf(hname_nOpPho_cryst_indv, "%s_nOpPho_cryst_indv",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_cryst_indv, "%s_nOpPho_gen_cryst_indv",ModName[i].c_str());
+  sprintf(hname_nOpPho_mdl_indv, "%s_nOpPho_mdl_indv",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_mdl_indv, "%s_nOpPho_gen_mdl_indv",ModName[i].c_str());
+
+  sprintf(hname_nOpPho_cryst_sum, "%s_nOpPho_cryst_sum",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_cryst_sum, "%s_nOpPho_gen_cryst_sum",ModName[i].c_str());
+  sprintf(hname_nOpPho_mdl_sum, "%s_nOpPho_mdl_sum",ModName[i].c_str());
+  sprintf(hname_nOpPho_gen_mdl_sum, "%s_nOpPho_gen_mdl_sum",ModName[i].c_str());
+  
+
   sprintf(hname_DetPosX_crys, "%s_DetPosX_crys", ModName[i].c_str());
-  sprintf(hname_nOpPho_cryst, "%s_nOpPho_cryst",ModName[i].c_str());
-  sprintf(hname_nOpPho_gen_cryst, "%s_nOpPho_gen_cryst",ModName[i].c_str());
-  sprintf(hname_nOpPho_mdl, "%s_nOpPho_mdl",ModName[i].c_str());
-  sprintf(hname_nOpPho_gen_mdl, "%s_nOpPho_gen_mdl",ModName[i].c_str());
-  sprintf(hname_Edep_cryst, "%s_Edep_cryst",ModName[i].c_str());
+  sprintf(hname_Edep_truth_cryst, "%s_Edep_truth_cryst",ModName[i].c_str());
+  sprintf(hname_Edep_reco_cryst, "%s_Edep_reco_cryst",ModName[i].c_str());
+
+  sprintf(hname_Edep_truth_mdl, "%s_Edep_truth_mdl",ModName[i].c_str());
+  sprintf(hname_Edep_reco_mdl, "%s_Edep_reco_mdl",ModName[i].c_str());
+
+  sprintf(hname_nHits_truth_mdl, "%s_nHits_truth_mdl",ModName[i].c_str());
+  sprintf(hname_nHits_reco_mdl, "%s_nHits_reco_mdl",ModName[i].c_str());
+
+  sprintf(hname_dPix_truth, "%s_pixel_distance_truth",ModName[i].c_str());
+  sprintf(hname_dPix_reco, "%s_pixel_distance_reco",ModName[i].c_str());
+
+  sprintf(hname_Edep_scat_truth, "%s_Edep_scat_truth",ModName[i].c_str());
+  sprintf(hname_Edep_abs_truth, "%s_Edep_abs_truth",ModName[i].c_str());
+  sprintf(hname_Edep_scatVsabs_truth, "%s_Edep_scatVsabs_truth",ModName[i].c_str());
+
+  sprintf(hname_Edep_scat_reco, "%s_Edep_scat_reco",ModName[i].c_str());
+  sprintf(hname_Edep_abs_reco, "%s_Edep_abs_reco",ModName[i].c_str());
+  sprintf(hname_Edep_scatVsabs_reco, "%s_Edep_reco",ModName[i].c_str());
+
+  sprintf(hname_DetXvsDetY_truth, "%s_DetXvsDetY_truth",ModName[i].c_str());
+  sprintf(hname_DetXvsDetY_reco, "%s_DetXvsDetY_reco",ModName[i].c_str());
+
+
+  sprintf(hname_phi_truth, "%s_phi_truth",ModName[i].c_str());
+  sprintf(hname_phi_reco, "%s_phi_reco",ModName[i].c_str());
+
+  
   sprintf(hname_nOp_vs_Edep_cryst, "%s_nOp_vs_Edep_cryst",ModName[i].c_str());
-  sprintf(hname_Edep_mdl, "%s_Edep_mdl",ModName[i].c_str());
   sprintf(hname_nOp_vs_Edep_mdl, "%s_nOp_vs_Edep_mdl",ModName[i].c_str());
   sprintf(hname_Edep_diff, "%s_Edep_diff",ModName[i].c_str());
-  sprintf(hname_Edep_TrueVsReco_cryst, "%s_Edep_TrueVsReco_cryst",ModName[i].c_str());
-  sprintf(hname_nHits_mdl, "%s_nHits_mdl",ModName[i].c_str());
-  sprintf(hname_DetXvsDetY, "%s_DetXvsDetY",ModName[i].c_str());
+  sprintf(hname_Edep_TrueVsReco_cryst, "%s_Edep_TrueVsReco_cryst",ModName[i].c_str());    
   sprintf(hname_theta_reco, "%s_theta_reco",ModName[i].c_str());
   sprintf(hname_theta_truth, "%s_theta_truth",ModName[i].c_str());
   sprintf(hname_scat_ElecVsEdep, "%s_scat_ElecVsEdep",ModName[i].c_str());
   sprintf(hname_scat_ElecVSscat_Edep, "%s_scat_ElecVSscat_Edep",ModName[i].c_str());
-  sprintf(hname_Edep_scat_truth, "%s_Edep_scat_truth",ModName[i].c_str());
-  sprintf(hname_Edep_abs_truth, "%s_Edep_abs_truth",ModName[i].c_str());
-  sprintf(hname_Edep_scatVsabs, "%s_Edep_scatVsabs",ModName[i].c_str());
+  
   sprintf(hname_scat_elec_E, "%s_scat_elec_E",ModName[i].c_str());
-  sprintf(hname_phi_truth, "%s_phi_truth",ModName[i].c_str());
-  sprintf(hname_dPix, "%s_pixel_distance",ModName[i].c_str());
+  
+  
   
 
   
-  h_DetX_crys[i] = new TH1F(hname_DetPosX_crys, hname_DetPosX_crys,1000,-40,40);
+  //inc-------
+  h_nOpPho_crys_inc[i] = new TH1I(hname_nOpPho_cryst_inc, hname_nOpPho_cryst_inc,3000,0,30000);
+  h_nOpPho_crys_inc[i]->GetXaxis()->SetTitle("nOp_end");
 
-  h_nOpPho_crys[i] = new TH1I(hname_nOpPho_cryst, hname_nOpPho_cryst,3000,0,30000);
-  h_nOpPho_gen_crys[i] = new TH1I(hname_nOpPho_gen_cryst, hname_nOpPho_gen_cryst,3000,0,30000);
+  h_nOpPho_gen_crys_inc[i] = new TH1I(hname_nOpPho_gen_cryst_inc, hname_nOpPho_gen_cryst_inc,3000,0,30000);
+  h_nOpPho_gen_crys_inc[i]->GetXaxis()->SetTitle("nOp_gen");
   
-  h_nOpPho_mdl[i] = new TH1I(hname_nOpPho_mdl, hname_nOpPho_mdl,3000,0,30000);
-  h_nOpPho_gen_mdl[i] = new TH1I(hname_nOpPho_gen_mdl, hname_nOpPho_gen_mdl,3000,0,30000);
+  h_nOpPho_mdl_inc[i] = new TH1I(hname_nOpPho_mdl_inc, hname_nOpPho_mdl_inc,3000,0,30000);
+  h_nOpPho_mdl_inc[i]->GetXaxis()->SetTitle("nOp_end");
   
+  h_nOpPho_gen_mdl_inc[i] = new TH1I(hname_nOpPho_gen_mdl_inc, hname_nOpPho_gen_mdl_inc,3000,0,30000);
+  h_nOpPho_gen_crys_inc[i]->GetXaxis()->SetTitle("nOp_gen");
 
-  h_Edep_crys[i] = new TH1F (hname_Edep_cryst, hname_Edep_cryst, 100,0,1.1);
+  //indv-------
+  h_nOpPho_crys_indv[i] = new TH1I(hname_nOpPho_cryst_indv, hname_nOpPho_cryst_indv,3000,0,30000);
+  h_nOpPho_crys_indv[i]->GetXaxis()->SetTitle("nOp_end");
+
+  h_nOpPho_gen_crys_indv[i] = new TH1I(hname_nOpPho_gen_cryst_indv, hname_nOpPho_gen_cryst_indv,3000,0,30000);
+  h_nOpPho_gen_crys_indv[i]->GetXaxis()->SetTitle("nOp_gen");
+  
+  h_nOpPho_mdl_indv[i] = new TH1I(hname_nOpPho_mdl_indv, hname_nOpPho_mdl_indv,3000,0,30000);
+  h_nOpPho_mdl_indv[i]->GetXaxis()->SetTitle("nOp_end");
+  
+  h_nOpPho_gen_mdl_indv[i] = new TH1I(hname_nOpPho_gen_mdl_indv, hname_nOpPho_gen_mdl_indv,3000,0,30000);
+  h_nOpPho_gen_crys_indv[i]->GetXaxis()->SetTitle("nOp_gen");
+
+  //sum-------
+  h_nOpPho_crys_sum[i] = new TH1I(hname_nOpPho_cryst_sum, hname_nOpPho_cryst_sum,3000,0,30000);
+  h_nOpPho_crys_sum[i]->GetXaxis()->SetTitle("nOp_end");
+
+  h_nOpPho_gen_crys_sum[i] = new TH1I(hname_nOpPho_gen_cryst_sum, hname_nOpPho_gen_cryst_sum,3000,0,30000);
+  h_nOpPho_gen_crys_sum[i]->GetXaxis()->SetTitle("nOp_gen");
+  
+  h_nOpPho_mdl_sum[i] = new TH1I(hname_nOpPho_mdl_sum, hname_nOpPho_mdl_sum,3000,0,30000);
+  h_nOpPho_mdl_sum[i]->GetXaxis()->SetTitle("nOp_end");
+  
+  h_nOpPho_gen_mdl_sum[i] = new TH1I(hname_nOpPho_gen_mdl_sum, hname_nOpPho_gen_mdl_sum,3000,0,30000);
+  h_nOpPho_gen_crys_sum[i]->GetXaxis()->SetTitle("nOp_gen");
+
+  //-----------------------------------------------------
+  h_DetX_crys[i] = new TH1F(hname_DetPosX_crys, hname_DetPosX_crys,1000,-40,40);  
+  h_Edep_truth_crys[i] = new TH1F (hname_Edep_truth_cryst, hname_Edep_truth_cryst, 100,0,1.1);
+  h_Edep_truth_crys[i]->GetXaxis()->SetTitle("Truth Edep (MeV)");
+  
+  h_Edep_reco_crys[i] = new TH1F (hname_Edep_reco_cryst, hname_Edep_reco_cryst, 500,0,1.1);
+  h_Edep_reco_crys[i]->GetXaxis()->SetTitle("Reco Edep (MeV)");
+  
   h_nOp_vs_Edep_crys[i] = new TH2D(hname_nOp_vs_Edep_cryst, hname_nOp_vs_Edep_cryst, 100,0.,1.1, 3000,0,30000);
+  h_nOp_vs_Edep_crys[i]->GetXaxis()->SetTitle("True Edep (MeV)");
+  h_nOp_vs_Edep_crys[i]->GetYaxis()->SetTitle("nOpPho_end");
 
-  h_Edep_mdl[i] = new TH1F (hname_Edep_mdl, hname_Edep_mdl, 100,0,1.1);
+  h_Edep_truth_mdl[i] = new TH1F (hname_Edep_truth_mdl, hname_Edep_truth_mdl, 100,0,1.1);
+  h_Edep_truth_mdl[i]->GetXaxis()->SetTitle("True Edep (MeV)");
+  
+  h_Edep_reco_mdl[i] = new TH1F (hname_Edep_reco_mdl, hname_Edep_reco_mdl, 100,0,1.1);
+  h_Edep_reco_mdl[i]->GetXaxis()->SetTitle("Reco Edep (MeV)");
+  
   h_nOp_vs_Edep_mdl[i] = new TH2D(hname_nOp_vs_Edep_mdl, hname_nOp_vs_Edep_mdl, 100,0.,1.1, 3000,0,30000);
+  h_nOp_vs_Edep_mdl[i]->GetXaxis()->SetTitle("True Edep (MeV)");
+  h_nOp_vs_Edep_mdl[i]->GetYaxis()->SetTitle("nOpPho_end");
 
   h_Edep_diff[i] = new TH1F (hname_Edep_diff, hname_Edep_diff, 1000,0.,0.5);
 
@@ -172,9 +258,17 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_Edep_true_Vs_reco_crys[i]->GetXaxis()->SetTitle("Edep_{truth} (MeV)");
   h_Edep_true_Vs_reco_crys[i]->GetYaxis()->SetTitle("Edep_{reco} (MeV)");
 
-  h_nHits_mdl[i] = new TH1I(hname_nHits_mdl, hname_nHits_mdl, 10,0,10);
+  h_nHits_truth_mdl[i] = new TH1I(hname_nHits_truth_mdl, hname_nHits_truth_mdl, 10,0,10);
+  h_nHits_reco_mdl[i] = new TH1I(hname_nHits_reco_mdl, hname_nHits_reco_mdl, 10,0,10);
 
-  h_DetXvsDetY[i] = new TH2F(hname_DetXvsDetY, hname_DetXvsDetY, 100,-40,40, 100,-40,40);
+  h_DetXvsDetY_truth[i] = new TH2F(hname_DetXvsDetY_truth, hname_DetXvsDetY_truth, 100,-40,40, 100,-40,40);
+  h_DetXvsDetY_truth[i]->GetXaxis()->SetTitle("DetX_truth (mm)");
+  h_DetXvsDetY_truth[i]->GetYaxis()->SetTitle("DetY_truth (mm)");
+
+  h_DetXvsDetY_reco[i] = new TH2F(hname_DetXvsDetY_reco, hname_DetXvsDetY_reco, 100,-40,40, 100,-40,40);
+  h_DetXvsDetY_reco[i]->GetXaxis()->SetTitle("DetX_reco (mm)");
+  h_DetXvsDetY_reco[i]->GetYaxis()->SetTitle("DetY_reco (mm)");
+
 
   h_theta_reco[i] = new TH1F(hname_theta_reco, hname_theta_reco, 400,0,200);
   h_theta_truth[i] = new TH1F(hname_theta_truth, hname_theta_truth, 400,0,200);
@@ -188,28 +282,46 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_elecE_vs_scatEdep[i]->GetYaxis()->SetTitle("E_scat_elec (MeV)");
 
 
-  h_Edep_scat[i] = new TH1F(hname_Edep_scat_truth, hname_Edep_scat_truth, 100,0,0.8);
-  h_Edep_abs[i] = new TH1F(hname_Edep_abs_truth, hname_Edep_abs_truth, 100,0,0.8);
+  h_Edep_scat_truth[i] = new TH1F(hname_Edep_scat_truth, hname_Edep_scat_truth, 100,0,0.8);
+  h_Edep_abs_truth[i] = new TH1F(hname_Edep_abs_truth, hname_Edep_abs_truth, 100,0,0.8);
 
-  h_Edep_scatVsabs[i] = new TH2F(hname_Edep_scatVsabs, hname_Edep_scatVsabs, 100,0,0.8, 100,0,0.8);
-  h_Edep_scatVsabs[i]->GetXaxis()->SetTitle("scat_Edep (MeV)");
-  h_Edep_scatVsabs[i]->GetYaxis()->SetTitle("abs_Edep (MeV)");
+  h_Edep_scat_reco[i] = new TH1F(hname_Edep_scat_reco, hname_Edep_scat_reco, 100,0,0.8);
+  h_Edep_abs_reco[i] = new TH1F(hname_Edep_abs_reco, hname_Edep_abs_reco, 100,0,0.8);
+
+
+  h_Edep_scatVsabs_truth[i] = new TH2F(hname_Edep_scatVsabs_truth, hname_Edep_scatVsabs_truth, 100,0,0.8, 100,0,0.8);
+  h_Edep_scatVsabs_truth[i]->GetXaxis()->SetTitle("scat_Edep_truth (MeV)");
+  h_Edep_scatVsabs_truth[i]->GetYaxis()->SetTitle("abs_Edep_truth (MeV)");
+
+    h_Edep_scatVsabs_reco[i] = new TH2F(hname_Edep_scatVsabs_reco, hname_Edep_scatVsabs_reco, 100,0,0.8, 100,0,0.8);
+  h_Edep_scatVsabs_reco[i]->GetXaxis()->SetTitle("scat_Edep_reco (MeV)");
+  h_Edep_scatVsabs_reco[i]->GetYaxis()->SetTitle("abs_Edep_reco (MeV)");
 
   h_scatElec_E[i]=new TH1F(hname_scat_elec_E, hname_scat_elec_E, 100,0,0.8);
 
   h_phi_truth[i] = new TH1F(hname_phi_truth, hname_phi_truth, 100,-200,200);
+  h_phi_reco[i] = new TH1F(hname_phi_reco, hname_phi_reco, 100,-200,200);
 
-  h_dPix[i] = new TH1F(hname_dPix, hname_dPix, 40,0,40);
+  h_dPix_truth[i] = new TH1F(hname_dPix_truth, hname_dPix_truth, 40,0,40);
+  h_dPix_reco[i] = new TH1F(hname_dPix_reco, hname_dPix_reco, 40,0,40);
   }
   //---------------------------
   
   
   h_dPhi_truth = new TH1F("diff_Phi_truth", "diff_Phi_truth", 100,-200,200);
-  h_dPhi_truth->GetXaxis()->SetTitle("dPhi (deg)");
+  h_dPhi_truth->GetXaxis()->SetTitle("dPhi_truth (deg)");
+
+  h_dPhi_reco = new TH1F("diff_Phi_reco", "diff_Phi_reco", 100,-200,200);
+  h_dPhi_reco->GetXaxis()->SetTitle("dPhi_reco (deg)");
   
   h_Phi1_vs_Phi2_truth = new TH2F("Phi1_vs_Phi2_truth", "Phi1_vs_Phi2_truth", 100,-200,200, 100,-200,200);
-  h_Phi1_vs_Phi2_truth->GetXaxis()->SetTitle("Phi1 (deg)");
-  h_Phi1_vs_Phi2_truth->GetYaxis()->SetTitle("Phi2 (deg)");
+  h_Phi1_vs_Phi2_truth->GetXaxis()->SetTitle("Phi1_truth (deg)");
+  h_Phi1_vs_Phi2_truth->GetYaxis()->SetTitle("Phi2_truth (deg)");
+
+  h_Phi1_vs_Phi2_reco = new TH2F("Phi1_vs_Phi2_reco", "Phi1_vs_Phi2_reco", 100,-200,200, 100,-200,200);
+  h_Phi1_vs_Phi2_reco->GetXaxis()->SetTitle("Phi1_reco (deg)");
+  h_Phi1_vs_Phi2_reco->GetYaxis()->SetTitle("Phi2_reco (deg)");
+
 }
 
 

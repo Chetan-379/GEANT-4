@@ -44,8 +44,8 @@ public :
    vector<double>  *Hit_Eta;
    vector<double>  *Hit_Eout;
    vector<double>  *Hit_Ein;
-   Float_t         right_module[8][8][4];
-   Float_t         left_module[8][8][4];
+   Float_t         right_module[8][8][7];
+   Float_t         left_module[8][8][7];
 
    // List of branches
    TBranch        *b_positionX;   //!

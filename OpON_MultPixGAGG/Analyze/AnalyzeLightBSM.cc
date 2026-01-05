@@ -238,25 +238,24 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
       
       int nOp_mdl[2] = {0}, nOp_gen_mdl[2] = {0};
       int nOp_crys[2] = {0}, nOp_gen_crys[2] = {0};
-      float EDep_mdl[2] = {0.}, EDep_crys[2] = {0.}, DetX[2] = {0.}, DetY[2] = {0.};
-      float Edep_diff[2] = {0.};
-      float Edep_reco_crys[2] = {0.};
+      float EDep_truth_mdl[2] = {0.}, EDep_reco_mdl[2] = {0.}, EDep_crys[2] = {0.}, Edep_reco_crys[2] = {0.}, DetX[2] = {0.}, DetY[2] = {0.};
+      float Edep_diff[2] = {0.};      
       float E_scatElec[2] = {0.};
 
-      int nHits_mdl[2] = {0}, nHits_mdl_truth[2] = {0};
+      int nHits_mdl_reco[2] = {0}, nHits_mdl_truth[2] = {0};
 
-      vector<vector<float>> Hit_Edep_reco, Hit_Edep_truth, Hit_Scat_elecE, Hit_DetX, Hit_DetY, Hit_DetX_truth, Hit_DetY_truth;
+      float sigma =0;
+
+      vector<vector<float>> Hit_Edep_reco, Hit_Edep_truth, Hit_Scat_elecE, Hit_DetX_reco, Hit_DetY_reco, Hit_DetX_truth, Hit_DetY_truth, Hit_nOp_indv, Hit_nOp_gen_indv;
       Hit_Edep_reco.resize(2);
       Hit_Edep_truth.resize(2);
       Hit_Scat_elecE.resize(2);
-      Hit_DetX.resize(2);
-      Hit_DetY.resize(2);
+      Hit_DetX_reco.resize(2);
+      Hit_DetY_reco.resize(2);
       Hit_DetX_truth.resize(2);
-      Hit_DetY_truth.resize(2);          
-
-      float scat_Edep[2] = {0}, abs_Edep[2] = {0}, theta_reco[2] = {0}, theta_truth[2] = {99999};
-
-      
+      Hit_DetY_truth.resize(2);
+      Hit_nOp_indv.resize(2);
+      Hit_nOp_gen_indv.resize(2);
 
       for (int mdl =0; mdl <2; mdl++){
 	for (int i =0; i<8; i++){
@@ -272,61 +271,84 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 
 	    if(nOp_crys[mdl] != 0) {	    
 	      h_DetX_crys[mdl]->Fill(DetX[mdl]);
-	      h_nOpPho_crys[mdl]->Fill(nOp_crys[mdl]);	    
+	      h_nOpPho_crys_inc[mdl]->Fill(nOp_crys[mdl]);
+	      h_nOpPho_gen_crys_inc[mdl]->Fill(nOp_gen_crys[mdl]);
+	      
 	      h_nOp_vs_Edep_crys[mdl]->Fill(EDep_crys[mdl], nOp_crys[mdl]);
 	      //Edep_reco_crys[mdl] = (1/21988.2) * nOp_crys[mdl];
-	      Edep_reco_crys[mdl] = (1/21929.7) * nOp_crys[mdl];
-	      h_Edep_true_Vs_reco_crys[mdl]->Fill(EDep_crys[mdl], Edep_reco_crys[mdl]);
-	      h_DetXvsDetY[mdl]->Fill(DetX[mdl], DetY[mdl]);
-	    
-	      nHits_mdl[mdl]++;
+	      Edep_reco_crys[mdl] = (1/21926.3) * nOp_crys[mdl];
 
-	      Hit_Edep_reco[mdl].push_back(Edep_reco_crys[mdl]);
-	      Hit_DetX[mdl].push_back(DetX[mdl]);
-	      Hit_DetY[mdl].push_back(DetY[mdl]);	   
+	      h_Edep_truth_crys[mdl]->Fill(EDep_crys[mdl]);
+	      h_Edep_reco_crys[mdl]->Fill(Edep_reco_crys[mdl]);
+	      h_Edep_true_Vs_reco_crys[mdl]->Fill(EDep_crys[mdl], Edep_reco_crys[mdl]);
 	    }
 			  
 	    nOp_mdl[mdl] += nOp_crys[mdl];
 	    nOp_gen_mdl[mdl] += nOp_gen_crys[mdl];
-	    EDep_mdl[mdl] += EDep_crys[mdl];
+	    
+	    EDep_truth_mdl[mdl] += EDep_crys[mdl];
+	    EDep_reco_mdl[mdl] += Edep_reco_crys[mdl];
 
-
-	    //if(EDep_crys[mdl] > 0.0001){
+	    //-------------------getting the relavant hits using true Edep---------------------
 	    if(EDep_crys[mdl] > 0.06 && EDep_crys[mdl]< 0.405){	    
 	      nHits_mdl_truth[mdl] ++;
 	      Hit_Edep_truth[mdl].push_back(EDep_crys[mdl]);
 	      Hit_Scat_elecE[mdl].push_back(E_scatElec[mdl]);
-	      h_elecE_vs_Edep_crys[mdl]->Fill(EDep_crys[mdl], E_scatElec[mdl]);
-	      h_Edep_crys[mdl]->Fill(EDep_crys[mdl]);
-
-	      //if(abs(EDep_crys - E_scatElec) < 0.001){
-  	      //auto theta_truth = GetScatAngle(EDep_crys); 
-  	      //h_theta_truth[mdl]->Fill(theta_truth*180/ TMath::Pi());
-	      //}
+	      
 	      Hit_DetX_truth[mdl].push_back(DetX[mdl]);
-	      Hit_DetY_truth[mdl].push_back(DetY[mdl]);	      
+	      Hit_DetY_truth[mdl].push_back(DetY[mdl]);
+
+	      h_elecE_vs_Edep_crys[mdl]->Fill(EDep_crys[mdl], E_scatElec[mdl]);
+	      //h_Edep_truth_crys[mdl]->Fill(EDep_crys[mdl]);
+	      h_DetXvsDetY_truth[mdl]->Fill(DetX[mdl], DetY[mdl]);
+
+	      Hit_nOp_indv[mdl].push_back(nOp_crys[mdl]);
+	      Hit_nOp_gen_indv[mdl].push_back(nOp_gen_crys[mdl]);
+	      
+	      h_nOpPho_crys_indv[mdl]->Fill(nOp_crys[mdl]);
+	      h_nOpPho_gen_crys_indv[mdl]->Fill(nOp_gen_crys[mdl]);	     
+	    }
+
+	    //-------------------getting the relavant hits using nOpPho at rear surface---------------------
+	    if(Edep_reco_crys[mdl] > 0.06-(3*sigma) && Edep_reco_crys[mdl]< 0.405+(3*sigma)){	    
+	      nHits_mdl_reco[mdl] ++;
+	      Hit_Edep_reco[mdl].push_back(Edep_reco_crys[mdl]);	        
+
+	      Hit_DetX_reco[mdl].push_back(DetX[mdl]);
+	      Hit_DetY_reco[mdl].push_back(DetY[mdl]);
+
+	      //h_Edep_reco_crys[mdl]->Fill(Edep_reco_crys[mdl]);
+	      h_DetXvsDetY_reco[mdl]->Fill(DetX[mdl], DetY[mdl]);	  	      
 	    }
 	  }
 	}
-      }
+	//---------------------------------------------------------------------------------------------------
+	//truth hists
+	h_Edep_truth_mdl[mdl] ->Fill(EDep_truth_mdl[mdl]);
+	h_nHits_truth_mdl[mdl]->Fill(nHits_mdl_truth[mdl]);
 
+	//reco hists
+	h_nOpPho_mdl_inc[mdl]->Fill(nOp_mdl[mdl]);
+	h_nOpPho_gen_mdl_inc[mdl]->Fill(nOp_gen_mdl[mdl]);
+	h_Edep_reco_mdl[mdl] ->Fill(EDep_reco_mdl[mdl]);
+	h_nHits_reco_mdl[mdl]->Fill(nHits_mdl_reco[mdl]);
 
-      //cout << nHits_mdl_truth << endl;
-
-      //Calculating theta using truth Edep
-      if(nHits_mdl_truth[r]==2 && nHits_mdl_truth[l]==2){
-	//if(nHits_mdl_truth[l]==2){
+	//for calibration (using both truth and reco info at the same time)
+	h_nOp_vs_Edep_mdl[mdl]->Fill(EDep_truth_mdl[mdl], nOp_mdl[mdl]);	
+      }       
       
-  	if(Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] <0.512 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] >=0.510){	  
+      
+//===============================Calculating theta using truth Edep====================================
+      if(nHits_mdl_truth[r]==2 && nHits_mdl_truth[l]==2){      
+  	if(Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] <0.512 && Hit_Edep_truth[r][0]+Hit_Edep_truth[r][1] >=0.510){
+	  h_nOpPho_mdl_sum[r]->Fill(Hit_nOp_indv[r][0]+Hit_nOp_indv[r][1]);
+	  h_nOpPho_gen_mdl_sum[r]->Fill(Hit_nOp_gen_indv[r][0]+Hit_nOp_gen_indv[r][1]);	  
 	  if(Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] <0.512 && Hit_Edep_truth[l][0]+Hit_Edep_truth[l][1] >=0.510){
 
-  	  // h_Edep_crys->Fill(Hit_Edep_truth[0]);
-  	  // h_Edep_crys->Fill(Hit_Edep_truth[1]);
-
-  	  float scat_Edep[2] ={0}, abs_Edep[2] ={0};
-  	  int scat_idx[2] ={99}, abs_idx[2] ={99};
-	  double phi_truth[2] ={999}, dPix[2] = {99999};
-
+	    float scat_Edep[2] ={0}, abs_Edep[2] ={0}, theta[2] = {9999};
+	    int scat_idx[2] ={99}, abs_idx[2] ={99};
+	    double phi[2] ={999}, dPix[2] = {99999};
+	    
 	  for (int Mdl =0; Mdl < 2; Mdl ++){
 	  if (Hit_Edep_truth[Mdl][0] < Hit_Edep_truth[Mdl][1]){	  	   
   	    scat_idx[Mdl] = 0;
@@ -346,10 +368,10 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	    
 	    //if(scat_Edep < 0.0476 && scat_Edep > 0.0474) cout << "look for Evt: " << jentry +1 << endl;
 	  
-	    theta_truth[Mdl] = GetScatAngle(scat_Edep[Mdl]);	  
+	    theta[Mdl] = GetScatAngle(scat_Edep[Mdl]);	  
 	    
 	    //if (scat_Edep[Mdl] < 0.25){	    
-	    h_theta_truth[Mdl]->Fill(theta_truth[Mdl]*180/ TMath::Pi());	     
+	    h_theta_truth[Mdl]->Fill(theta[Mdl]*180/ TMath::Pi());	     
 	    h_elecE_vs_scatEdep[Mdl]->Fill(scat_Edep[Mdl], Hit_Scat_elecE[Mdl][scat_idx[Mdl]]);
 	    
 	    //}
@@ -363,99 +385,128 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
   	  //   }
   	  // }
 
-  	  if (Hit_Edep_truth[Mdl][0] < Hit_Edep_truth[Mdl][1]){
-  	    h_Edep_scat[Mdl]->Fill(Hit_Edep_truth[Mdl][0]);
-  	    h_Edep_abs[Mdl]->Fill(Hit_Edep_truth[Mdl][1]);
-  	    h_Edep_scatVsabs[Mdl]->Fill(Hit_Edep_truth[Mdl][0], Hit_Edep_truth[Mdl][1]);
-  	  }
-	  
-  	  else if (Hit_Edep_truth[Mdl][1] < Hit_Edep_truth[Mdl][0]){
-  	    h_Edep_scat[Mdl]->Fill(Hit_Edep_truth[Mdl][1]);
-  	    h_Edep_abs[Mdl]->Fill(Hit_Edep_truth[Mdl][0]);
-  	    h_Edep_scatVsabs[Mdl]->Fill(Hit_Edep_truth[Mdl][1], Hit_Edep_truth[Mdl][0]);
-  	  }
-	  	  
+  	  
+  	    h_Edep_scat_truth[Mdl]->Fill(scat_Edep[Mdl]);
+  	    h_Edep_abs_truth[Mdl]->Fill(abs_Edep[Mdl]);
+  	    h_Edep_scatVsabs_truth[Mdl]->Fill(scat_Edep[Mdl], abs_Edep[Mdl]);  	  	  
 	  
   	  //------------------Calculating Phi---------------------------------------
-  	  float abs_DetX_truth = Hit_DetX_truth[Mdl][abs_idx[Mdl]];
-  	  float abs_DetY_truth = Hit_DetY_truth[Mdl][abs_idx[Mdl]];
+  	  float abs_DetX = Hit_DetX_truth[Mdl][abs_idx[Mdl]];
+  	  float abs_DetY = Hit_DetY_truth[Mdl][abs_idx[Mdl]];
 	  
-  	  float scat_DetX_truth = Hit_DetX_truth[Mdl][scat_idx[Mdl]];
-  	  float scat_DetY_truth = Hit_DetY_truth[Mdl][scat_idx[Mdl]];
+  	  float scat_DetX = Hit_DetX_truth[Mdl][scat_idx[Mdl]];
+  	  float scat_DetY = Hit_DetY_truth[Mdl][scat_idx[Mdl]];
 
   	  //phi_truth[Mdl] = atan((abs_DetY_truth-scat_DetY_truth)/(abs_DetX_truth-scat_DetX_truth));	
-	  phi_truth[Mdl] = atan2(abs_DetY_truth-scat_DetY_truth, abs_DetX_truth-scat_DetX_truth);
+	  phi[Mdl] = atan2(abs_DetY-scat_DetY, abs_DetX-scat_DetX);
 	  
   	  //h_phi_truth[Mdl]->Fill(phi_truth[Mdl]*180/ TMath::Pi());
-	  dPix[Mdl]= sqrt(((abs_DetX_truth-scat_DetX_truth)*(abs_DetX_truth-scat_DetX_truth))+((abs_DetY_truth-scat_DetY_truth)*(abs_DetY_truth-scat_DetY_truth)));
+	  dPix[Mdl]= sqrt(((abs_DetX-scat_DetX)*(abs_DetX-scat_DetX))+((abs_DetY-scat_DetY)*(abs_DetY-scat_DetY)));
 
 	  //cout << "pix distance: " << Pix_distance[Mdl] << endl;
-	  h_dPix[Mdl]->Fill(dPix[Mdl]);
+	  h_dPix_truth[Mdl]->Fill(dPix[Mdl]);
 	  }
 	  }	  
 	  
-	  if (theta_truth[r]< Rad(90) && theta_truth[r]> Rad(72) && theta_truth[l]< Rad(90) && theta_truth[l]> Rad(72)){
-	    h_phi_truth[r]->Fill(Deg(phi_truth[r]));
-	    h_phi_truth[l]->Fill(Deg(phi_truth[l]));
-	    h_Phi1_vs_Phi2_truth->Fill(Deg(phi_truth[r]), Deg(phi_truth[l]));
+	  if (theta[r]< Rad(90) && theta[r]> Rad(72) && theta[l]< Rad(90) && theta[l]> Rad(72)){
+	    h_phi_truth[r]->Fill(Deg(phi[r]));
+	    h_phi_truth[l]->Fill(Deg(phi[l]));
+	    h_Phi1_vs_Phi2_truth->Fill(Deg(phi[r]), Deg(phi[l]));
 	    
-	    float dPhi_truth = phi_truth[r] - phi_truth[l];
-	    if (abs(dPhi_truth) <= Pi) h_dPhi_truth->Fill(dPhi_truth*180/ Pi);
-	    else if(abs(dPhi_truth) > Pi && dPhi_truth>0) h_dPhi_truth->Fill((dPhi_truth-(2*Pi))*180/ Pi);
-	    else if(abs(dPhi_truth) > Pi && dPhi_truth<0) h_dPhi_truth->Fill((dPhi_truth+(2*Pi))*180/ Pi);	    
+	    float dPhi = phi[r] - phi[l];
+	    if (abs(dPhi) <= Pi) h_dPhi_truth->Fill(dPhi*180/ Pi);
+	    else if(abs(dPhi) > Pi && dPhi>0) h_dPhi_truth->Fill((dPhi-(2*Pi))*180/ Pi);
+	    else if(abs(dPhi) > Pi && dPhi<0) h_dPhi_truth->Fill((dPhi+(2*Pi))*180/ Pi);	    
 	    }
 	  //}
 	  }
 	}
       }
-      
+
+      //===============================Calculating theta using Reco Edep====================================
+      if(nHits_mdl_reco[r]==2 && nHits_mdl_reco[l]==2){      
+  	if(Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] < (0.511+(3*sigma)) && Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] >=(0.511-3*sigma)){	  
+	  if(Hit_Edep_reco[l][0]+Hit_Edep_reco[l][1] < (0.511+(3*sigma)) && Hit_Edep_reco[l][0]+Hit_Edep_reco[l][1] >=(0.511-3*sigma)){
+	    float scat_Edep[2] ={0}, abs_Edep[2] ={0}, theta[2] = {9999};
+	    int scat_idx[2] ={99}, abs_idx[2] ={99};
+	    double phi[2] ={999}, dPix[2] = {99999};
+	    
+	    for (int Mdl =0; Mdl < 2; Mdl ++){
+	      if (Hit_Edep_reco[Mdl][0] < Hit_Edep_reco[Mdl][1]){	  	   
+		scat_idx[Mdl] = 0;
+		abs_idx[Mdl] = 1;
+	      }
+	      
+	      else if (Hit_Edep_reco[Mdl][1] < Hit_Edep_reco[Mdl][0]){
+		scat_idx[Mdl] = 1;
+		abs_idx[Mdl] = 0;	    
+	      }
+	      
+	      if(scat_idx[Mdl] != 99 || abs_idx[Mdl] != 99){
+		scat_Edep[Mdl] = Hit_Edep_reco[Mdl][scat_idx[Mdl]];
+		abs_Edep[Mdl] = Hit_Edep_reco[Mdl][abs_idx[Mdl]];
+			     		
+		theta[Mdl] = GetScatAngle(scat_Edep[Mdl]);	  
+		
+		h_theta_reco[Mdl]->Fill(theta[Mdl]*180/ TMath::Pi());	     
+				
+		h_Edep_scat_reco[Mdl]->Fill(scat_Edep[Mdl]);
+		h_Edep_abs_reco[Mdl]->Fill(abs_Edep[Mdl]);
+		h_Edep_scatVsabs_reco[Mdl]->Fill(scat_Edep[Mdl], abs_Edep[Mdl]);
+	    
+	    	  	  	 	  
+  	  //------------------Calculating Phi---------------------------------------
+  	  float abs_DetX = Hit_DetX_reco[Mdl][abs_idx[Mdl]];
+  	  float abs_DetY = Hit_DetY_reco[Mdl][abs_idx[Mdl]];
+	  
+  	  float scat_DetX = Hit_DetX_reco[Mdl][scat_idx[Mdl]];
+  	  float scat_DetY = Hit_DetY_reco[Mdl][scat_idx[Mdl]];
+
+  	  //phi_truth[Mdl] = atan((abs_DetY_truth-scat_DetY_truth)/(abs_DetX_truth-scat_DetX_truth));	
+	  phi[Mdl] = atan2(abs_DetY-scat_DetY, abs_DetX-scat_DetX);
+	  
+  	  //h_phi[Mdl]->Fill(phi[Mdl]*180/ TMath::Pi());
+	  dPix[Mdl]= sqrt(((abs_DetX-scat_DetX)*(abs_DetX-scat_DetX))+((abs_DetY-scat_DetY)*(abs_DetY-scat_DetY)));
+
+	  //cout << "pix distance: " << Pix_distance[Mdl] << endl;
+	  h_dPix_reco[Mdl]->Fill(dPix[Mdl]);
+	  }
+	  }	  
+	  
+	  if (theta[r]< Rad(90) && theta[r]> Rad(72) && theta[l]< Rad(90) && theta[l]> Rad(72)){
+	    h_phi_reco[r]->Fill(Deg(phi[r]));
+	    h_phi_reco[l]->Fill(Deg(phi[l]));
+	    h_Phi1_vs_Phi2_reco->Fill(Deg(phi[r]), Deg(phi[l]));
+	    
+	    float dPhi = phi[r] - phi[l];
+	    if (abs(dPhi) <= Pi) h_dPhi_reco->Fill(dPhi*180/ Pi);
+	    else if(abs(dPhi) > Pi && dPhi>0) h_dPhi_reco->Fill((dPhi-(2*Pi))*180/ Pi);
+	    else if(abs(dPhi) > Pi && dPhi<0) h_dPhi_reco->Fill((dPhi+(2*Pi))*180/ Pi);	    
+	    }
+	  //}
+	  }
+	}
+      }
+
   
 
 
-      //Calculating theta using reco Edep
-      if(nHits_mdl[r]==2) {
-  	if(Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] <0.512 && Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] >=0.510){	
-  	  if (Hit_Edep_reco[r][0] < Hit_Edep_reco[r][1]) theta_reco[r] = GetScatAngle(Hit_Edep_reco[r][0]);
-  	  else if (Hit_Edep_reco[r][1] < Hit_Edep_reco[r][0]) theta_reco[r] = GetScatAngle(Hit_Edep_reco[r][1]);  
-  	  h_theta_reco[r]->Fill(theta_reco[r]*180/ TMath::Pi());	  
-  	}
-      }
+      // //Calculating theta using reco Edep
+      // if(nHits_mdl[r]==2) {
+      // 	if(Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] <0.512 && Hit_Edep_reco[r][0]+Hit_Edep_reco[r][1] >=0.510){	
+      // 	  if (Hit_Edep_reco[r][0] < Hit_Edep_reco[r][1]) theta_reco[r] = GetScatAngle(Hit_Edep_reco[r][0]);
+      // 	  else if (Hit_Edep_reco[r][1] < Hit_Edep_reco[r][0]) theta_reco[r] = GetScatAngle(Hit_Edep_reco[r][1]);  
+      // 	  h_theta_reco[r]->Fill(theta_reco[r]*180/ TMath::Pi());	  
+      // 	}
+      // }
       
-      h_nOpPho_mdl[r]->Fill(nOp_mdl[r]);
-      h_nOpPho_gen_mdl[r]->Fill(nOp_gen_mdl[r]);
-      h_Edep_mdl[r] ->Fill(EDep_mdl[r]);
-      h_nOp_vs_Edep_mdl[r]->Fill(EDep_mdl[r], nOp_mdl[r]);             
-      //h_nHits_mdl->Fill(nHits_mdl);
-      h_nHits_mdl[r]->Fill(nHits_mdl_truth[r]);     
-      
-
-      // if (nOp > 0) h_nOpPho->Fill(nOp);
-      // if (nOp_gen >0) h_nOpPho_gen->Fill(nOp_gen);
-
-      //if(EDep_mdl >= 0.444 && EDep_mdl <= 0.477) cout << jentry << endl;
-      
+           
       } //jentry loop end
 
   cout << "No. of events with exactly 2 Hits: " << nEvts2Hits << endl;
 
   cout << "\nTheta: " << Pi << endl;
-    cout << "\nScat ElecE: " << GetScatElecE(90) << endl;
-
-
-  //TH1F* hDiv = (TH1F*) h1->Clone("hDiv");
-  //-----------------fitting the 2d histogram to convert nOp to MeV---------------------  
-  //TF1 *fitfunc_crys = new TF1("FitFunc_mdl","[0]+[1]*x",0,20000);
-  // TF1 fitfunc_crys = new TF1(h_nOp_vs_Edep_crys->Fit("pol1"));
-  // //fitfunc_crys->SetParameters(0.0002,22000);
-  // fitfunc_crys->SetLineColor(kRed);  
-  // h_nOp_vs_Edep_crys->Draw();
-  // fitfunc_crys->Draw("same");
-
-  // //h_nOp_vs_Edep_crys->Fit("pol1");
-  //------------------------------------------------------------------------------------
-
-
-  
+  cout << "\nScat ElecE: " << GetScatElecE(90) << endl;  
   }
 
 void AnalyzeLightBSM::FillHistogram(double time, double posX, double posY, double posZ, double theta_deg, double eta_deg, double Ein, double Eout){
