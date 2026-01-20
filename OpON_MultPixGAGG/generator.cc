@@ -61,7 +61,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   fParticleGun->GeneratePrimaryVertex(anEvent);    
   gParticleGun->GeneratePrimaryVertex(anEvent);
 
-  //G4double relPol_ang = acos(pol1.dot(pol2))*180/CLHEP::pi;
+  //G4double relPol_ang = acos(XAxis.dot(gammaMom1))*180/CLHEP::pi;
   G4double relPol_ang = pol1.azimAngle(pol2, gammaMom1)*180/CLHEP::pi;
 
 

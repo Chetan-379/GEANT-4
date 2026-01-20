@@ -55,11 +55,10 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4ThreeVector pol2 = gammaMom2.orthogonal().unit();  
   pol2 = pol2.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom2);     //randomizing the photon polarisation 
   
-  gParticleGun->SetParticlePolarization(pol2);
-  
+  gParticleGun->SetParticlePolarization(pol2);  
 
-  fParticleGun->GeneratePrimaryVertex(anEvent);    
-  gParticleGun->GeneratePrimaryVertex(anEvent);
+  fParticleGun->GeneratePrimaryVertex(anEvent);  //shooting right    
+  gParticleGun->GeneratePrimaryVertex(anEvent);  //shooting left
 
   //G4double relPol_ang = acos(pol1.dot(pol2))*180/CLHEP::pi;
   G4double relPol_ang = pol1.azimAngle(pol2, gammaMom1)*180/CLHEP::pi;

@@ -103,8 +103,9 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
    auto vtx2 = event->GetPrimaryVertex(1);
    auto pol2  = vtx2->GetPrimary(0)->GetPolarization();
 
-   //relPol_Angle = acos(p1.dot(p2))*180/CLHEP::pi;
+   
    relPol_Angle = pol1.azimAngle(pol2, ref)*180/CLHEP::pi;
+   //relPol_Angle = acos(ref.dot(G4ThreeVector(1,0,0)))*180/CLHEP::pi;
    runObject->relPol_Angle = relPol_Angle;
 
  

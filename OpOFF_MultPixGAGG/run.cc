@@ -47,7 +47,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 
   tree->Branch("rel_PolAngle", &relPol_Angle);
   
-  hfile = hfile = TFile::Open("Uncorrelated_test.root","RECREATE");
+  hfile = hfile = TFile::Open("Uncorrelated_test_4.5M_2Mod_2Gun.root","RECREATE");
 }
 
 

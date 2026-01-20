@@ -55,7 +55,7 @@ public:
   TH1I *h_nOpPho_crys_inc[2], *h_nOpPho_gen_crys_inc[2], *h_nOpPho_mdl_inc[2], *h_nOpPho_gen_mdl_inc[2];
   TH1I *h_nOpPho_crys_indv[2], *h_nOpPho_gen_crys_indv[2], *h_nOpPho_mdl_indv[2], *h_nOpPho_gen_mdl_indv[2];
   TH1I *h_nOpPho_crys_sum[2], *h_nOpPho_gen_crys_sum[2], *h_nOpPho_mdl_sum[2], *h_nOpPho_gen_mdl_sum[2];
-
+  
 
   TH1F *h_DetX_crys[2], *h_Edep_truth_crys[2], *h_Edep_truth_mdl[2], *h_Edep_reco_mdl[2], *h_Edep_reco_crys[2];
 
@@ -67,18 +67,24 @@ public:
 
   TH1I *h_nHits_truth_mdl[2], *h_nHits_reco_mdl[2];
 
-  TH1F* h_theta_reco[2], *h_theta_truth[2], *h_scatElec_E[2], *h_phi_truth[2], *h_phi_reco[2], *h_dPix_truth[2], *h_dPix_reco[2];
+  TH1F* h_theta_reco[2], *h_theta_truth[2], *h_scatElec_E[2], *h_phi_truth[2], *h_phi_truth_EvtMix[2], *h_phi_reco[2], *h_dPix_truth[2], *h_dPix_reco[2];
 
   TH2F* h_elecE_vs_Edep_crys[2], *h_elecE_vs_scatEdep[2];
 
-  TH1F *h_dPhi_truth, *h_dPhi_reco;
-
+  TH1F *h_dPhi_truth_inc, *h_dPhi_truth_inc_dexc, *h_dPhi_reco_inc, *h_dPhi_truth_EvtMix_inc, *h_dPhi_truth_corrected_inc;
+  TH1F *h_dPhi_truth_70_90, *h_dPhi_truth_70_90_dexc, *h_dPhi_reco_70_90, *h_dPhi_truth_EvtMix_70_90, *h_dPhi_truth_corrected_70_90;
+  
   TH2F *h_Phi1_vs_Phi2_truth, *h_Phi1_vs_Phi2_reco;
+
+  TH2F *h_test2d;
+  TH1F *h_Edep_sum_reco;
    
   TFile *oFile;
 
   enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar =6};
 };
+
+enum ModIdx{r=0, l=1};
 
 enum sigma_check{inc=0, hitIndv=1, hitSum=2};
 #endif
@@ -127,7 +133,7 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   
   char hname_nOpPho_cryst_inc[50], hname_nOpPho_gen_cryst_inc[50], hname_nOpPho_mdl_inc[50], hname_nOpPho_gen_mdl_inc[50], hname_nOpPho_cryst_indv[50], hname_nOpPho_gen_cryst_indv[50], hname_nOpPho_mdl_indv[50], hname_nOpPho_gen_mdl_indv[50], hname_nOpPho_cryst_sum[50], hname_nOpPho_gen_cryst_sum[50], hname_nOpPho_mdl_sum[50], hname_nOpPho_gen_mdl_sum[50];
 
-  char hname_DetPosX_crys[50], hname_Edep_truth_cryst[50], hname_Edep_reco_cryst[50], hname_nOp_vs_Edep_cryst[50], hname_Edep_truth_mdl[50], hname_Edep_reco_mdl[50], hname_nOp_vs_Edep_mdl[50], hname_Edep_diff[50], hname_Edep_TrueVsReco_cryst[50], hname_nHits_truth_mdl[50], hname_nHits_reco_mdl[50], hname_DetXvsDetY_truth[50], hname_DetXvsDetY_reco[50], hname_theta_reco[50], hname_theta_truth[50], hname_scat_ElecVsEdep[50], hname_scat_ElecVSscat_Edep[50], hname_Edep_scat_truth[50], hname_Edep_abs_truth[50],  hname_Edep_scat_reco[50], hname_Edep_abs_reco[50], hname_Edep_scatVsabs_truth[50], hname_Edep_scatVsabs_reco[50], hname_scat_elec_E[50], hname_phi_truth[50], hname_phi_reco[50], hname_dPix_truth[50], hname_dPix_reco[50];
+  char hname_DetPosX_crys[50], hname_Edep_truth_cryst[50], hname_Edep_reco_cryst[50], hname_nOp_vs_Edep_cryst[50], hname_Edep_truth_mdl[50], hname_Edep_reco_mdl[50], hname_nOp_vs_Edep_mdl[50], hname_Edep_diff[50], hname_Edep_TrueVsReco_cryst[50], hname_nHits_truth_mdl[50], hname_nHits_reco_mdl[50], hname_DetXvsDetY_truth[50], hname_DetXvsDetY_reco[50], hname_theta_reco[50], hname_theta_truth[50], hname_scat_ElecVsEdep[50], hname_scat_ElecVSscat_Edep[50], hname_Edep_scat_truth[50], hname_Edep_abs_truth[50],  hname_Edep_scat_reco[50], hname_Edep_abs_reco[50], hname_Edep_scatVsabs_truth[50], hname_Edep_scatVsabs_reco[50], hname_scat_elec_E[50], hname_phi_truth[50], hname_phi_truth_EvtMix[50], hname_phi_reco[50], hname_dPix_truth[50], hname_dPix_reco[50];
 
   for (int i=0; i<2; i++){
   
@@ -173,6 +179,8 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
 
 
   sprintf(hname_phi_truth, "%s_phi_truth",ModName[i].c_str());
+  sprintf(hname_phi_truth_EvtMix, "%s_phi_truth_EvtMix",ModName[i].c_str());
+  
   sprintf(hname_phi_reco, "%s_phi_reco",ModName[i].c_str());
 
   
@@ -300,6 +308,8 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_scatElec_E[i]=new TH1F(hname_scat_elec_E, hname_scat_elec_E, 100,0,0.8);
 
   h_phi_truth[i] = new TH1F(hname_phi_truth, hname_phi_truth, 100,-200,200);
+  h_phi_truth_EvtMix[i] = new TH1F(hname_phi_truth_EvtMix, hname_phi_truth_EvtMix, 100,-200,200);
+
   h_phi_reco[i] = new TH1F(hname_phi_reco, hname_phi_reco, 100,-200,200);
 
   h_dPix_truth[i] = new TH1F(hname_dPix_truth, hname_dPix_truth, 40,0,40);
@@ -308,11 +318,6 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   //---------------------------
   
   
-  h_dPhi_truth = new TH1F("diff_Phi_truth", "diff_Phi_truth", 100,-200,200);
-  h_dPhi_truth->GetXaxis()->SetTitle("dPhi_truth (deg)");
-
-  h_dPhi_reco = new TH1F("diff_Phi_reco", "diff_Phi_reco", 100,-200,200);
-  h_dPhi_reco->GetXaxis()->SetTitle("dPhi_reco (deg)");
   
   h_Phi1_vs_Phi2_truth = new TH2F("Phi1_vs_Phi2_truth", "Phi1_vs_Phi2_truth", 100,-200,200, 100,-200,200);
   h_Phi1_vs_Phi2_truth->GetXaxis()->SetTitle("Phi1_truth (deg)");
@@ -322,6 +327,42 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   h_Phi1_vs_Phi2_reco->GetXaxis()->SetTitle("Phi1_reco (deg)");
   h_Phi1_vs_Phi2_reco->GetYaxis()->SetTitle("Phi2_reco (deg)");
 
+  //------------distributions for dPhi
+  h_dPhi_truth_inc = new TH1F("dPhi_truth_inc", "dPhi_truth_inc", 100,-200,200);
+  h_dPhi_truth_inc->GetXaxis()->SetTitle("dPhi_truth (deg)");
+
+  h_dPhi_truth_inc_dexc = new TH1F("dPhi_truth_inc_dexc", "dPhi_truth_inc_dexc", 100,-200,200);
+  h_dPhi_truth_inc_dexc->GetXaxis()->SetTitle("dPhi_truth (deg)");
+  
+  h_dPhi_reco_inc = new TH1F("dPhi_reco_inc", "dPhi_reco_inc", 100,-200,200);
+  h_dPhi_reco_inc->GetXaxis()->SetTitle("dPhi_reco (deg)");
+  
+  h_dPhi_truth_EvtMix_inc = new TH1F("dPhi_truth_EvtMix_inc", "dPhi_truth_EvtMix_inc", 100,-200,200);
+  h_dPhi_truth_EvtMix_inc->GetXaxis()->SetTitle("dPhi_truth_EvtMix (deg)");
+  
+  h_dPhi_truth_corrected_inc = new TH1F("dPhi_truth_corrected_EvtMix_inc", "dPhi_truth_corrected_EvtMix_inc", 20,-200,200);
+  h_dPhi_truth_corrected_inc->GetXaxis()->SetTitle("dPhi_truth (deg)");
+
+  //------ for theta 70 to 90 degs
+  h_dPhi_truth_70_90 = new TH1F("dPhi_truth_70_90", "dPhi_truth_70_90", 100,-200,200);
+  h_dPhi_truth_70_90->GetXaxis()->SetTitle("dPhi_truth (deg)");
+
+  h_dPhi_truth_70_90_dexc = new TH1F("dPhi_truth_70_90_dexc", "dPhi_truth_70_90_dexc", 100,-200,200);
+  h_dPhi_truth_70_90_dexc->GetXaxis()->SetTitle("dPhi_truth (deg)");
+  
+  h_dPhi_reco_70_90 = new TH1F("dPhi_reco_70_90", "dPhi_reco_70_90", 100,-200,200);
+  h_dPhi_reco_70_90->GetXaxis()->SetTitle("dPhi_reco (deg)");
+  
+  h_dPhi_truth_EvtMix_70_90 = new TH1F("dPhi_truth_EvtMix_70_90", "dPhi_truth_EvtMix_70_90", 100,-200,200);
+  h_dPhi_truth_EvtMix_70_90->GetXaxis()->SetTitle("dPhi_truth_EvtMix (deg)");
+  
+  h_dPhi_truth_corrected_70_90 = new TH1F("dPhi_truth_corrected_EvtMix_70_90", "dPhi_truth_corrected_EvtMix_70_90", 20,-200,200);
+  h_dPhi_truth_corrected_70_90->GetXaxis()->SetTitle("dPhi_truth (deg)");
+
+  h_Edep_sum_reco = new TH1F("h_Edep_reco_sum", "h_Edep_reco_sum", 500,0,1.1);
+  //h_test2d = new TH2F("test2D", "test2D", 80,-40,40, 80,-40,40);
+  //h_test2d = new TH2F("test2D", "test2D", 10000,-200,200, 100,-200,200);
+  h_test2d = new TH2F("test2D", "test2D", 100,0,1.1, 100,0,1.1);
 }
 
 
@@ -338,7 +379,7 @@ AnalyzeLightBSM::AnalyzeLightBSM(const TString &inputFileList, const char *outFi
 
   if(nameDetType!="signalH") nameDetType="BG";
   if(nameDetType=="signalH") nameDetType="signal";
-  cout<<"Treating the input files as "<<nameDetType<<" for setting tree branches"<<endl;
+  //cout<<"Treating the input files as "<<nameDetType<<" for setting tree branches"<<endl;
   NtupleVariables::Init(tree,nameDetType);
   
   BookHistogram(outFileName);
