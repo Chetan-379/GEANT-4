@@ -139,8 +139,8 @@ void MyDetectorConstruction::DefineMaterials()
 
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT1", G_ScintPhoEnergy, G_ScintFastArray, false, true);
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
-  //G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
-  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);  
+  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
+  // G_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);  
   G_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
@@ -149,8 +149,8 @@ void MyDetectorConstruction::DefineMaterials()
   G_MPT->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
   
   L_MPT->AddProperty("SCINTILLATIONCOMPONENT1", L_ScintPhoEnergy, L_ScintFastArray, false, true);
-  //L_MPT->AddConstProperty("SCINTILLATIONYIELD", 30000 / MeV);
-  L_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);
+  L_MPT->AddConstProperty("SCINTILLATIONYIELD", 30000 / MeV);
+  // L_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);
   L_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   L_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 40 * ns);
   L_MPT->AddConstProperty("SCINTILLATIONYIELD1", 1);
@@ -223,38 +223,62 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   logic_lyso->SetVisAttributes(visAttr_lyso);
 
 
-  for (int i =0; i<MatSize; i++){
-    for (int j=0; j<MatSize; j++){
-      for (int k =0; k<2; k++){
-	//GAGG---------------
-	auto *phys_gagg = new G4PVPlacement(nullptr,
-					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*(sep/2+Z_dim/4)),
-					    logic_gagg,
-					    "GAGG_PV",
-					    logicWorld,
-					    false,
-					    PosIdx[k]*(i+1+(10*(j+1))+100),
-					    false);
+  // for (int i =0; i<MatSize; i++){
+  //   for (int j=0; j<MatSize; j++){
+  //     for (int k =0; k<2; k++){
+  // 	//GAGG---------------
+  // 	auto *phys_gagg = new G4PVPlacement(nullptr,
+  // 					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*(sep/2+Z_dim/4)),
+  // 					    logic_gagg,
+  // 					    "GAGG_PV",
+  // 					    logicWorld,
+  // 					    false,
+  // 					    PosIdx[k]*(i+1+(10*(j+1))+100),
+  // 					    false);
 	
-	//LYSO---------------
-	auto *phys_lyso = new G4PVPlacement(nullptr,			 
-					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*(sep/2+(3.*Z_dim/4))),
-					    logic_lyso,
-					    "LYSO_PV",
-					    logicWorld,
-					    false,
-					    PosIdx[k]*(i+1+(10*(j+1))+200),
-					    false);
+  // 	//LYSO---------------
+  // 	auto *phys_lyso = new G4PVPlacement(nullptr,			 
+  // 					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*(sep/2+(3.*Z_dim/4))),
+  // 					    logic_lyso,
+  // 					    "LYSO_PV",
+  // 					    logicWorld,
+  // 					    false,
+  // 					    PosIdx[k]*(i+1+(10*(j+1))+200),
+  // 					    false);
 
 	
-	//-----------Placing the reflectors------------	
-	auto *gagg_AirBoundary = new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
-	auto *lyso_AirBoundary = new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
+  // 	//-----------Placing the reflectors------------	
+  // 	auto *gagg_AirBoundary = new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
+  // 	auto *lyso_AirBoundary = new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
 	
-      }
-    }
-  }  
-    
+  //     }
+  //   }
+  // }
+
+  //GAGG---------------
+  auto *phys_gagg = new G4PVPlacement(nullptr,
+				      G4ThreeVector(0.,0.,2*cm),
+				      logic_gagg,
+				      "GAGG_PV",
+				      logicWorld,
+				      false,
+				      111,
+				      false);
+  
+  //LYSO---------------
+  auto *phys_lyso = new G4PVPlacement(nullptr,			 
+				      G4ThreeVector(0.,0.,3*cm),
+				      logic_lyso,
+				      "LYSO_PV",
+				      logicWorld,
+				      false,
+				      211,
+				      false);
+	
+  //-----------Placing the reflectors------------	
+  auto *gagg_AirBoundary = new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
+  auto *lyso_AirBoundary = new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
+
   return physWorld;
 }
 

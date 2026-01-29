@@ -22,30 +22,9 @@ public:
 
   TFile *hfile;
   TTree *tree;
-  std::vector<double> X, Y, Z, E;
-  G4double Total_E, Total_Compt_Edep, Photo_Edep;
 
-  G4int nOpPhotons = 0;
-
-  std::vector<G4double> HitEdep, HitTime, HitScatAngle, HitEta, HitEout, HitEin;
-  std::vector<G4double> HitPosX, HitPosY, HitPosZ;
-  std::vector<G4int> HitDetId, HitGunId, HitProcId;
-
-  //std::vector<std::vector<G4int>> Module1, Module2;
-  G4float Module1[8][8][7], Module2[8][8][7], Edep_truth, E_outPtcl=0., E_verify=0;
-
-  std::vector<vector<vector<G4float>>> right_module;
-
-  G4int nPtcl_out =0, nSec_e=0, nSec_pho =0;
-
-  std::vector<G4double> E_eOut, E_phoOut;
-
-  G4float relPol_Angle=9999;
-
-  G4float scat_theta;
-  
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar=6};  
-  //CellHit Block1[8][8], Block2[8][8];
+  G4float Edep_truth, Edep_G_truth, Edep_L_truth;
+  G4int nOpGAGG, nOpLYSO, nOpGAGG_truth, nOpLYSO_truth;
 };
 
 #endif

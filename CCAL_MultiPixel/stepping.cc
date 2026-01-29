@@ -1,251 +1,104 @@
 #include "stepping.hh"
 
-MySteppingAction::MySteppingAction(MyEventAction *eventAction, MyRunAction* runAction)
+MySteppingAction::MySteppingAction(MyEventAction *eventAction, MyRunAction *runAction)
 {
   fEventAction = eventAction;
   fRunAction = runAction;
 }
 
 MySteppingAction::~MySteppingAction()
-{}
+{
+}
 
 void MySteppingAction::UserSteppingAction(const G4Step *step)
 {
   G4StepPoint *preStepPoint = step->GetPreStepPoint();
   G4StepPoint *postStepPoint = step->GetPostStepPoint();
-    
+
   G4ThreeVector phopos_pre = preStepPoint->GetPosition();
   G4ThreeVector phopos_post = postStepPoint->GetPosition();
-  
-  const G4TouchableHandle& preStepTouch = preStepPoint->GetTouchableHandle();
-  
+
+  const G4TouchableHandle &preStepTouch = preStepPoint->GetTouchableHandle();
+
   G4Track *track = step->GetTrack();
 
   G4int parentId = track->GetParentID();
   G4ThreeVector TrkPos = track->GetPosition();
 
-  G4int TrkId = track-> GetTrackID();
+  G4int TrkId = track->GetTrackID();
 
-  G4ParticleDefinition* particleDef = track->GetDefinition();
+  G4ParticleDefinition *particleDef = track->GetDefinition();
   G4String particleName = particleDef->GetParticleName();
   G4ThreeVector creatPos = track->GetVertexPosition();
-  
+
   G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
- 
+
   //=================Studying photon interaction with material===========
   G4double edep = step->GetTotalEnergyDeposit();
   fEventAction->AddEdep(edep);
-  
+
   G4double KE_i = preStepPoint->GetKineticEnergy();
   G4double KE_f = postStepPoint->GetKineticEnergy();
-  
-  if (step->GetTrack()->GetParentID() == 0 && TrkId ==1 && TrkPos[2]>0){
-    if (proc == "compt") {
-      fEventAction-> Compt_edep.push_back(KE_i - KE_f);      
+
+  if (step->GetTrack()->GetParentID() == 0 && TrkId == 1 && TrkPos[2] > 0)
+  {
+    if (proc == "compt")
+    {
+      fEventAction->Compt_edep.push_back(KE_i - KE_f);
     }
-    
-    if (proc == "phot") {      
-      fEventAction-> Photo_edep.push_back(KE_i - KE_f);
+
+    if (proc == "phot")
+    {
+      fEventAction->Photo_edep.push_back(KE_i - KE_f);
     }
-    
+
     fEventAction->Xarray.push_back(phopos_post[0]);
     fEventAction->Yarray.push_back(phopos_post[1]);
     fEventAction->Zarray.push_back(phopos_post[2]);
   }
-  
+
   //=================Analysing Scintillation photon======================
-  
-  G4TouchableHistory* postTouch = (G4TouchableHistory*) (postStepPoint->GetTouchable());
-  G4TouchableHistory* preTouch = (G4TouchableHistory*) (preStepPoint->GetTouchable());
 
-  G4TouchableHistory* postTouch_tst = (G4TouchableHistory*) (track->GetTouchable());
-  
-  G4String VolName= preTouch->GetVolume()->GetName();
-  
+  G4TouchableHistory *postTouch = (G4TouchableHistory *)(postStepPoint->GetTouchable());
+  G4TouchableHistory *preTouch = (G4TouchableHistory *)(preStepPoint->GetTouchable());
+
+  G4String VolName = preTouch->GetVolume()->GetName();
+
   G4String creatProc;
-  if (track->GetCreatorProcess()) creatProc = track->GetCreatorProcess()->GetProcessName();
-  
-  G4int DetId = 999;  
-  G4ThreeVector prePos = preStepPoint->GetPosition();
+  if (track->GetCreatorProcess())    creatProc = track->GetCreatorProcess()->GetProcessName();
+ 
+  G4float Op_lmbda = (1239.8e-6) / (postStepPoint->GetKineticEnergy());
 
-  G4ThreeVector DetPos;
-  auto history = preTouch->GetHistory();
-  G4int depth = history->GetDepth(); 
+  if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
+  {
+    if (particleName == "opticalphoton" && creatProc == "Scintillation")
+    {
+      if (TrkPos[2] == 35 * mm)
+        {
+	  //discrimination based on Op wavelength-------------------
+	  bool isGAGG = false, isLYSO = false;       
+	  if(Op_lmbda > 480) isGAGG = true;
+	  else isLYSO = true;
+	  
+	  if(isGAGG) fRunAction->nOpGAGG++;
+	  if(isLYSO) fRunAction->nOpLYSO++;
 
-   // G4cout << "pre step Point: " << prePos << G4endl;
-   // G4cout << "Post step Point: " << postStepPoint->GetPosition() << G4endl;
+	  //discrimination based on creation positionZ--------------
+	  bool isGAGG_truth = false, isLYSO_truth = false;
+	  if(creatPos[2] <= 25) isGAGG_truth =true;
+	  else isLYSO_truth = true;
+	  
+	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;
+	  if(isLYSO_truth) fRunAction->nOpLYSO_truth++;
 
-  if (VolName == "Scint_PV"){
-    //DetId = (10*(preTouch->GetVolume(1)->GetCopyNo()+1)+preTouch->GetVolume(2)->GetCopyNo()+1) * preTouch->GetVolume(3)->GetCopyNo();       
-    G4int row_Idx, col_Idx, module_Idx, row_test, col_test;   
-    
-    // row_Idx = preTouch->GetVolume(1)->GetCopyNo();
-    // col_Idx = preTouch->GetVolume(2)->GetCopyNo();
 
-    G4int Det_cpyNo = preStepPoint->GetTouchable()->GetVolume()->GetCopyNo();
-    row_Idx = abs(G4int (Det_cpyNo/10))-1;
-    col_Idx = abs(Det_cpyNo % 10)-1;
-
-    
-    //module_Idx = preTouch->GetVolume(3)->GetCopyNo();
-    if(Det_cpyNo > 0) module_Idx = 1;
-    else if (Det_cpyNo < 0) module_Idx = -1;
-    
-    // if(particleName == "e-") {
-      // G4cout << "\nrow: " << row_Idx << G4endl;
-      // G4cout << "col: " << col_Idx << G4endl;
-
-      // G4cout << "\nrow_test: " << row_test << G4endl;
-      // G4cout << "col_test: " << col_test << G4endl;
-
-      // G4cout << "\nDetPos: " << preStepPoint->GetTouchable()->GetTranslation() << G4endl;
-
-      // for (int i = 0; i < depth; ++i) {
-// 	G4cout << "[" << i << "] "
-// 	       << history->GetVolume(i)->GetName()
-// 	       << " copy=" << history->GetVolume(i)->GetCopyNo()
-// 	       << G4endl;
-// }
-
-      //}
-
-    DetPos =  preTouch->GetTranslation();
-
-    // if (edep>0) G4cout << module_Idx << "*[" << row_Idx << "][" << col_Idx << "]" << G4endl;
+	  track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
+        }      	
+    }
          
-    if(particleName == "opticalphoton" && creatProc == "Scintillation"){
-      if (prePos == creatPos) {
-	if (module_Idx == 1) {
-	  fEventAction->matrix1_gen[row_Idx][col_Idx]++;
-	  fRunAction->Module1[row_Idx][col_Idx][nGenOp]++;	  
-	}
-      
-	if (module_Idx == -1){
-	  fEventAction->matrix2_gen[row_Idx][col_Idx]++;
-	  //fRunAction->Module1[row_Idx][col_Idx][nGenOp]++;
-	  fRunAction->Module2[row_Idx][col_Idx][nGenOp]++;
-	}
-      }
-
-      if (TrkPos[2] == 35*mm || TrkPos[2] == -35*mm){
-	if (module_Idx == 1) {
-	  fEventAction->matrix1[row_Idx][col_Idx]++;
-	
-	  fRunAction->Module1[row_Idx][col_Idx][nOpPho]++;
-	  // fRunAction->Module1[row_Idx][col_Idx][DetPosX] = DetPos[0];
-	  // fRunAction->Module1[row_Idx][col_Idx][DetPosY] = DetPos[1];
-	}
-      
-	if (module_Idx == -1){
-	  fEventAction->matrix2[row_Idx][col_Idx]++;
-	
-	  fRunAction->Module2[row_Idx][col_Idx][nOpPho]++;
-	  // fRunAction->Module2[row_Idx][col_Idx][DetPosX] = DetPos[0];
-	  // fRunAction->Module2[row_Idx][col_Idx][DetPosY] = DetPos[1];	  
-	}
-      
-	//G4cout << "DetPos: " << DetPos << G4endl;
-      
-	track->SetTrackStatus(fStopAndKill);   //killing the Op pho at rear surface
-      }
-    }              
-    //    else if (particleName != "opticalphoton"){
-      if(module_Idx == 1) {
-	fRunAction->Module1[row_Idx][col_Idx][Edep] += edep;
-
-	fRunAction->Module1[row_Idx][col_Idx][DetPosX] = DetPos[0];
-	fRunAction->Module1[row_Idx][col_Idx][DetPosY] = DetPos[1];
-      }
-      
-      if(module_Idx == -1) {
-	fRunAction->Module2[row_Idx][col_Idx][Edep] += edep;
-
-	fRunAction->Module2[row_Idx][col_Idx][DetPosX] = DetPos[0];
-	fRunAction->Module2[row_Idx][col_Idx][DetPosY] = DetPos[1];
-      }
-      //}
-
-     double scatAngle, E_scatGamma;
-     //if (particleName == "gamma" && proc == "compt") {
-     if (particleName == "gamma" && (proc == "compt" || proc == "phot")) {
-       auto secondaries = step->GetSecondaryInCurrentStep();
-       
-       if (secondaries->size()>0){
-	 auto scat_e_E = (*secondaries)[0]->GetKineticEnergy();	 	 
-	 //if (preStepPoint->GetKineticEnergy() == 0.511){
-	 //auto sec_ptcl_name = (*secondaries)[0]->GetParticleDefinition()->GetParticleName();
-	 //G4cout << "secondary particle name: " << sec_ptcl_name << G4endl;
-	   scatAngle = acos(1-(0.511*((1/(0.511-scat_e_E)) - (1/0.511))));
-	   fRunAction->scat_theta = scatAngle*180/CLHEP::pi;
-	   
-	   if(module_Idx == 1) {
-	     fRunAction->Module1[row_Idx][col_Idx][E_elec] += scat_e_E;
-	     fRunAction->Module1[row_Idx][col_Idx][tryVar] += edep + scat_e_E;
-	   }
-
-	   if(module_Idx == -1) {
-	     fRunAction->Module2[row_Idx][col_Idx][E_elec] += scat_e_E;
-	     fRunAction->Module2[row_Idx][col_Idx][tryVar] += edep + scat_e_E;
-	   }
-	   
-	   //G4cout << "sec e E: " << scat_e_E << G4endl;
-	   
-	   
-	   //}
-       }
-     }     
+    fRunAction->Edep_truth += edep;
+    if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;
+    if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;
   }  
-  
-  fRunAction->Edep_truth += edep;  
-
-  //Don't pay attention here---------------------------------------------------------------------------------
-  if(parentId !=0 && (postStepPoint->GetStepStatus() == fWorldBoundary)) {
-    //if(parentId ==0 && (postStepPoint->GetStepStatus() == fWorldBoundary)) {
-    fRunAction->nPtcl_out++;
-    fRunAction->E_outPtcl += track->GetKineticEnergy();
-
-    if (particleName == "e-") {
-      fRunAction->nSec_e++;
-      fRunAction->E_eOut.push_back(track->GetKineticEnergy());     
-      //G4cout << "\n sec e out !!" << G4endl;
-    }
-    
-    else if (particleName == "gamma"){
-      fRunAction->nSec_pho++;
-      fRunAction->E_phoOut.push_back(track->GetKineticEnergy());
-    }
-
-    // if(particleName == "gamma" || particleName == "e-") fEventAction->chkEvt = fEventAction->ievent;
-    //-------------------------------------------------------------------------------------------------------    
-  }
-
-  // if(parentId == 0 && track->GetNextVolume() && track->GetNextVolume()->GetName( )== "OutOfWorld") G4cout << "\nParticle leaving the World" << G4endl;
-
-  //checking to reconstruct the scattering angle
-
-  // G4cout << "step end !!" << G4endl;
 }
 
-
-
-           
-  
-   
-
-   
-
-
-
-
-// G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
-  
-// const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*> (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-// G4LogicalVolume *fScoringVolume = detectorConstruction->GetScoringVolume();
-
-
-// for (int i = 0; i < depth; ++i) {
-// 	G4cout << "[" << i << "] "
-// 	       << history->GetVolume(i)->GetName()
-// 	       << " copy=" << history->GetReplicaNo(i)
-// 	       << G4endl;
-// }

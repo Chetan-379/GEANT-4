@@ -20,10 +20,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4ThreeVector YAxis(0,1,0);
   G4ThreeVector XAxis(1,0,0);
   
-  // mom = mom.rotate(0.6748*((2*G4UniformRand()) - 1.0), YAxis);
-  // mom = mom.rotate(0.6748*((2*G4UniformRand()) - 1.0), XAxis);
-  mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), XAxis);
-  mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), YAxis);
+  // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), XAxis);
+  // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), YAxis);
   
   fParticleGun->SetParticlePosition(pos);
   gParticleGun->SetParticlePosition(pos);
@@ -58,8 +56,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   gParticleGun->SetParticlePolarization(pol2);
   
 
-  fParticleGun->GeneratePrimaryVertex(anEvent);    
-  gParticleGun->GeneratePrimaryVertex(anEvent);
+  fParticleGun->GeneratePrimaryVertex(anEvent);    //shooting towards right
+  //gParticleGun->GeneratePrimaryVertex(anEvent);  //shooting towards left
 
   //G4double relPol_ang = acos(XAxis.dot(gammaMom1))*180/CLHEP::pi;
   G4double relPol_ang = pol1.azimAngle(pol2, gammaMom1)*180/CLHEP::pi;

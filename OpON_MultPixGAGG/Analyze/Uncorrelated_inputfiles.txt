@@ -3,3 +3,4 @@ src_root_files/OpOFF_Uncorrelated_5MEvts_Correct_detPos.root
 #src_root_files/Uncorrelated_OpOFF_4.5MEvts.root
 #src_root_files/Uncorrelated_OpOFF_50MEvts.root
 #src_root_files/Uncorrelated_OpON_5MEvts_4.5_0.5_1_15.root
+#src_root_files/Uncorrelated_OpON_10MEvts_condor.root

@@ -43,8 +43,8 @@ int main(int argc, char** argv)
     // Combine with PID
     gRandomSeed = timeSeed ^ getpid();
 
-    CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
-    CLHEP::HepRandom::setTheSeed(gRandomSeed);
+    // CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+    // CLHEP::HepRandom::setTheSeed(gRandomSeed);
     
     G4cout << "\n###########################" << G4endl;
     G4cout << "Random seed = " << gRandomSeed << G4endl;
