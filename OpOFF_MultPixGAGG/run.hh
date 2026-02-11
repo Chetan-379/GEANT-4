@@ -42,7 +42,7 @@ public:
 
   G4float scat_theta;
   
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar=6};  
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar=6, theta=7};  
   //CellHit Block1[8][8], Block2[8][8];
 };
 

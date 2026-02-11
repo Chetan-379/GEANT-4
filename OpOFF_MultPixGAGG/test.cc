@@ -10,8 +10,47 @@
 #include "construction.hh"
 #include "physics.hh"
 #include "action.hh"
+
+#include "Randomize.hh"
+#include <chrono>
+#include <unistd.h>   // getpid()
+
+#include <string>
+
+long gRandomSeed = 0;
+std::string gOutputFileName = " ";
+
 int main(int argc, char** argv)
 {
+   // -----------------------------
+    // Argument handling
+    // -----------------------------
+    if (argc < 2) {
+        G4cerr << "Usage: " << argv[0]
+               << " run.mac [output.root]" << G4endl;
+        //return 1;   //comment this if you want to run in the visualization
+    }
+
+    if (argc >= 3) {
+      gOutputFileName = argv[2];
+    }
+    
+  //-----------randomizing the run in terms of running time and system
+  // High-resolution time
+    auto now = std::chrono::high_resolution_clock::now();
+    long timeSeed = now.time_since_epoch().count();
+
+    // Combine with PID
+    gRandomSeed = timeSeed ^ getpid();
+
+    // CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+    // CLHEP::HepRandom::setTheSeed(gRandomSeed);
+    
+    G4cout << "\n###########################" << G4endl;
+    G4cout << "Random seed = " << gRandomSeed << G4endl;
+    G4cout << "OutFileName = " << gOutputFileName << G4endl;
+    G4cout << "###########################" << G4endl;
+    
   G4RunManager *runManager = new G4RunManager();
   runManager->SetUserInitialization(new MyDetectorConstruction());
   runManager->SetUserInitialization(new MyPhysicsList());
@@ -48,7 +87,7 @@ int main(int argc, char** argv)
   if(ui)
     {    
       UImanager->ApplyCommand("/control/execute vis.mac");
-      //UImanager->ApplyCommand("/tracking/verbose 1");
+      UImanager->ApplyCommand("/tracking/verbose 1");
       ui->SessionStart();
     }
 

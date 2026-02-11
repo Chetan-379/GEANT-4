@@ -46,14 +46,14 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   pol1 = pol1.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom1);     //randomizing the photon polarisation direction in the plane perp to gamma mom  
   fParticleGun->SetParticlePolarization(pol1);
 
-  G4ThreeVector gammaMom2 = fParticleGun->GetParticleMomentumDirection();
+  G4ThreeVector gammaMom2 = gParticleGun->GetParticleMomentumDirection();
   G4int sign = (G4UniformRand() < 0.5) ? -1 : 1;
   
-  // G4ThreeVector pol2 = pol1;
+  // G4ThreeVector pol2 = pol1;                //correlated
   // pol2 = pol2.rotate(sign*CLHEP::pi / 2.0, gammaMom1);
 
-  G4ThreeVector pol2 = gammaMom2.orthogonal().unit();  
-  pol2 = pol2.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom2);     //randomizing the photon polarisation 
+  G4ThreeVector pol2 = gammaMom2.orthogonal().unit();           //uncorrelated
+  pol2 = pol2.rotate(2*CLHEP::pi * G4UniformRand(), gammaMom2);    
   
   gParticleGun->SetParticlePolarization(pol2);  
 
@@ -61,10 +61,10 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   gParticleGun->GeneratePrimaryVertex(anEvent);  //shooting left
 
   //G4double relPol_ang = acos(pol1.dot(pol2))*180/CLHEP::pi;
-  G4double relPol_ang = pol1.azimAngle(pol2, gammaMom1)*180/CLHEP::pi;
+  G4double Angle = acos(pol2.dot(gammaMom1))*180./CLHEP::pi;
 
 
-  //G4cout << "Angle between the polarisations: " << relPol_ang << G4endl;
+  G4cout << "\n------------Angle: " << Angle << "--------------" << G4endl;
   
   // G4cout << "\n\nMomentum direction of the 1st incident photons: " << fParticleGun->GetParticleMomentumDirection () << G4endl;
   // G4cout << "polarisation vector (EF direction) of the 1st incident photons: " << fParticleGun->GetParticlePolarization() << "\n\n";

@@ -22,6 +22,9 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   
   // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), XAxis);
   // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), YAxis);
+
+  // mom = mom.rotate(0.1974*((2*G4UniformRand()) - 1.0), XAxis);
+  // mom = mom.rotate(0.1974*((2*G4UniformRand()) - 1.0), YAxis);
   
   fParticleGun->SetParticlePosition(pos);
   gParticleGun->SetParticlePosition(pos);

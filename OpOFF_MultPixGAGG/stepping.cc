@@ -166,8 +166,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       //}
 
      double scatAngle, E_scatGamma;
-     //if (particleName == "gamma" && proc == "compt") {
-     if (particleName == "gamma" && (proc == "compt" || proc == "phot")) {
+     if (particleName == "gamma" && proc == "compt") {
+     //if (particleName == "gamma" && (proc == "compt" || proc == "phot")) {
        auto secondaries = step->GetSecondaryInCurrentStep();
        
        if (secondaries->size()>0){
@@ -181,11 +181,13 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	   if(module_Idx == 1) {
 	     fRunAction->Module1[row_Idx][col_Idx][E_elec] += scat_e_E;
 	     fRunAction->Module1[row_Idx][col_Idx][tryVar] += edep + scat_e_E;
+	     fRunAction->Module1[row_Idx][col_Idx][theta] = scatAngle;
 	   }
 
 	   if(module_Idx == -1) {
 	     fRunAction->Module2[row_Idx][col_Idx][E_elec] += scat_e_E;
 	     fRunAction->Module2[row_Idx][col_Idx][tryVar] += edep + scat_e_E;
+	     fRunAction->Module2[row_Idx][col_Idx][theta] = scatAngle;
 	   }
 	   
 	   //G4cout << "sec e E: " << scat_e_E << G4endl;

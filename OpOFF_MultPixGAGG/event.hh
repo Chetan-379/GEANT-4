@@ -72,7 +72,7 @@ private:
 
   std::vector<G4int> E_eOut_vec, E_phoOut_vec;
 
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar=6};
+  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, tryVar=6, theta=7};
 
   std::vector<int> tgt_evt = {130, 180, 813, 999, 1499, 1973, 2511, 3174, 4044, 4314};
 

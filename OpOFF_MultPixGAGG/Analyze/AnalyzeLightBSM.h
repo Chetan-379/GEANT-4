@@ -69,7 +69,7 @@ public:
 
   TH2F* h_elecE_vs_Edep_crys[2], *h_elecE_vs_scatEdep[2];
 
-  TH1F *h_dPhi_truth, *h_dPhi_rmBkg_truth;
+  TH1F *h_dPhi_truth, *h_dPhi_truth_inc, *h_dPhi_rmBkg_truth;
 
   TH2F *h_Phi1_vs_Phi2_truth;
    
@@ -203,6 +203,8 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName) {
   }
   //---------------------------
   
+  h_dPhi_truth_inc = new TH1F("diff_Phi_truth_inc", "diff_Phi_truth_inc", 100,-200,200);
+  h_dPhi_truth_inc->GetXaxis()->SetTitle("dPhi_inc (deg)");
   
   h_dPhi_truth = new TH1F("diff_Phi_truth", "diff_Phi_truth", 100,-200,200);
   h_dPhi_truth->GetXaxis()->SetTitle("dPhi (deg)");

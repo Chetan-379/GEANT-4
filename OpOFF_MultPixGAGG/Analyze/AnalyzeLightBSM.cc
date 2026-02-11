@@ -393,16 +393,20 @@ void AnalyzeLightBSM::EventLoop(const char *detType,const char *inputFileList, c
 	  h_dPix[Mdl]->Fill(dPix[Mdl]);
 	  }
 	  }	  
+
+	  float dPhi_truth = phi_truth[r] - phi_truth[l];
+	  if (abs(dPhi_truth) <= Pi) dPhi_truth*180/ Pi;
+	  else if (dPhi_truth > Pi) dPhi_truth = dPhi_truth - (2*Pi);
+	  else if (dPhi_truth < -Pi) dPhi_truth = dPhi_truth + (2*Pi);
+	    
+	  h_dPhi_truth_inc->Fill(dPhi_truth*180/ Pi);
 	  
-	  if (theta_truth[r]< Rad(90) && theta_truth[r]> Rad(72) && theta_truth[l]< Rad(90) && theta_truth[l]> Rad(72)){
+	  if (theta_truth[r]<= Rad(90) && theta_truth[r]>= Rad(72) && theta_truth[l]<= Rad(90) && theta_truth[l]>= Rad(72)){
 	    h_phi_truth[r]->Fill(Deg(phi_truth[r]));
 	    h_phi_truth[l]->Fill(Deg(phi_truth[l]));
 	    h_Phi1_vs_Phi2_truth->Fill(Deg(phi_truth[r]), Deg(phi_truth[l]));
-	    
-	    float dPhi_truth = phi_truth[r] - phi_truth[l];
-	    if (abs(dPhi_truth) <= Pi) h_dPhi_truth->Fill(dPhi_truth*180/ Pi);
-	    else if(abs(dPhi_truth) > Pi && dPhi_truth>0) h_dPhi_truth->Fill((dPhi_truth-(2*Pi))*180/ Pi);
-	    else if(abs(dPhi_truth) > Pi && dPhi_truth<0) h_dPhi_truth->Fill((dPhi_truth+(2*Pi))*180/ Pi);	    
+	    	   
+	    h_dPhi_truth->Fill(dPhi_truth*180/ Pi);	    
 	    }
 	  //}
 	  }

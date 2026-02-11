@@ -41,6 +41,11 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
    runObject->nOpLYSO_truth =0;
    runObject->Edep_G_truth =0;
    runObject->Edep_L_truth =0;
+
+   for (int iqud = 0; iqud<4; iqud ++){
+     runObject->nOpG_quad[iqud] = 0;
+     runObject->nOpL_quad[iqud] = 0;
+   }
  
    G4cout << "\n=====================event No.: " << ievent << "====================" << G4endl;     
 }
@@ -50,7 +55,7 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   // G4cout << "\nGAGG_Edep: " << Edep_G_truth << G4endl;
   // G4cout << "\nLYSO_Edep: " << Edep_L_truth << G4endl;
   
-  runObject->tree->Fill();
+  runObject->tree->Fill();  
   ievent++;
   //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
 }

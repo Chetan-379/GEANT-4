@@ -5,12 +5,23 @@ void get_dphi_RmBkg() {
     // TFile *f1 = TFile::Open("out_root_files/OpOFF_Correlated_5MEvts_correct_DetPos_out.root");
     // TFile *f2 = TFile::Open("out_root_files/OpOFF_Uncorrelated_5MEvts_correct_DetPos_out.root");
 
-  TFile *f1 = TFile::Open("out_root_files/Correlated_OpOFF_50MEvts.root");
-  TFile *f2 = TFile::Open("out_root_files/Uncorrelated_OpOFF_50MEvts.root");
+  // TFile *f1 = TFile::Open("out_root_files/Correlated_OpOFF_50MEvts.root");
+  // TFile *f2 = TFile::Open("out_root_files/Uncorrelated_OpOFF_50MEvts.root");
 
-  
+  TFile *f1 = TFile::Open("out_root_files/Correlated_OpOFF_50MEvts_inc_out.root");
+  TFile *f2 = TFile::Open("out_root_files/Uncorrelated_OpOFF_50MEvts_inc_out.root");
+
+  // TFile *f1 = TFile::Open("out_root_files/OpOFF_Correlated_theta_70_90_5MEvts_correct_DetPos_correct_pol_out.root");
+  // TFile *f2 = TFile::Open("out_root_files/OpOFF_Uncorrelated_theta_70_90_5MEvts_correct_DetPos_out.root");
+
+  // TFile *f1 = TFile::Open("check_Correlated.root");
+  // TFile *f2 = TFile::Open("check_Uncorrelated.root");
+
   TH1F *h1 = (TH1F*) f1->Get("diff_Phi_truth");
   TH1F *h2 = (TH1F*) f2->Get("diff_Phi_truth");
+  
+  // TH1F *h1 = (TH1F*) f1->Get("diff_Phi_truth_inc");
+  // TH1F *h2 = (TH1F*) f2->Get("diff_Phi_truth_inc");
   
   h1->Sumw2();
   h2->Sumw2();

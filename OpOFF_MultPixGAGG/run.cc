@@ -1,5 +1,8 @@
 #include "run.hh"
 
+extern long gRandomSeed;
+extern std::string gOutputFileName;
+
 MyRunAction::MyRunAction()
 {}
 
@@ -32,8 +35,8 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Hit_Eta", &HitEta);
   tree->Branch("Hit_Eout", &HitEout);
   tree->Branch("Hit_Ein", &HitEin);
-  tree->Branch("right_module", Module1, "Module1[8][8][7]/F");
-  tree->Branch("left_module", Module2, "Module2[8][8][7]/F");
+  tree->Branch("right_module", Module1, "Module1[8][8][8]/F");
+  tree->Branch("left_module", Module2, "Module2[8][8][8]/F");
 
   tree->Branch("Edep_truch", &Edep_truth);
   tree->Branch("nPtcl_OutDet", &nPtcl_out);
@@ -46,8 +49,12 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("ScatTheta", &scat_theta);
 
   tree->Branch("rel_PolAngle", &relPol_Angle);
-  
-  hfile = hfile = TFile::Open("Uncorrelated_test_4.5M_2Mod_2Gun.root","RECREATE");
+  tree->Branch("RandomSeed", &gRandomSeed, "RandomSeed/L");
+
+  if(gOutputFileName != " ") hfile = hfile = TFile::Open((gOutputFileName).c_str(),"RECREATE");
+  else hfile = hfile = TFile::Open("test_vis.root","RECREATE");
+
+  G4cout << "----------------------Seed: " << gRandomSeed << "---------------" << G4endl;
 }
 
 

@@ -67,20 +67,23 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
       matrix1_gen[i][j] = 0;
       matrix2_gen[i][j] = 0;
 
-      runObject->Module1[i][j][nOpPho]=0;
-      runObject->Module2[i][j][nOpPho]=0;
+      runObject->Module1[i][j][nOpPho]=0.;
+      runObject->Module2[i][j][nOpPho]=0.;
 
-      runObject->Module1[i][j][nGenOp]=0;
-      runObject->Module2[i][j][nGenOp]=0;
+      runObject->Module1[i][j][nGenOp]=0.;
+      runObject->Module2[i][j][nGenOp]=0.;
 
-      runObject->Module1[i][j][Edep]=0;
-      runObject->Module2[i][j][Edep]=0;
+      runObject->Module1[i][j][Edep]=0.;
+      runObject->Module2[i][j][Edep]=0.;
 
-      runObject->Module1[i][j][E_elec]=0;
-      runObject->Module2[i][j][E_elec]=0;
+      runObject->Module1[i][j][E_elec]=0.;
+      runObject->Module2[i][j][E_elec]=0.;
 
-      runObject->Module1[i][j][tryVar]=0;
-      runObject->Module2[i][j][tryVar]=0;
+      runObject->Module1[i][j][tryVar]=0.;
+      runObject->Module2[i][j][tryVar]=0.;
+
+      runObject->Module1[i][j][theta]=0.;
+      runObject->Module2[i][j][theta]=0.;
     }   
   }
 
@@ -107,7 +110,7 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
    runObject->relPol_Angle = relPol_Angle;
 
  
-   G4cout << "\n=====================event No.: " << ievent << "====================" << G4endl;    
+   if(ievent%100000 == 0)   G4cout << "\n=====================event No.: " << ievent << "====================" << G4endl;    
    // for (int i =0; i<tgt_evt.size(); i++){
      if (ievent == chkEvt) {     
        //G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
@@ -201,18 +204,29 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   
   runObject->tree->Fill();
 
-  //G4cout << "\n\nsize of the matrix is: " << sizeof(matrix1) / sizeof(matrix1[0][0]) << G4endl;
+  G4cout << "\n\nsize of the matrix is: " << sizeof(matrix1) / sizeof(matrix1[0][0]) << G4endl;
   //if (ievent == chkEvt){
-  // G4cout << "\v============= right module Edep: =============" << G4endl;
-  //  for (int i = 0; i < 8; i++) {          // Loop over rows
-  //       for (int j = 0; j < 8; j++) {      // Loop over columns
-  // 	  G4int precision = 0;
-  // 	  if (runObject->Module1[i][j][Edep] ==0) precision = 0;
-  // 	  if (runObject->Module1[i][j][Edep] !=0) precision = 3;
-  // 	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module1[i][j][Edep] << " ";
-  //       }
-  //       G4cout << G4endl;                      // New line after each row
-  //   }
+  G4cout << "\v============= right module Edep: =============" << G4endl;
+   for (int i = 0; i < 8; i++) {          // Loop over rows
+        for (int j = 0; j < 8; j++) {      // Loop over columns
+  	  G4int precision = 0;
+  	  if (runObject->Module1[i][j][Edep] ==0) precision = 0;
+  	  if (runObject->Module1[i][j][Edep] !=0) precision = 3;
+  	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module1[i][j][Edep] << " ";
+        }
+        G4cout << G4endl;                      // New line after each row
+    }
+
+   G4cout << "\v============= left module Edep: =============" << G4endl;
+   for (int i = 0; i < 8; i++) {          // Loop over rows
+        for (int j = 0; j < 8; j++) {      // Loop over columns
+  	  G4int precision = 0;
+  	  if (runObject->Module2[i][j][Edep] ==0) precision = 0;
+  	  if (runObject->Module2[i][j][Edep] !=0) precision = 3;
+  	  G4cout << std::fixed << std::setprecision(precision) << std::setw(6) << runObject->Module2[i][j][Edep] << " ";
+        }
+        G4cout << G4endl;                      // New line after each row
+    }
 
    //   G4cout << "\n\n\v============= right module nOpPho: =============" << G4endl;
    // for (int i = 0; i < 8; i++) {          // Loop over rows
@@ -245,4 +259,5 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
   // }
   ievent++;
   //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;  
+  //}
 }

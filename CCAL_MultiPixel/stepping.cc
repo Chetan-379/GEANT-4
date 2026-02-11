@@ -68,30 +68,53 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (track->GetCreatorProcess())    creatProc = track->GetCreatorProcess()->GetProcessName();
  
   G4float Op_lmbda = (1239.8e-6) / (postStepPoint->GetKineticEnergy());
-
   if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
   {
     if (particleName == "opticalphoton" && creatProc == "Scintillation")
-    {
+    {      
       if (TrkPos[2] == 35 * mm)
         {
+	  G4float OpX = TrkPos[0];
+	  G4float OpY = TrkPos[1];
+
+	  G4int quad_idx = 9999;
+	  if(OpX >=0 && OpY >=0) quad_idx = 0;
+	  if(OpX <0 && OpY >0) quad_idx = 1;
+	  if(OpX <=0 && OpY <=0) quad_idx = 2;
+	  if(OpX >0 && OpY <0) quad_idx = 3;
+	  
+
 	  //discrimination based on Op wavelength-------------------
 	  bool isGAGG = false, isLYSO = false;       
-	  if(Op_lmbda > 480) isGAGG = true;
-	  else isLYSO = true;
+	  if(Op_lmbda >= 480) isGAGG = true;
+	  else if(Op_lmbda <= 479) isLYSO = true;
 	  
-	  if(isGAGG) fRunAction->nOpGAGG++;
-	  if(isLYSO) fRunAction->nOpLYSO++;
+	  if(isGAGG){
+	    fRunAction->nOpGAGG++;
+	    fRunAction->nOpG_quad[quad_idx]++;
+	    fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
+	    // G4cout << "lambda: " << Op_lmbda << G4endl;
+	    // G4cout << "createZ: " << creatPos[2] << G4endl;
+	    //fRunAction->h_zVslmbda->Fill(Op_lmbda, Op_lmbda);
+	  }
+
+	  if(isLYSO){
+	    fRunAction->nOpLYSO++;
+	    fRunAction->nOpL_quad[quad_idx]++;
+	    fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
+	    //fRunAction->h_zVslmbda->Fill(Op_lmbda, Op_lmbda);
+	  }
 
 	  //discrimination based on creation positionZ--------------
 	  bool isGAGG_truth = false, isLYSO_truth = false;
 	  if(creatPos[2] <= 25) isGAGG_truth =true;
 	  else isLYSO_truth = true;
 	  
-	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;
+	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;	  
 	  if(isLYSO_truth) fRunAction->nOpLYSO_truth++;
-
-
+	  
+	  
+	  //dividing the crystal end into 4 quads-------------------	  	  
 	  track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
         }      	
     }
