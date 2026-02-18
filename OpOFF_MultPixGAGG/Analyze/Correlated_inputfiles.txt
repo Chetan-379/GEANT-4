@@ -1,4 +1,0 @@
-src_root_files/OpOFF_Correlated_5M_OneGo.root
-#src_root_files/OpOFF_Correlated_5MEvts_Correct_detPos_correct_Pol.root
-#src_root_files/correlated_OpOFF_50MEvts.root
-

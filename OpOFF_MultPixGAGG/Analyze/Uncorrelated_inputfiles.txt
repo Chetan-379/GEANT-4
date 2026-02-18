@@ -1,5 +1,0 @@
-src_root_files/OpOFF_Uncorrelated_5M_OneGo.root
-#src_root_files/Uncorrelated_OpOFF_50MEvts.root
-#src_root_files/Uncorrelated_OpOFF_2mod_2gun_4.5MEvts.root
-#src_root_files/Uncorrelated_OpOFF_1mod_1gun_4.5MEvts.root
-#src_root_files/OpOFF_Uncorrelated_5MEvts_Correct_detPos.root
