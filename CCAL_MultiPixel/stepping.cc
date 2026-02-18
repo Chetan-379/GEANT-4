@@ -82,6 +82,10 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  if(OpX <0 && OpY >0) quad_idx = 1;
 	  if(OpX <=0 && OpY <=0) quad_idx = 2;
 	  if(OpX >0 && OpY <0) quad_idx = 3;
+
+	  fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
+	  fRunAction->h_Op_lmbda->Fill(Op_lmbda);
+	  fRunAction->h_Op_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
 	  
 
 	  //discrimination based on Op wavelength-------------------
@@ -91,32 +95,47 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  
 	  if(isGAGG){
 	    fRunAction->nOpGAGG++;
-	    fRunAction->nOpG_quad[quad_idx]++;
-	    fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
-	    // G4cout << "lambda: " << Op_lmbda << G4endl;
-	    // G4cout << "createZ: " << creatPos[2] << G4endl;
-	    //fRunAction->h_zVslmbda->Fill(Op_lmbda, Op_lmbda);
+	    fRunAction->nOpG_quad[quad_idx]++;	    
 	  }
 
 	  if(isLYSO){
 	    fRunAction->nOpLYSO++;
-	    fRunAction->nOpL_quad[quad_idx]++;
-	    fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
-	    //fRunAction->h_zVslmbda->Fill(Op_lmbda, Op_lmbda);
-	  }
+	    fRunAction->nOpL_quad[quad_idx]++;	  
+	  }	  
 
 	  //discrimination based on creation positionZ--------------
 	  bool isGAGG_truth = false, isLYSO_truth = false;
 	  if(creatPos[2] <= 25) isGAGG_truth =true;
 	  else isLYSO_truth = true;
-	  
-	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;	  
+
+	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;
 	  if(isLYSO_truth) fRunAction->nOpLYSO_truth++;
-	  
-	  
-	  //dividing the crystal end into 4 quads-------------------	  	  
-	  track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
-        }      	
+	  //track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
+        }
+
+      //counting the Op photons which gets detected after QE of SiPM
+      G4OpBoundaryProcessStatus boundaryStatus = Undefined;
+
+      auto part = track->GetDefinition();
+      // find the boundary process only once
+      if (nullptr == fBoundary) {
+	G4ProcessManager* pm = part->GetProcessManager();
+	G4int nprocesses = pm->GetProcessListLength();
+	G4ProcessVector* pv = pm->GetProcessList();
+	for (G4int i = 0; i < nprocesses; ++i) {
+	  if (nullptr != (*pv)[i] && (*pv)[i]->GetProcessName() == "OpBoundary") {
+	    fBoundary = dynamic_cast<G4OpBoundaryProcess*>((*pv)[i]);
+	    break;
+	  }
+	}
+      }
+      
+      if (nullptr != fBoundary) boundaryStatus = fBoundary->GetStatus();    
+      if (boundaryStatus == Detection) {   //detection only possible at SiPM surface as other have zero efficiency
+	fRunAction->h_Op_QE_lmbda->Fill(Op_lmbda);
+	fRunAction->h_Op_QE_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
+	fRunAction->h_Op_QE_Z->Fill(TrkPos[2]);
+      }     
     }
          
     fRunAction->Edep_truth += edep;

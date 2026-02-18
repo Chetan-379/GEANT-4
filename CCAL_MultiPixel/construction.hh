@@ -38,11 +38,11 @@ public:
 
 private:
   virtual void ConstructSDandField();
-  G4Material *worldMat, *gagg, *lyso;
+  G4Material *worldMat, *gagg, *lyso, *SiPM_Mat;
 
   G4Element *Gd, *Al, *Ga, *O, *Lu, *Y, *Si;
 
-  G4OpticalSurface* OpSurface_ScintAir;
+  G4OpticalSurface* OpSurface_ScintAir, *OpSurface_SiPM;
   // G4LogicalVolume ScintLV;
   // G4Box ScintS;
 

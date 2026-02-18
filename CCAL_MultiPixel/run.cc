@@ -26,11 +26,26 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   
   tree->Branch("RandomSeed", &gRandomSeed, "RandomSeed/L");
 
-  //h_Op_lmbda = new TH1F("Op_lambda","Op_lambda",1000,0,1000);
+  h_Op_lmbda = new TH1F("Op_lambda","Op_lambda",1000,0,1000);
+  h_Op_lmbda->GetXaxis()->SetTitle("Op_lambda (nm)");
+  
+  h_Op_energy = new TH1F("Op_energy","Op_energy",1000,0,4);
+  h_Op_energy->GetXaxis()->SetTitle("Op_energy (eV)");
 
-  h_zVslmbda = new TH2F("Op_lambda","Op_lambda", 100,15,35, 1000,0,1000);
+  h_zVslmbda = new TH2F("Op_Z_vs_lambda","Op_Z_vs_lambda", 100,15,35, 1000,0,1000);
   h_zVslmbda->GetXaxis()->SetTitle("CreateZ (mm)");
   h_zVslmbda->GetYaxis()->SetTitle("Op_lambda (nm)");
+
+  //detected optical photons
+  h_Op_QE_lmbda = new TH1F("Op_QE_lambda","Op_QE_lambda",1000,0,1000);
+  h_Op_QE_lmbda->GetXaxis()->SetTitle("Op_QE_lambda (nm)");
+  
+  h_Op_QE_energy = new TH1F("Op_QE_energy","Op_QE_energy",1000,0,4);
+  h_Op_QE_energy->GetXaxis()->SetTitle("Op_QE_energy (eV)");
+  
+  h_Op_QE_Z = new TH1F("Op_QE_Z","Op_QE_Z",1000,10,40);
+  h_Op_QE_Z->GetXaxis()->SetTitle("Op_QE_Z (mm)");
+  
   //output root file------------------
   if(gOutputFileName != " ") hfile = hfile = TFile::Open((gOutputFileName).c_str(),"RECREATE");
   else hfile = hfile = TFile::Open("test_vis.root","RECREATE");
@@ -43,9 +58,14 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
 void MyRunAction::EndOfRunAction(const G4Run*)
 {
   tree->Write();
-  //h_Op_lmbda->Write();
+
+  h_Op_lmbda->Write();
+  h_Op_energy->Write();
   h_zVslmbda->Write();
   
+  h_Op_QE_lmbda->Write();
+  h_Op_QE_energy->Write();
+  h_Op_QE_Z->Write();
 
   hfile->Close();
   G4cout << "Run Ended !!" << G4endl;

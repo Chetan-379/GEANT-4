@@ -4,6 +4,8 @@
 #include "G4UserSteppingAction.hh"
 #include "G4Step.hh"
 #include "G4Track.hh"
+#include "G4OpBoundaryProcess.hh"
+
 
 #include "construction.hh"
 #include "event.hh"
@@ -21,6 +23,7 @@ private:
   MyRunAction *fRunAction;
   //enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
   enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, Op_G=6, Op_L=7};
+  G4OpBoundaryProcess* fBoundary = nullptr;  
 };
 
 #endif
