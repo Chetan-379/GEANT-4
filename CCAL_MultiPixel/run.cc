@@ -16,6 +16,8 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree = new TTree("tree","HitInfo");
   tree->Branch("nOp_GAGG", &nOpGAGG);
   tree->Branch("nOp_LYSO", &nOpLYSO);
+  tree->Branch("nOp_GAGG_QE", &nOpGAGG_QE);
+  tree->Branch("nOp_LYSO_QE", &nOpLYSO_QE);
   tree->Branch("nOp_GAGG_truth", &nOpGAGG_truth);
   tree->Branch("nOp_LYSO_truth", &nOpLYSO_truth);
   tree->Branch("Edep_truth", &Edep_truth);

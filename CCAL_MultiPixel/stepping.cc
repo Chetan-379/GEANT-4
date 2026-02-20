@@ -41,21 +41,21 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4double KE_f = postStepPoint->GetKineticEnergy();
 
   if (step->GetTrack()->GetParentID() == 0 && TrkId == 1 && TrkPos[2] > 0)
-  {
-    if (proc == "compt")
     {
-      fEventAction->Compt_edep.push_back(KE_i - KE_f);
-    }
+      if (proc == "compt")
+	{
+	  fEventAction->Compt_edep.push_back(KE_i - KE_f);
+	}
 
-    if (proc == "phot")
-    {
-      fEventAction->Photo_edep.push_back(KE_i - KE_f);
-    }
+      if (proc == "phot")
+	{
+	  fEventAction->Photo_edep.push_back(KE_i - KE_f);
+	}
 
-    fEventAction->Xarray.push_back(phopos_post[0]);
-    fEventAction->Yarray.push_back(phopos_post[1]);
-    fEventAction->Zarray.push_back(phopos_post[2]);
-  }
+      fEventAction->Xarray.push_back(phopos_post[0]);
+      fEventAction->Yarray.push_back(phopos_post[1]);
+      fEventAction->Zarray.push_back(phopos_post[2]);
+    }
 
   //=================Analysing Scintillation photon======================
 
@@ -69,78 +69,81 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
  
   G4float Op_lmbda = (1239.8e-6) / (postStepPoint->GetKineticEnergy());
   if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
-  {
-    if (particleName == "opticalphoton" && creatProc == "Scintillation")
-    {      
-      if (TrkPos[2] == 35 * mm)
-        {
-	  G4float OpX = TrkPos[0];
-	  G4float OpY = TrkPos[1];
-
-	  G4int quad_idx = 9999;
-	  if(OpX >=0 && OpY >=0) quad_idx = 0;
-	  if(OpX <0 && OpY >0) quad_idx = 1;
-	  if(OpX <=0 && OpY <=0) quad_idx = 2;
-	  if(OpX >0 && OpY <0) quad_idx = 3;
-
-	  fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
-	  fRunAction->h_Op_lmbda->Fill(Op_lmbda);
-	  fRunAction->h_Op_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
-	  
-
-	  //discrimination based on Op wavelength-------------------
+    {
+      if (particleName == "opticalphoton" && creatProc == "Scintillation")
+	{
 	  bool isGAGG = false, isLYSO = false;       
-	  if(Op_lmbda >= 480) isGAGG = true;
-	  else if(Op_lmbda <= 479) isLYSO = true;
+	  if (TrkPos[2] == 35 * mm)
+	    {
+	      G4float OpX = TrkPos[0];
+	      G4float OpY = TrkPos[1];
+	    
+	      G4int quad_idx = 9999;
+	      if(OpX >=0 && OpY >=0) quad_idx = 0;
+	      if(OpX <0 && OpY >0) quad_idx = 1;
+	      if(OpX <=0 && OpY <=0) quad_idx = 2;
+	      if(OpX >0 && OpY <0) quad_idx = 3;
+
+	      fRunAction->h_zVslmbda->Fill(creatPos[2], Op_lmbda);
+	      fRunAction->h_Op_lmbda->Fill(Op_lmbda);
+	      fRunAction->h_Op_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
 	  
-	  if(isGAGG){
-	    fRunAction->nOpGAGG++;
-	    fRunAction->nOpG_quad[quad_idx]++;	    
+
+	      //discrimination based on Op wavelength-------------------	      
+	      if(Op_lmbda >= 480) isGAGG = true;
+	      else if(Op_lmbda <= 479) isLYSO = true;
+	  
+	      if(isGAGG){
+		fRunAction->nOpGAGG++;
+		fRunAction->nOpG_quad[quad_idx]++;	    
+	      }
+
+	      if(isLYSO){
+		fRunAction->nOpLYSO++;
+		fRunAction->nOpL_quad[quad_idx]++;	  
+	      }	  
+
+	      //discrimination based on creation positionZ--------------
+	      bool isGAGG_truth = false, isLYSO_truth = false;
+	      if(creatPos[2] <= 25) isGAGG_truth =true;
+	      else isLYSO_truth = true;
+
+	      if(isGAGG_truth) fRunAction->nOpGAGG_truth++;
+	      if(isLYSO_truth) fRunAction->nOpLYSO_truth++;
+	      //track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
+	    }
+
+	  //counting the Op photons which gets detected after QE of SiPM
+	  G4OpBoundaryProcessStatus boundaryStatus = Undefined;
+
+	  auto part = track->GetDefinition();
+	  // find the boundary process only once
+	  if (nullptr == fBoundary) {
+	    G4ProcessManager* pm = part->GetProcessManager();
+	    G4int nprocesses = pm->GetProcessListLength();
+	    G4ProcessVector* pv = pm->GetProcessList();
+	    for (G4int i = 0; i < nprocesses; ++i) {
+	      if (nullptr != (*pv)[i] && (*pv)[i]->GetProcessName() == "OpBoundary") {
+		fBoundary = dynamic_cast<G4OpBoundaryProcess*>((*pv)[i]);
+		break;
+	      }
+	    }
 	  }
+      
+	  if (nullptr != fBoundary) boundaryStatus = fBoundary->GetStatus();    
+	  if (boundaryStatus == Detection) {   //detection only possible at SiPM surface as other have zero efficiency
+	    fRunAction->h_Op_QE_lmbda->Fill(Op_lmbda);
+	    fRunAction->h_Op_QE_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
+	    fRunAction->h_Op_QE_Z->Fill(TrkPos[2]);
 
-	  if(isLYSO){
-	    fRunAction->nOpLYSO++;
-	    fRunAction->nOpL_quad[quad_idx]++;	  
-	  }	  
-
-	  //discrimination based on creation positionZ--------------
-	  bool isGAGG_truth = false, isLYSO_truth = false;
-	  if(creatPos[2] <= 25) isGAGG_truth =true;
-	  else isLYSO_truth = true;
-
-	  if(isGAGG_truth) fRunAction->nOpGAGG_truth++;
-	  if(isLYSO_truth) fRunAction->nOpLYSO_truth++;
-	  //track->SetTrackStatus(fStopAndKill); // killing the Op pho at rear surface
-        }
-
-      //counting the Op photons which gets detected after QE of SiPM
-      G4OpBoundaryProcessStatus boundaryStatus = Undefined;
-
-      auto part = track->GetDefinition();
-      // find the boundary process only once
-      if (nullptr == fBoundary) {
-	G4ProcessManager* pm = part->GetProcessManager();
-	G4int nprocesses = pm->GetProcessListLength();
-	G4ProcessVector* pv = pm->GetProcessList();
-	for (G4int i = 0; i < nprocesses; ++i) {
-	  if (nullptr != (*pv)[i] && (*pv)[i]->GetProcessName() == "OpBoundary") {
-	    fBoundary = dynamic_cast<G4OpBoundaryProcess*>((*pv)[i]);
-	    break;
+	    if(isGAGG) fRunAction->nOpGAGG_QE++;
+	    if(isLYSO) fRunAction->nOpLYSO_QE++;
 	  }
 	}
-      }
-      
-      if (nullptr != fBoundary) boundaryStatus = fBoundary->GetStatus();    
-      if (boundaryStatus == Detection) {   //detection only possible at SiPM surface as other have zero efficiency
-	fRunAction->h_Op_QE_lmbda->Fill(Op_lmbda);
-	fRunAction->h_Op_QE_energy->Fill(postStepPoint->GetKineticEnergy()*1e6);
-	fRunAction->h_Op_QE_Z->Fill(TrkPos[2]);
-      }     
-    }
          
-    fRunAction->Edep_truth += edep;
-    if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;
-    if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;
-  }  
+      fRunAction->Edep_truth += edep;
+      if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;
+      if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;
+    }  
 }
 

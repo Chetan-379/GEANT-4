@@ -39,6 +39,9 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
    runObject->nOpLYSO =0;
    runObject->nOpGAGG_truth =0;
    runObject->nOpLYSO_truth =0;
+   runObject->nOpGAGG_QE =0;
+   runObject->nOpLYSO_QE =0;
+   
    runObject->Edep_G_truth =0;
    runObject->Edep_L_truth =0;
 

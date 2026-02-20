@@ -68,8 +68,8 @@ void MyDetectorConstruction::DefineMaterials()
 
   //defining the emission spectra of GAGG from csv file
   std::vector<G4double> G_ScintPhoEnergy, G_ScintFastArray, G_ScintSlowArray;
-  std::ifstream GAGG_file("../test_GAGG_emission.csv");
-  //std::ifstream GAGG_file("../GAGG_emission.csv"); 
+  //std::ifstream GAGG_file("../test_GAGG_emission.csv");
+  std::ifstream GAGG_file("../GAGG_emission.csv"); 
   std::string line;
   
   std::getline(GAGG_file, line);  //skipping the headers in csv file
@@ -89,8 +89,8 @@ void MyDetectorConstruction::DefineMaterials()
   
   //defining the emission spectra of LYSO from csv file
   std::vector<G4double> L_ScintPhoEnergy, L_ScintFastArray;
-  std::ifstream LYSO_file("../test_LYSO_emission.csv");
-  //std::ifstream LYSO_file("../LYSO_emission.csv");
+  //std::ifstream LYSO_file("../test_LYSO_emission.csv");
+  std::ifstream LYSO_file("../LYSO_emission.csv");
   
   std::getline(LYSO_file, line);  //skipping the headers in csv file
   while (std::getline(LYSO_file, line)) {
@@ -132,14 +132,14 @@ void MyDetectorConstruction::DefineMaterials()
   }
 
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT1", G_ScintPhoEnergy, G_ScintFastArray, false, true);
-  //G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
+  G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
   G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
   // G_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);  
   G_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
-  //G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
+  G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
   G_MPT->AddConstProperty("SCINTILLATIONYIELD1", 0.392);
-  //G_MPT->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
+  G_MPT->AddConstProperty("SCINTILLATIONYIELD2", 0.608);
   G_MPT->AddConstProperty("SCINTILLATIONRISETIME1", 8 * ns);
   
   L_MPT->AddProperty("SCINTILLATIONCOMPONENT1", L_ScintPhoEnergy, L_ScintFastArray, false, true);
@@ -185,8 +185,9 @@ void MyDetectorConstruction::DefineMaterials()
 
   //defining the Quantum Efficiency of SiPM from csv file
   std::vector<G4double> SiPM_PhoEnergy, SiPM_EFF;
-  std::ifstream SiPM_file("../SiPM_QE.csv");
-  //std::ifstream LYSO_file("../LYSO_emission.csv");
+  //std::ifstream SiPM_file("../SiPM_QE.csv");
+  std::ifstream SiPM_file("../Abs_frac_SiPM_QE.csv");
+ 
   
   std::getline(SiPM_file, line);  //skipping the headers in csv file
   while (std::getline(SiPM_file, line)) {

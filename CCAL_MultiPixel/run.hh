@@ -24,7 +24,7 @@ public:
   TTree *tree;
 
   G4float Edep_truth, Edep_G_truth, Edep_L_truth;
-  G4int nOpGAGG, nOpLYSO, nOpGAGG_truth, nOpLYSO_truth, nOpG_quad[4], nOpL_quad[4];
+  G4int nOpGAGG, nOpLYSO, nOpGAGG_truth, nOpLYSO_truth, nOpG_quad[4], nOpL_quad[4], nOpGAGG_QE, nOpLYSO_QE;
 
   TH1F *h_Op_lmbda, *h_Op_energy;
   TH2F *h_zVslmbda;
