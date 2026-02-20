@@ -3,9 +3,16 @@ In this version, I have applied QE of a SiPM at the rear surface of LYSO for the
 
 =================================
 To run the simulation:
+
 `mkdir build`
+
 `cd build`
+
 `cmake ..`
+
 `make`
+
 `./CCal_OpON`   (to run with visualization)
+
 `./CCal_OpON run.mac <output file name>`   (to run in batch mode)
+
