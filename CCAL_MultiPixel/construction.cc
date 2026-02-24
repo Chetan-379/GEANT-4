@@ -133,8 +133,8 @@ void MyDetectorConstruction::DefineMaterials()
 
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT1", G_ScintPhoEnergy, G_ScintFastArray, false, true);
   G_MPT->AddProperty("SCINTILLATIONCOMPONENT2", G_ScintPhoEnergy, G_ScintSlowArray, false, true);
-  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
-  // G_MPT->AddConstProperty("SCINTILLATIONYIELD", 50 / MeV);  
+  //G_MPT->AddConstProperty("SCINTILLATIONYIELD", 28244 / MeV);
+  G_MPT->AddConstProperty("SCINTILLATIONYIELD", 50000 / MeV);  
   G_MPT->AddConstProperty("RESOLUTIONSCALE", 1.0);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 50.1 * ns);
   G_MPT->AddConstProperty("SCINTILLATIONTIMECONSTANT2", 321.5 * ns);
@@ -157,8 +157,8 @@ void MyDetectorConstruction::DefineMaterials()
   lyso->GetIonisation()->SetBirksConstant(0. * mm / MeV);
 
   //==============================================
-  gagg->SetMaterialPropertiesTable(G_MPT);
-  lyso->SetMaterialPropertiesTable(L_MPT);
+  // gagg->SetMaterialPropertiesTable(G_MPT);
+  // lyso->SetMaterialPropertiesTable(L_MPT);
   //==============================================
 
   //Defining the optical surfaces for Scintillators
@@ -226,7 +226,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   //------------Crystal dimensions----------
   G4double X_dim = 6*mm;
   G4double Y_dim = 6*mm;
-  G4double Z_dim = 20*mm;
+  G4double Z_dim = 10*mm;
   G4double gapThick = 0.2*mm;
 
   G4int MatSize = 8;
@@ -238,7 +238,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   std::vector<G4int> PosIdx = {-1, 1};
 
   //-------------------------creating the geomtery ------------------------
-  auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/4);
+  auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);
   
   auto logic_gagg = new G4LogicalVolume(ScintS, gagg, "GAGG_LV");
   G4VisAttributes* visAttr_gagg = new G4VisAttributes(G4Colour(1.3, 1.2, 0.6,1.));
@@ -254,47 +254,58 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   visAttr_lyso->SetVisibility(true);  
   logic_lyso->SetVisAttributes(visAttr_lyso);
 
-
-  //GAGG---------------
-  auto *phys_gagg = new G4PVPlacement(nullptr,
-				      G4ThreeVector(0.,0.,2*cm),
-				      logic_gagg,
-				      "GAGG_PV",
-				      logicWorld,
-				      false,
-				      111,
-				      false);
-  
-  //LYSO---------------
-  auto *phys_lyso = new G4PVPlacement(nullptr,			 
-				      G4ThreeVector(0.,0.,3*cm),
-				      logic_lyso,
-				      "LYSO_PV",
-				      logicWorld,
-				      false,
-				      211,
-				      false);
-
-  //--------
-  //SiPMs-------------
-  auto SiPM_S = new G4Box("SiPM", X_dim/2, Y_dim/2, Z_dim/20);
+  //SiPM---------------
+  auto SiPM_S = new G4Box("SiPM", X_dim/2, Y_dim/2, Z_dim/40);
   auto logic_SiPM = new G4LogicalVolume(SiPM_S, SiPM_Mat, "SiPM_LV");
 
-  auto *phys_SiPM = new G4PVPlacement(nullptr,
-				      G4ThreeVector(0.,0.,3.6*cm),
-				      logic_SiPM,
-				      "SiPM_PV",
-				      logicWorld,
-				      false,
-				      311,
-				      false);
+  
+    // //creating the geomtery using for loop
+  
+  for (int i =0; i<MatSize; i++){
+    for (int j=0; j<MatSize; j++){
+      for (int k =1; k<2; k++){
+	//GAGG---------------
+	auto *phys_gagg = new G4PVPlacement(nullptr,
+					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2)+(Z_dim/2.))),
+					    logic_gagg,
+					    "GAGG_PV",
+					    logicWorld,
+					    false,
+					    PosIdx[k]*(100+i+1+(10*(j+1))),
+					    false);
+
+	//LYSO---------------
+	auto *phys_lyso = new G4PVPlacement(nullptr,
+					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2.)+(3*Z_dim/2))),
+					    logic_lyso,
+					    "LYSO_PV",
+					    logicWorld,
+					    false,
+					    PosIdx[k]*(200+i+1+(10*(j+1))),
+					    false);
+	
+	//SiPMs-------------		
+	auto *phys_SiPM = new G4PVPlacement(nullptr,
+					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2.)+ (2*Z_dim) + (Z_dim/40))),
+					    logic_SiPM,
+					    "SiPM_PV",
+					    logicWorld,
+					    false,
+					    311,
+					    false);
   
 
-  
-  //-----------Placing the reflectors------------	
-  new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
-  new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
-  new G4LogicalBorderSurface("LYSO_SiPM_Boundary", phys_lyso, phys_SiPM, OpSurface_SiPM);
+	
+	//-----------Placing the reflectors------------	
+	new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
+	new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
+	new G4LogicalBorderSurface("LYSO_SiPM_Boundary", phys_lyso, phys_SiPM, OpSurface_SiPM);
+	
+      }
+    }
+  }
+
+
 
   return physWorld;
 }

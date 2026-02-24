@@ -50,7 +50,11 @@ public:
   G4int chkEvt = 48222;
 
   G4float relPol_Angle;
-  
+
+  std::vector<G4bool> store_log;
+  std::vector<G4int> Det_row_Idx, Det_col_Idx, Det_clr_Idx;
+
+  G4bool storeHit;
 private:
   G4double fX;
   MyRunAction *runObject;

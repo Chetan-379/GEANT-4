@@ -32,6 +32,9 @@ public:
   //detected
   TH1F *h_Op_QE_lmbda, *h_Op_QE_energy, *h_Op_QE_Z;
 
+  std::vector<G4int> Det_row_Idx, Det_col_Idx, Det_clr_Idx;
+  std::vector<G4double> Edep_truth_vec;
+
 };
 
 #endif

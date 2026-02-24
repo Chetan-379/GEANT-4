@@ -68,8 +68,16 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (track->GetCreatorProcess())    creatProc = track->GetCreatorProcess()->GetProcessName();
  
   G4float Op_lmbda = (1239.8e-6) / (postStepPoint->GetKineticEnergy());
+
   if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
     {
+      G4int Det_cpyNo = preStepPoint->GetTouchable()->GetVolume()->GetCopyNo();
+      //G4int Det_cpyNo = track->GetTouchable()->GetCopyNumber();
+      G4int clr_Idx = abs(Det_cpyNo/100);
+      G4int row_Idx = abs(G4int ((Det_cpyNo%100)/10))-1;
+      G4int col_Idx = abs((Det_cpyNo%100) % 10)-1;
+
+      
       if (particleName == "opticalphoton" && creatProc == "Scintillation")
 	{
 	  bool isGAGG = false, isLYSO = false;       
@@ -141,9 +149,50 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  }
 	}
          
-      fRunAction->Edep_truth += edep;
+      fRunAction->Edep_truth += edep;      
       if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;
       if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;
+
+      if (edep > 0.00001) {
+	bool updateEntry = false, addEntry =true;
+	G4int updt_Idx = -999;
+	
+	for(int i =0; i< fRunAction->Det_row_Idx.size(); i++){
+	  G4int check_DetId = 100*(fRunAction->Det_clr_Idx[i]) + 10*(fRunAction->Det_row_Idx[i]+1) + fRunAction->Det_col_Idx[i] +1;	  
+	  
+	  if(Det_cpyNo == check_DetId) {
+	    updateEntry =true;
+	    updt_Idx = i;
+	    addEntry = false;
+	    break;
+	  }
+	  
+	  else addEntry =true;       
+	}
+
+	if (addEntry){
+	  fRunAction->Det_row_Idx.push_back(row_Idx);
+	  fRunAction->Det_col_Idx.push_back(col_Idx);
+	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
+	  fRunAction->Edep_truth_vec.push_back(edep);
+	  //G4cout << "Edep: " << edep << G4endl;
+	}
+	
+	if (updateEntry) {
+	  fRunAction->Edep_truth_vec[updt_Idx] += edep;
+	  // G4cout << "Edep: " << edep << G4endl;
+	  // G4cout << "Edep_updated: " << fRunAction->Edep_truth_vec[updt_Idx] << G4endl;
+	}
+
+	if (fEventAction->storeHit) {
+	  fRunAction->Det_row_Idx.push_back(row_Idx);
+	  fRunAction->Det_col_Idx.push_back(col_Idx);
+	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
+	  fRunAction->Edep_truth_vec.push_back(edep);
+	  fEventAction->storeHit = false;
+	  //G4cout << "Edep: " << edep << G4endl;
+	}  //only for storing the 1st hit of an event
+      }
     }  
 }
 
