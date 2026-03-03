@@ -1,5 +1,5 @@
-In this version, I have applied QE of a SiPM at the rear surface of LYSO for the detection of scintillation photon reaching there.
--have used the built-in surface efficiency property for the purpose.
+In this version the corrected Working new machinery is implemented for Colour calorimetry in a multipixelated setup.
+
 
 =================================
 To run the simulation:
