@@ -7,9 +7,7 @@
 #include "G4AnalysisManager.hh"
 #include "G4AttValue.hh"
 
-#include "G4HCofThisEvent.hh"
 #include "G4RunManager.hh"
-#include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
 #include "G4UImanager.hh"
 
@@ -26,60 +24,17 @@ public:
 
   virtual void BeginOfEventAction(const G4Event* event);
   virtual void EndOfEventAction(const G4Event* event);
-  bool Compt_Before_Photo = false;
-  G4int nCompt_Before_Photo;
-  std::vector<G4double> Compt_edep, Photo_edep;  
-  void AddX(G4double XCoord) {fX += 1;}
 
-  void StorePos(G4double XCoord, G4double YCoord, G4double ZCoord, G4double edep)
-  {
-    Xarray.push_back(XCoord);
-    Yarray.push_back(YCoord);
-    Zarray.push_back(ZCoord);
-    Earray.push_back(edep);
-  }
-
-  void AddEdep(G4double edep) {fEdep += edep;}
-
-  std::vector<G4double> Xarray, Yarray, Zarray, Earray;
-  G4double matrix1[8][8], matrix2[8][8], matrix1_gen[8][8], matrix2_gen[8][8];
-
-  CellHit module1[8][8];
-  G4int ievent=1;
-
-  G4int chkEvt = 48222;
-
-  G4float relPol_Angle;
+  G4int ievent=0;
+  G4int chkEvt = 13010;
 
   std::vector<G4bool> store_log;
   std::vector<G4int> Det_row_Idx, Det_col_Idx, Det_clr_Idx;
 
   G4bool storeHit;
+  
 private:
-  G4double fX;
   MyRunAction *runObject;
-
-  G4double fEdep;
-  G4double compt_total_edep, photo_total_edep;
-
-  CellHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
-  void PrintEventStatistics(G4double CellEdep, G4double CellTrackLength) const;
-
-  // G4int fInStripHCID = -1;
-  // G4int fOutStripHCID = -1;
-  // G4int fOuterMostStripHCID = -1;
-  G4int fScintHCID = -1;
-
-  std::vector<G4double> HitEdep_vec, HitTime_vec, HitScatAngle_vec, HitEta_vec, HitEin_vec, HitEout_vec;
-  std::vector<double> HitPosX_vec, HitPosY_vec, HitPosZ_vec;
-  std::vector<G4int> HitDetId_vec, HitGunId_vec, HitProcId_vec;
-
-  std::vector<G4int> E_eOut_vec, E_phoOut_vec;
-
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, Op_G=6, Op_L=7};
-
-  std::vector<int> tgt_evt = {130, 180, 813, 999, 1499, 1973, 2511, 3174, 4044, 4314};
-
 };
 
 #endif

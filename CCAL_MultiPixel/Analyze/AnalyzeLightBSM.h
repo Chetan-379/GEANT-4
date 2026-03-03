@@ -47,6 +47,7 @@ public:
 
   TH1I  *h_nOpG_quad[4], *h_nOpL_quad[4];
   TH1F *h_Edep_truth, *h_EdepG_truth, *h_EdepL_truth;
+  TH1F *h_Edep_truth_cryst, *h_EdepG_truth_cryst, *h_EdepL_truth_cryst;
 
   TH2F *h_nOpG_vs_Edep, *h_nOpL_vs_Edep, *h_nOpSumGL_vs_Edep, *h_nOpG_vs_EdepG, *h_nOpL_vs_EdepL, *h_nOpG_truth_vs_EdepG, *h_nOpL_truth_vs_EdepL, *h_nOpG_QE_vs_EdepG, *h_nOpL_QE_vs_EdepL;
   TH2I *h_nOp_GvsL, *h_nOp_GvsL_truth, *h_nOpG_q12_vs_q13, *h_nOpL_q12_vs_q13;
@@ -175,6 +176,16 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName)
   h_nOpL_q12_vs_q13 = new TH2I("nOpL_q12_vs_q13", "nOpL_q12_vs_q13", 500,0,10000, 500,0,10000);
   h_nOpL_q12_vs_q13->GetXaxis()->SetTitle("nOp_LYSO_q12");
   h_nOpL_q12_vs_q13->GetYaxis()->SetTitle("nOp_LYSO_q13");
+
+  //-----------------------
+  h_Edep_truth_cryst=new TH1F("Edep_truth_cryst", "Edep_truth_cryst", 100, 0 ,0.6);
+  h_Edep_truth_cryst->GetXaxis()->SetTitle("Edep_truth_crys");
+
+  h_EdepG_truth_cryst = new TH1F("Edep_GAGG_truth_cryst", "Edep_GAGG_truth_cryst", 100, 0 ,0.6);
+  h_EdepG_truth_cryst->GetXaxis()->SetTitle("Edep_GAGG_truth_crys");
+
+  h_EdepL_truth_cryst = new TH1F("Edep_LYSO_truth_cryst", "Edep_LYSO_truth_cryst", 100, 0 ,0.6);
+  h_EdepL_truth_cryst->GetXaxis()->SetTitle("Edep_LYSO_truth_crys");
 }
 
 AnalyzeLightBSM::AnalyzeLightBSM(const TString &inputFileList, const char *outFileName, const char *detType)
@@ -184,13 +195,13 @@ AnalyzeLightBSM::AnalyzeLightBSM(const TString &inputFileList, const char *outFi
   TChain *tree = new TChain("tree");
   //  TChain *tree = new TChain("PreSelection");
   if (!FillChain(tree, inputFileList))
-  {
-    std::cerr << "Cannot get the tree " << std::endl;
-  }
+    {
+      std::cerr << "Cannot get the tree " << std::endl;
+    }
   else
-  {
-    std::cout << "Initiating analysis of detType " << detType << std::endl;
-  }
+    {
+      std::cout << "Initiating analysis of detType " << detType << std::endl;
+    }
 
   if (nameDetType != "signalH")
     nameDetType = "BG";
@@ -210,20 +221,20 @@ Bool_t AnalyzeLightBSM::FillChain(TChain *chain, const TString &inputFileList)
   std::string buffer;
 
   if (!infile.is_open())
-  {
-    std::cerr << "** ERROR: Can't open '" << inputFileList << "' for input" << std::endl;
-    return kFALSE;
-  }
+    {
+      std::cerr << "** ERROR: Can't open '" << inputFileList << "' for input" << std::endl;
+      return kFALSE;
+    }
 
   std::cout << "TreeUtilities : FillChain " << std::endl;
   while (1)
-  {
-    infile >> buffer;
-    if (!infile.good())
-      break;
-    // std::cout << "Adding tree from " << buffer.c_str() << std::endl;
-    chain->Add(buffer.c_str());
-  }
+    {
+      infile >> buffer;
+      if (!infile.good())
+	break;
+      // std::cout << "Adding tree from " << buffer.c_str() << std::endl;
+      chain->Add(buffer.c_str());
+    }
   std::cout << "No. of Entries in this tree : " << chain->GetEntries() << std::endl;
   return kTRUE;
 }
@@ -240,10 +251,10 @@ Long64_t AnalyzeLightBSM::LoadTree(Long64_t entry)
     return centry;
   TChain *chain = (TChain *)fChain;
   if (chain->GetTreeNumber() != fCurrent)
-  {
-    fCurrent = chain->GetTreeNumber();
-    //    Notify();
-  }
+    {
+      fCurrent = chain->GetTreeNumber();
+      //    Notify();
+    }
   return centry;
 }
 
@@ -251,9 +262,9 @@ AnalyzeLightBSM::~AnalyzeLightBSM()
 {
 
   if (!fChain)
-  {
-    return;
-  }
+    {
+      return;
+    }
   delete fChain->GetCurrentFile();
   oFile->cd();
   oFile->Write();

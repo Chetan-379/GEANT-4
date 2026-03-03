@@ -21,8 +21,7 @@ public:
 private:
   MyEventAction *fEventAction;
   MyRunAction *fRunAction;
-  //enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4};
-  enum info_pack{nOpPho=0, DetPosX=1, DetPosY=2, nGenOp=3, Edep = 4, E_elec=5, Op_G=6, Op_L=7};
+  
   G4OpBoundaryProcess* fBoundary = nullptr;  
 };
 

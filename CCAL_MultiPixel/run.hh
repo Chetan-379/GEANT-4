@@ -2,12 +2,10 @@
 #define RUN_HH
 
 #include "G4UserRunAction.hh"
-#include "G4AnalysisManager.hh"
 #include <TROOT.h>
 #include "TH2.h"
 #include "TTree.h"
 #include "TFile.h"
-#include "CellHit.hh"
 
 #include "G4Run.hh"
 

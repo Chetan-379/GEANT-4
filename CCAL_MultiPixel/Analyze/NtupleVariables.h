@@ -40,8 +40,15 @@ class NtupleVariables : public TSelector {
   Float_t         Edep_LYSO_truth;
   Int_t           nOpGAGG_quad[4];
   Int_t           nOpLYSO_quad[4];
-  
-   // List of branches
+
+  vector<double>  *Edep_truth_vec;
+  vector<Int_t>  *Det_row_Idx;
+  vector<Int_t>  *Det_col_Idx;
+  vector<Int_t>  *Det_clr_Idx;
+
+  Float_t         right_module[8][8][2];
+
+  // List of branches
   TBranch         *b_nOp_GAGG;   //!
   TBranch         *b_nOp_LYSO;   //!
   TBranch         *b_nOp_GAGG_QE;   //!
@@ -52,9 +59,14 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Edep_GAGG_truth;   //!
   TBranch         *b_Edep_LYSO_truth;   //!
   TBranch         *b_nOpGAGG_quad;   //!
-  TBranch         *b_nOpLYSO_quad;   //!  
+  TBranch         *b_nOpLYSO_quad;   //!
+
+  TBranch         *b_Edep_truth_vec;   //!
+  TBranch         *b_Det_row_Idx;   //!
+  TBranch         *b_Det_col_Idx;   //!
+  TBranch         *b_Det_clr_Idx;   //!
   
-  
+  TBranch         *b_Module1;   //!
   
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
    ~NtupleVariables() { }
@@ -84,22 +96,15 @@ void NtupleVariables::Init(TTree *tree, string nameData)
   // Init() will be called many times when running on PROOF
   // (once per file to be processed).
 
-   // Set object pointer
 
-   // left_module;
+  //set object pointer
+  Edep_truth_vec = 0;
+  Det_row_Idx =0;
+  Det_col_Idx =0;
+  Det_clr_Idx =0;
+ 
    
-   // right_module[0][0] =0;
-
-   // for (int i =0; i< 8; i++){
-   //      for (int j =0; j< 8; j++){
-   // 	  //for (int k =0; k< 8; k++){
-   // 	  left_module[i][j] = Float_t(0.);
-   // 	       right_module[i][j] = Float_t(0.);
-   // 	       //}
-   // 	}
-   // }
-   
-   // Set branch addresses and branch pointers
+  // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
    fCurrent = -1;
@@ -116,6 +121,13 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Edep_LYSO_truth", &Edep_LYSO_truth, &b_Edep_LYSO_truth);
    fChain->SetBranchAddress("nOpGAGG_quad", &nOpGAGG_quad, &b_nOpGAGG_quad);
    fChain->SetBranchAddress("nOpLYSO_quad", &nOpLYSO_quad, &b_nOpLYSO_quad);
+
+   fChain->SetBranchAddress("Edep_truth_vec", &Edep_truth_vec, &b_Edep_truth_vec);
+   fChain->SetBranchAddress("Det_row_Idx", &Det_row_Idx, &b_Det_row_Idx);
+   fChain->SetBranchAddress("Det_col_Idx", &Det_col_Idx, &b_Det_col_Idx);
+   fChain->SetBranchAddress("Det_clr_Idx", &Det_clr_Idx, &b_Det_clr_Idx);
+
+   fChain->SetBranchAddress("right_module", right_module, &b_Module1);
    Notify();
 }
 

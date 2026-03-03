@@ -26,7 +26,11 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Edep_GAGG_truth", &Edep_G_truth);
   tree->Branch("Edep_LYSO_truth", &Edep_L_truth);
   tree->Branch("Edep_truth", &Edep_truth);
+
   tree->Branch("Edep_truth_vec", &Edep_truth_vec);
+  tree->Branch("Det_row_Idx", &Det_row_Idx);
+  tree->Branch("Det_col_Idx", &Det_col_Idx);
+  tree->Branch("Det_clr_Idx", &Det_clr_Idx);
   
   tree->Branch("RandomSeed", &gRandomSeed, "RandomSeed/L");
 

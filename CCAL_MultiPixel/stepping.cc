@@ -33,32 +33,10 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 
   G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
-  //=================Studying photon interaction with material===========
   G4double edep = step->GetTotalEnergyDeposit();
-  fEventAction->AddEdep(edep);
 
-  G4double KE_i = preStepPoint->GetKineticEnergy();
-  G4double KE_f = postStepPoint->GetKineticEnergy();
-
-  if (step->GetTrack()->GetParentID() == 0 && TrkId == 1 && TrkPos[2] > 0)
-    {
-      if (proc == "compt")
-	{
-	  fEventAction->Compt_edep.push_back(KE_i - KE_f);
-	}
-
-      if (proc == "phot")
-	{
-	  fEventAction->Photo_edep.push_back(KE_i - KE_f);
-	}
-
-      fEventAction->Xarray.push_back(phopos_post[0]);
-      fEventAction->Yarray.push_back(phopos_post[1]);
-      fEventAction->Zarray.push_back(phopos_post[2]);
-    }
 
   //=================Analysing Scintillation photon======================
-
   G4TouchableHistory *postTouch = (G4TouchableHistory *)(postStepPoint->GetTouchable());
   G4TouchableHistory *preTouch = (G4TouchableHistory *)(preStepPoint->GetTouchable());
 
@@ -72,7 +50,6 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
     {
       G4int Det_cpyNo = preStepPoint->GetTouchable()->GetVolume()->GetCopyNo();
-      //G4int Det_cpyNo = track->GetTouchable()->GetCopyNumber();
       G4int clr_Idx = abs(Det_cpyNo/100);
       G4int row_Idx = abs(G4int ((Det_cpyNo%100)/10))-1;
       G4int col_Idx = abs((Det_cpyNo%100) % 10)-1;
@@ -125,7 +102,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  G4OpBoundaryProcessStatus boundaryStatus = Undefined;
 
 	  auto part = track->GetDefinition();
-	  // find the boundary process only once
+	  
 	  if (nullptr == fBoundary) {
 	    G4ProcessManager* pm = part->GetProcessManager();
 	    G4int nprocesses = pm->GetProcessListLength();
@@ -133,7 +110,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	    for (G4int i = 0; i < nprocesses; ++i) {
 	      if (nullptr != (*pv)[i] && (*pv)[i]->GetProcessName() == "OpBoundary") {
 		fBoundary = dynamic_cast<G4OpBoundaryProcess*>((*pv)[i]);
-		break;
+		break;  // find the boundary process only once
 	      }
 	    }
 	  }
@@ -148,13 +125,13 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	    if(isLYSO) fRunAction->nOpLYSO_QE++;
 	  }
 	}
-         
+      
       fRunAction->Edep_truth += edep;      
-      if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;
-      if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;
-
+      if (VolName == "GAGG_PV") fRunAction->Edep_G_truth +=edep;	            
+      if (VolName == "LYSO_PV") fRunAction->Edep_L_truth +=edep;	      
+      
       if (edep > 0.00001) {
-	bool updateEntry = false, addEntry =true;
+	bool updateEntry = false, addEntry =false;
 	G4int updt_Idx = -999;
 	
 	for(int i =0; i< fRunAction->Det_row_Idx.size(); i++){
@@ -162,26 +139,23 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  
 	  if(Det_cpyNo == check_DetId) {
 	    updateEntry =true;
-	    updt_Idx = i;
-	    addEntry = false;
+	    addEntry =false;
+	    updt_Idx = i;	    
 	    break;
 	  }
 	  
 	  else addEntry =true;       
 	}
-
+	
 	if (addEntry){
 	  fRunAction->Det_row_Idx.push_back(row_Idx);
 	  fRunAction->Det_col_Idx.push_back(col_Idx);
 	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
 	  fRunAction->Edep_truth_vec.push_back(edep);
-	  //G4cout << "Edep: " << edep << G4endl;
 	}
 	
 	if (updateEntry) {
 	  fRunAction->Edep_truth_vec[updt_Idx] += edep;
-	  // G4cout << "Edep: " << edep << G4endl;
-	  // G4cout << "Edep_updated: " << fRunAction->Edep_truth_vec[updt_Idx] << G4endl;
 	}
 
 	if (fEventAction->storeHit) {
@@ -190,9 +164,8 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
 	  fRunAction->Edep_truth_vec.push_back(edep);
 	  fEventAction->storeHit = false;
-	  //G4cout << "Edep: " << edep << G4endl;
-	}  //only for storing the 1st hit of an event
-      }
+	}  //only for storing the 1st interaction of an event
+      }      
     }  
 }
 
