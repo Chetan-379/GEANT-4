@@ -34,6 +34,11 @@ void MyEventAction::BeginOfEventAction(const G4Event* event)
    
   G4cout << "\n=====================event No.: " << ievent << "====================" << G4endl;
   if (ievent == chkEvt) G4UImanager::GetUIpointer()->ApplyCommand("/tracking/verbose 1");
+
+  auto vtx1 = event->GetPrimaryVertex(0);
+  auto mom1 = vtx1->GetPrimary(0)->GetMomentumDirection();
+
+  runObject->h_momXvsY->Fill(mom1[0],mom1[1]);
 }
 
 void MyEventAction::EndOfEventAction(const G4Event* event)
@@ -49,11 +54,11 @@ void MyEventAction::EndOfEventAction(const G4Event* event)
 
   //G4cout << "\n\t\t\t****************END OF EVENT*******************\n" << G4endl;
 
-  // for (int i =0; i< runObject->Det_clr_Idx.size(); i++){
-  //   G4cout << "color: " << runObject->Det_clr_Idx[i] << G4endl;
-  //   G4cout << "row: " << runObject->Det_row_Idx[i] << G4endl;
-  //   G4cout << "column: " << runObject->Det_col_Idx[i] << G4endl;
-  //   G4cout << "edep: " << runObject->Edep_truth_vec[i] << "\n\n";
-  // }
+  for (int i =0; i< runObject->Det_clr_Idx.size(); i++){
+    G4cout << "color: " << runObject->Det_clr_Idx[i] << G4endl;
+    G4cout << "row: " << runObject->Det_row_Idx[i] << G4endl;
+    G4cout << "column: " << runObject->Det_col_Idx[i] << G4endl;
+    G4cout << "edep: " << runObject->Edep_truth_vec[i] << "\n\n";
+  }
   
 }

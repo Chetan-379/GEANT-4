@@ -47,10 +47,15 @@ public:
 
   TH1I  *h_nOpG_quad[4], *h_nOpL_quad[4];
   TH1F *h_Edep_truth, *h_EdepG_truth, *h_EdepL_truth;
-  TH1F *h_Edep_truth_cryst, *h_EdepG_truth_cryst, *h_EdepL_truth_cryst;
+  TH1F *h_EdepG_truth_cryst, *h_EdepL_truth_cryst;
+  TH1F *h_Edep_truth_cryst[10], *h_theta;
 
   TH2F *h_nOpG_vs_Edep, *h_nOpL_vs_Edep, *h_nOpSumGL_vs_Edep, *h_nOpG_vs_EdepG, *h_nOpL_vs_EdepL, *h_nOpG_truth_vs_EdepG, *h_nOpL_truth_vs_EdepL, *h_nOpG_QE_vs_EdepG, *h_nOpL_QE_vs_EdepL;
   TH2I *h_nOp_GvsL, *h_nOp_GvsL_truth, *h_nOpG_q12_vs_q13, *h_nOpL_q12_vs_q13;
+
+  TH2I *h_rowVScol;
+
+  enum CatIdx{noCut=0, Trig=1, nhit2=2, fullEdep=3, diffClr=4, diffPix = 5};
 
   TFile *oFile;
 };
@@ -178,14 +183,33 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName)
   h_nOpL_q12_vs_q13->GetYaxis()->SetTitle("nOp_LYSO_q13");
 
   //-----------------------
-  h_Edep_truth_cryst=new TH1F("Edep_truth_cryst", "Edep_truth_cryst", 100, 0 ,0.6);
-  h_Edep_truth_cryst->GetXaxis()->SetTitle("Edep_truth_crys");
+  // h_Edep_truth_cryst=new TH1F("Edep_truth_cryst", "Edep_truth_cryst", 100, 0 ,0.6);
+  // h_Edep_truth_cryst->GetXaxis()->SetTitle("Edep_truth_crys");
 
   h_EdepG_truth_cryst = new TH1F("Edep_GAGG_truth_cryst", "Edep_GAGG_truth_cryst", 100, 0 ,0.6);
   h_EdepG_truth_cryst->GetXaxis()->SetTitle("Edep_GAGG_truth_crys");
 
   h_EdepL_truth_cryst = new TH1F("Edep_LYSO_truth_cryst", "Edep_LYSO_truth_cryst", 100, 0 ,0.6);
   h_EdepL_truth_cryst->GetXaxis()->SetTitle("Edep_LYSO_truth_crys");
+
+  h_rowVScol = new TH2I("Row_vs_Col_Idx", "Row_vs_Col_Idx", 10, -1, 9, 10, -1, 9);
+  h_rowVScol->GetXaxis()->SetTitle("Row_Idx");
+  h_rowVScol->GetYaxis()->SetTitle("Col_Idx");
+
+  h_theta = new TH1F("scat_theta", "scat_theta", 200, 0 ,200);
+  h_EdepL_truth_cryst->GetXaxis()->SetTitle("#theta(#Degree)");
+
+
+  //histograms for different cuts------------
+  vector<string> catgry = {"no_condition", "Triggered", "nHit2", "full_Edep", "diff_clr", "diff_pix"};
+
+  char hname_Edep[50];
+  
+  for (int i=0; i<catgry.size(); i++){
+    sprintf(hname_Edep, "%s_Edep_crys", catgry[i].c_str());
+
+    h_Edep_truth_cryst[i] = new TH1F(hname_Edep, hname_Edep,600,0,0.6);
+  }  
 }
 
 AnalyzeLightBSM::AnalyzeLightBSM(const TString &inputFileList, const char *outFileName, const char *detType)

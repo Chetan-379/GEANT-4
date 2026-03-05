@@ -13,27 +13,36 @@ MyPrimaryGenerator::~MyPrimaryGenerator()
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
-  G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);  
-  //G4double time = 0.;
-  G4ThreeVector mom(0., 0., 1);
-
-  G4ThreeVector YAxis(0,1,0);
-  G4ThreeVector XAxis(1,0,0);
-  
-  // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), XAxis);
-  // mom = mom.rotate(0.7044*((2*G4UniformRand()) - 1.0), YAxis);
-
-  // mom = mom.rotate(0.1974*((2*G4UniformRand()) - 1.0), XAxis);
-  // mom = mom.rotate(0.1974*((2*G4UniformRand()) - 1.0), YAxis);
-
-  mom = mom.rotate(1.0251*((2*G4UniformRand()) - 1.0), XAxis);
-  mom = mom.rotate(1.0251*((2*G4UniformRand()) - 1.0), YAxis);
-  
+  G4ThreeVector pos(0.*cm, 0.*cm, 0.*cm);
   fParticleGun->SetParticlePosition(pos);
   gParticleGun->SetParticlePosition(pos);
+  
+  G4ThreeVector mom(0., 0., 1.);
+  G4ThreeVector YAxis(0.,1.,0.);
+  G4ThreeVector XAxis(1.,0.,0.);
+  G4ThreeVector ZAxis(0.,0.,1.);
 
+  G4float xThetaMax = atan(24.7 / 15);
+  G4float rotX = xThetaMax*((2.*G4UniformRand()) - 1.0);
+
+  G4float yThetaMax = atan(24.7*cos(rotX) / 15);
+  G4float rotY = yThetaMax*((2.*G4UniformRand()) - 1.0);
+ 
+  //mom = mom.rotate(rotX, XAxis);
+  mom = mom.rotate(rotY, YAxis);  
+    
   fParticleGun->SetParticleMomentumDirection(mom);
   gParticleGun->SetParticleMomentumDirection(-1*mom);
+
+  //========================================================
+  //Randomizing using point on the detector face-------
+  // G4float X_random = 24.7*((2.*G4UniformRand()) - 1.0);
+  // G4float Y_random = 24.7*((2.*G4UniformRand()) - 1.0);
+  // G4ThreeVector mom(X_random *mm, Y_random *mm, 15 *mm);
+
+  // fParticleGun->SetParticleMomentumDirection(mom.unit());
+  // gParticleGun->SetParticleMomentumDirection(-1*(mom.unit()));
+  //=======================================================
   
   fParticleGun->SetParticleEnergy(511*keV);
   gParticleGun->SetParticleEnergy(511*keV);  

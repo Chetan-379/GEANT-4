@@ -44,6 +44,10 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   // h_zVslmbda->GetXaxis()->SetTitle("CreateZ (mm)");
   // h_zVslmbda->GetYaxis()->SetTitle("Op_lambda (nm)");
 
+  h_momXvsY = new TH2F("MomX_vs_MomY","MomX_vs_MomY", 100,0,1, 100,0,1);
+  h_momXvsY->GetXaxis()->SetTitle("MomX");
+  h_momXvsY->GetYaxis()->SetTitle("MomY");
+
   //detected optical photons
   // h_Op_QE_lmbda = new TH1F("Op_QE_lambda","Op_QE_lambda",1000,0,1000);
   // h_Op_QE_lmbda->GetXaxis()->SetTitle("Op_QE_lambda (nm)");
@@ -74,6 +78,8 @@ void MyRunAction::EndOfRunAction(const G4Run*)
   // h_Op_QE_lmbda->Write();
   // h_Op_QE_energy->Write();
   // h_Op_QE_Z->Write();
+
+  h_momXvsY->Write();
 
   hfile->Close();
   G4cout << "Run Ended !!" << G4endl;

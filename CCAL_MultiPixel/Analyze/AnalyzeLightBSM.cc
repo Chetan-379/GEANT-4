@@ -59,7 +59,9 @@ void AnalyzeLightBSM::EventLoop(const char *detType, const char *inputFileList, 
   bool Debug = false;
 
   int nOpG_q12 =-99, nOpG_q13 =-99, nOpL_q12 =-99, nOpL_q13 =-99;
-
+  int nTrig =0, ntwoHit=0, nFullEdep=0, nDiffClr=0, nDiffPix=0;
+  int scat_idx =-999, abs_idx =-999;
+  float scat_Edep = -99, abs_Edep = -99, scat_theta = -999;
   for (Long64_t jentry = 0; jentry < nentries; jentry++)
   {
     double progress = 10.0 * jentry / (1.0 * nentries);
@@ -136,18 +138,89 @@ void AnalyzeLightBSM::EventLoop(const char *detType, const char *inputFileList, 
 
     //Analysing truth info
     float Edep_truth_cryst = 0;
-    int clr_Idx = -99;
+    int clr_Idx = -99, row_Idx = -99, col_Idx = -99;
+    
+    vector<double> Hit_Edep, Hit_rowIdx, Hit_colIdx, Hit_clrIdx;
+    
     for(int i =0; i<Edep_truth_vec->size(); i++){
       Edep_truth_cryst = (*Edep_truth_vec)[i];
       clr_Idx = (*Det_clr_Idx)[i];
+      row_Idx = (*Det_row_Idx)[i];
+      col_Idx = (*Det_col_Idx)[i];
 
-      h_Edep_truth_cryst->Fill(Edep_truth_cryst);
+      h_Edep_truth_cryst[noCut]->Fill(Edep_truth_cryst);
 
       if(clr_Idx ==1) h_EdepG_truth_cryst->Fill(Edep_truth_cryst);
-      if(clr_Idx ==2) h_EdepL_truth_cryst->Fill(Edep_truth_cryst);	
+      if(clr_Idx ==2) h_EdepL_truth_cryst->Fill(Edep_truth_cryst);
+
+      h_rowVScol->Fill(row_Idx, col_Idx);
+
+      //-------------
+      if(Edep_truth_cryst >= 0.06 && Edep_truth_cryst <=0.405){        
+	Hit_Edep.push_back(Edep_truth_cryst);
+	Hit_rowIdx.push_back(row_Idx);
+	Hit_colIdx.push_back(col_Idx);
+	Hit_clrIdx.push_back(clr_Idx);
+
+	h_Edep_truth_cryst[Trig]->Fill(Edep_truth_cryst);
+      }
     }
 
+    if (Hit_Edep.size()>0) nTrig++; 
+    
+    if (Hit_Edep.size() ==2){
+      ntwoHit++;
+      h_Edep_truth_cryst[nhit2]->Fill(Hit_Edep[0]);
+      h_Edep_truth_cryst[nhit2]->Fill(Hit_Edep[1]);      
+      
+      if(Hit_Edep[0]+Hit_Edep[1] >0.5109 && Hit_Edep[0]+Hit_Edep[1] < 0.5111) {
+	nFullEdep++;
+	h_Edep_truth_cryst[fullEdep]->Fill(Hit_Edep[0]);
+	h_Edep_truth_cryst[fullEdep]->Fill(Hit_Edep[1]);
+	
+	if(Hit_clrIdx[0] != Hit_clrIdx[1]) {
+	  nDiffClr++;
+	  h_Edep_truth_cryst[diffClr]->Fill(Hit_Edep[0]);
+	  h_Edep_truth_cryst[diffClr]->Fill(Hit_Edep[1]);
+	  
+	  if((Hit_rowIdx[0] != Hit_rowIdx[1]) || (Hit_colIdx[0] != Hit_colIdx[1])){
+	    nDiffPix++;
+	    h_Edep_truth_cryst[diffPix]->Fill(Hit_Edep[0]);
+	    h_Edep_truth_cryst[diffPix]->Fill(Hit_Edep[1]);
+
+	    if(Hit_clrIdx[0] ==1 && Hit_clrIdx[1] ==2){
+	      if (Hit_Edep[0] < Hit_Edep[1]){	  	   
+		scat_idx = 0;
+		abs_idx = 1;
+	      }	     
+	    }
+	    
+	    else if(Hit_clrIdx[0] ==2 && Hit_clrIdx[1] ==1){
+	      if (Hit_Edep[0] > Hit_Edep[1]){	  	   
+		scat_idx = 0;
+		abs_idx = 1;
+	      }	     
+	    }
+
+	    if (scat_idx >0){
+	      scat_Edep = Hit_Edep[scat_idx];
+	      scat_theta = GetScatAngle(scat_Edep);
+
+	      h_theta->Fill(scat_theta);
+	    }
+	    	    
+	  }
+	}
+      }
+    }
+    
   } // jentry loop end
+
+  cout << "Total Triggerd evts: " << nTrig/1000. << "%" << endl;
+  cout << "two hit evts: " << ntwoHit*100./nTrig << "%" << endl;
+  cout << "Full Edep evts in two hits: " << nFullEdep*100./nTrig << "%" << endl;
+  cout << "Events with full energy deposits in different clrs: " << nDiffClr*100./nTrig << "%" << endl;
+  cout << "Events with full energy deposits in different clrs and pixels: " << nDiffPix*100./nTrig << "%" << endl;
 }
 
 string AnalyzeLightBSM::MatName(int DetId)

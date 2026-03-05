@@ -46,7 +46,6 @@ class NtupleVariables : public TSelector {
   vector<Int_t>  *Det_col_Idx;
   vector<Int_t>  *Det_clr_Idx;
 
-  Float_t         right_module[8][8][2];
 
   // List of branches
   TBranch         *b_nOp_GAGG;   //!
@@ -66,7 +65,6 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Det_col_Idx;   //!
   TBranch         *b_Det_clr_Idx;   //!
   
-  TBranch         *b_Module1;   //!
   
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
    ~NtupleVariables() { }
@@ -127,7 +125,6 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Det_col_Idx", &Det_col_Idx, &b_Det_col_Idx);
    fChain->SetBranchAddress("Det_clr_Idx", &Det_clr_Idx, &b_Det_clr_Idx);
 
-   fChain->SetBranchAddress("right_module", right_module, &b_Module1);
    Notify();
 }
 

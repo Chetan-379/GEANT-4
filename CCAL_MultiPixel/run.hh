@@ -25,7 +25,7 @@ public:
   G4int nOpGAGG, nOpLYSO, nOpGAGG_truth, nOpLYSO_truth, nOpG_quad[4], nOpL_quad[4], nOpGAGG_QE, nOpLYSO_QE;
 
   TH1F *h_Op_lmbda, *h_Op_energy;
-  TH2F *h_zVslmbda;
+  TH2F *h_zVslmbda, *h_momXvsY;
 
   //detected
   TH1F *h_Op_QE_lmbda, *h_Op_QE_energy, *h_Op_QE_Z;
