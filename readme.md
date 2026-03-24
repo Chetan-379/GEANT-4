@@ -10,7 +10,7 @@ To Run the simulation:
 ```bash
 git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com/Chetan-379/GEANT-4.git
 ```
-1. To simulate with CCal setup:
+2. To simulate with CCal setup:
 ```bash
 `cp CCal_construction construction.cc`
 `mkdir build`  
@@ -21,7 +21,7 @@ git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com
 `cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`  
 ```
 
-1. To simulate without CCal setup:
+3. To simulate without CCal setup:
 ```bash
 `cd ..`  
 `cp noCCal_construction construction.cc`
@@ -30,9 +30,11 @@ git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com
 `./CCal run.mac`  
 `cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`  
 ```
-To do the analysis:  
+4. To do the analysis:
+``bash  
 `cd Analyze`  
-`make`  
+`make`
+``  
 for CCal case:   
 `./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`  
 for no CCal case:   
