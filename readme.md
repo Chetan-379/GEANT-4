@@ -9,14 +9,14 @@ In this tag, a scripts are added for the compton scattering angle reconstruction
 To Run the simulation:
 clone the git repository: add git repo name
 
-To simulate with CCal setup:
-`cp CCal_construction construction.cc`
-`mkdir build`
-`cd build`
-`cmake ..`
-`make`
-`./CCal run.mac`
-`cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`
+To simulate with CCal setup:  
+`cp CCal_construction construction.cc`  
+`mkdir build`  
+`cd build`  
+`cmake ..`  
+`make`  
+`./CCal run.mac`  
+`cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`  
 
 To simulate without CCal setup:
 `cd ..`
