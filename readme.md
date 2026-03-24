@@ -6,7 +6,7 @@ In this tag, a scripts are added for the compton scattering angle reconstruction
 
 =================================  
 To Run the simulation:  
-clone the git repository: 
+clone the git repository: git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com/Chetan-379/GEANT-4.git
 
 To simulate with CCal setup:  
 `cp CCal_construction construction.cc`  
