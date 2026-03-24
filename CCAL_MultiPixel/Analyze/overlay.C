@@ -1,7 +1,7 @@
 const int n_pl = 4;
 bool logx = false;
 //defining the legends for each plots
-TString legend_text[15] = {"Reaching at rear", "Applied QE"};
+TString legend_text[15] = {" ", " "};
 
 int line_width[15] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2};
 int line_style[15] = {1,1,1,1,1,1,1,1,1,1,1,1,2,2};
@@ -203,9 +203,10 @@ void generate_1Dplot(vector<TH1F*> hist, char const *tag_name="", double xmax=-1
   if(ymin<0.0) ymin = 1e-4;
   for(int i = 0; i < (int)hist.size(); i++) {
     //if(normalize) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/3));
-    if(!normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(1, ymax*10);
+    if(!normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0, ymax*10);
     if(!normalize && !log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0,ymax+(ymax/7));
     if(normalize && !log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0,1.2);
+    //if(normalize && log_flag) hist.at(i)->GetYaxis()->SetRangeUser(0,10e-4);
     
     
     // else
@@ -272,8 +273,9 @@ void overlay()
   vector<string> f;
  
   //f= {"QE_applied_10kEVts_out.root"};
-  f= {"correct_QE_applied_10kEVts_out.root"};
+  //f= {"correct_QE_applied_10kEVts_out.root"};
   //f= {"QE_GAGG_LYSO_emission_realSiPM_100Evts.root"};
+  f= {"OpOFF_noCCal_100kEvts_out.root"};
   
   
   //define your histograms to be read from here
@@ -281,17 +283,18 @@ void overlay()
 
   vector<string> variables;
   //variables = {"n_Op_GAGG", "n_Op_GAGG_QE"};
-  variables = {"n_Op_LYSO", "n_Op_LYSO_QE"};
+  //variables = {"n_Op_LYSO", "n_Op_LYSO_QE"};
   //variables = {"Op_energy", "Op_QE_energy"};  
-  
+  variables = {"dTheta"};
+	       
   vector<string> filetag;
-  filetag={"sim: 10k Evts"};  
+  filetag={"sim: 100k Evts"};  
      
   //rebin values
-  vector<int >rebin = {2,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
+  vector<int >rebin = {1,1,1,1,1,1,1,1,1,1,1}; //keep it 1 if you don't want to change hist bins
       
   //x axis range
-  vector<double>xmax = {20000, 200, 200, 1000, 1000, 1000, 20};
+  vector<double>xmax = {90, 200, 200, 1000, 1000, 1000, 20};
   vector<double>xmin = {0, -200, 0, -1000, 1000, -700, 0};
 
   vector<TH1F*> hist_list;
@@ -315,7 +318,7 @@ void overlay()
   vector<string>diff_title;
 
   //diff_title = {"number of scint photons", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};
-  diff_title = {"Op_energy (eV)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};
+  diff_title = {"#theta_{Sim}-#theta_{Reco} (#circ)", "eta(#circ)", "Escat_(MeV)", "PosX(mm)", "PosY(mm)"};
 	 
   //path to save the files a jpg or pdf
   vector<string> folder;   

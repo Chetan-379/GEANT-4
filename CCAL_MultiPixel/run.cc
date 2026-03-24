@@ -31,6 +31,9 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   tree->Branch("Det_row_Idx", &Det_row_Idx);
   tree->Branch("Det_col_Idx", &Det_col_Idx);
   tree->Branch("Det_clr_Idx", &Det_clr_Idx);
+  tree->Branch("Det_nCompt", &Det_nCompt);
+  tree->Branch("Det_nPhoto", &Det_nPhoto);
+  tree->Branch("Det_scat_theta", &Det_theta);
   
   tree->Branch("RandomSeed", &gRandomSeed, "RandomSeed/L");
 
@@ -60,7 +63,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
   
   //output root file------------------
   if(gOutputFileName != " ") hfile = hfile = TFile::Open((gOutputFileName).c_str(),"RECREATE");
-  else hfile = hfile = TFile::Open("test_vis.root","RECREATE");
+  else hfile = hfile = TFile::Open("test.root","RECREATE");
 
   G4cout << "----------------------Seed: " << gRandomSeed << "---------------" << G4endl;
 }

@@ -48,14 +48,18 @@ public:
   TH1I  *h_nOpG_quad[4], *h_nOpL_quad[4];
   TH1F *h_Edep_truth, *h_EdepG_truth, *h_EdepL_truth;
   TH1F *h_EdepG_truth_cryst, *h_EdepL_truth_cryst;
-  TH1F *h_Edep_truth_cryst[10], *h_theta;
+  TH1F *h_Edep_truth_cryst[10], *h_theta_Sim[10];
+  TH1F *h_theta_ana, *h_theta_ana_nInt, *h_theta_sim, *h_theta_sim_nInt, *h_theta_ana_noCCal, *h_theta_sim_noCCal, *h_theta_ana_nInt_noCCal, *h_theta_sim_nInt_noCCal;
+  TH2F *h_theta_SimVsAna, *h_theta_SimVsAna_nInt, *h_theta_SimVsAna_noCCal, *h_theta_SimVsAna_nInt_noCCal;
 
   TH2F *h_nOpG_vs_Edep, *h_nOpL_vs_Edep, *h_nOpSumGL_vs_Edep, *h_nOpG_vs_EdepG, *h_nOpL_vs_EdepL, *h_nOpG_truth_vs_EdepG, *h_nOpL_truth_vs_EdepL, *h_nOpG_QE_vs_EdepG, *h_nOpL_QE_vs_EdepL;
   TH2I *h_nOp_GvsL, *h_nOp_GvsL_truth, *h_nOpG_q12_vs_q13, *h_nOpL_q12_vs_q13;
 
   TH2I *h_rowVScol;
 
-  enum CatIdx{noCut=0, Trig=1, nhit2=2, fullEdep=3, diffClr=4, diffPix = 5};
+  TH1D *h_dTheta, *h_dTheta_nInt, *h_dTheta_noCCal, *h_dTheta_nInt_noCCal;
+
+  enum CatIdx{noCut=0, Trig=1, nhit2=2, fullEdep=3, diffClr=4};
 
   TFile *oFile;
 };
@@ -182,34 +186,85 @@ void AnalyzeLightBSM::BookHistogram(const char *outFileName)
   h_nOpL_q12_vs_q13->GetXaxis()->SetTitle("nOp_LYSO_q12");
   h_nOpL_q12_vs_q13->GetYaxis()->SetTitle("nOp_LYSO_q13");
 
-  //-----------------------
-  // h_Edep_truth_cryst=new TH1F("Edep_truth_cryst", "Edep_truth_cryst", 100, 0 ,0.6);
-  // h_Edep_truth_cryst->GetXaxis()->SetTitle("Edep_truth_crys");
-
   h_EdepG_truth_cryst = new TH1F("Edep_GAGG_truth_cryst", "Edep_GAGG_truth_cryst", 100, 0 ,0.6);
   h_EdepG_truth_cryst->GetXaxis()->SetTitle("Edep_GAGG_truth_crys");
 
   h_EdepL_truth_cryst = new TH1F("Edep_LYSO_truth_cryst", "Edep_LYSO_truth_cryst", 100, 0 ,0.6);
   h_EdepL_truth_cryst->GetXaxis()->SetTitle("Edep_LYSO_truth_crys");
 
-  h_rowVScol = new TH2I("Row_vs_Col_Idx", "Row_vs_Col_Idx", 10, -1, 9, 10, -1, 9);
-  h_rowVScol->GetXaxis()->SetTitle("Row_Idx");
-  h_rowVScol->GetYaxis()->SetTitle("Col_Idx");
-
-  h_theta = new TH1F("scat_theta", "scat_theta", 200, 0 ,200);
-  h_EdepL_truth_cryst->GetXaxis()->SetTitle("#theta(#Degree)");
-
-
   //histograms for different cuts------------
-  vector<string> catgry = {"no_condition", "Triggered", "nHit2", "full_Edep", "diff_clr", "diff_pix"};
+  vector<string> catgry = {"no_condition", "Triggered", "nHit2", "full_Edep", "diff_clr"};
 
-  char hname_Edep[50];
+  char hname_Edep[50], hname_theta_sim[50];
   
   for (int i=0; i<catgry.size(); i++){
     sprintf(hname_Edep, "%s_Edep_crys", catgry[i].c_str());
+    sprintf(hname_theta_sim, "%s_theta_sim_crys", catgry[i].c_str());
 
-    h_Edep_truth_cryst[i] = new TH1F(hname_Edep, hname_Edep,600,0,0.6);
-  }  
+    h_Edep_truth_cryst[i] = new TH1F(hname_Edep, hname_Edep, 600,0,0.6);
+
+    h_theta_Sim[i] = new TH1F(hname_theta_sim, hname_theta_sim, 200,0,200);
+    h_theta_Sim[i]->GetXaxis()->SetTitle("#theta_{sim}(#circ)");
+  }
+
+  h_rowVScol = new TH2I("Row_vs_Col_Idx", "Row_vs_Col_Idx", 10, -1, 9, 10, -1, 9);
+  h_rowVScol->GetXaxis()->SetTitle("i_{X}");
+  h_rowVScol->GetYaxis()->SetTitle("i_{Y}");
+
+  h_theta_ana = new TH1F("scat_theta_Ana", "scat_theta_Ana", 200, 0 ,200);
+  h_theta_ana->GetXaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_sim = new TH1F("scat_theta_Sim", "scat_theta_Sim", 200, 0 ,200);
+  h_theta_sim->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+
+
+  h_theta_ana_nInt = new TH1F("scat_theta_Ana_nInt", "scat_theta_Ana_nInt", 200, 0 ,200);
+  h_theta_ana_nInt->GetXaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_sim_nInt = new TH1F("scat_theta_Sim_nInt", "scat_theta_Sim_nInt", 200, 0 ,200);
+  h_theta_sim_nInt->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+
+  h_theta_SimVsAna = new TH2F("theta_SimVsAna", "theta_SimVsAna", 200,0,200, 200,0,200);
+  h_theta_SimVsAna ->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+  h_theta_SimVsAna ->GetYaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_SimVsAna_nInt = new TH2F("theta_SimVsAna_nInt", "theta_SimVsAna_nInt", 200,0,200, 200,0,200);
+  h_theta_SimVsAna_nInt ->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+  h_theta_SimVsAna_nInt ->GetYaxis()->SetTitle("#theta_{Ana}(#circ)"); 
+
+  h_dTheta = new TH1D("dTheta", "dTheta", 1000, -20. ,180.);
+  h_dTheta ->GetXaxis()->SetTitle("#theta_{Sim}-#theta_{Reco}(#circ)");
+
+  h_dTheta_nInt = new TH1D("dTheta_nInt", "dTheta_nInt", 1000, -20. ,180.);
+  h_dTheta_nInt ->GetXaxis()->SetTitle("#theta_{Sim}-#theta_{Reco}(#circ)");
+
+
+  //histograms for No CCal case:
+  h_theta_ana_noCCal = new TH1F("scat_theta_Ana_noCCal", "scat_theta_Ana_noCCal", 200, 0 ,200);
+  h_theta_ana_noCCal->GetXaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_sim_noCCal = new TH1F("theta_sim_noCCal", "theta_sim_noCCal", 200,0,200);
+  h_theta_sim_noCCal->GetXaxis()->SetTitle("#theta_{sim}(#circ)");
+
+  h_theta_ana_nInt_noCCal = new TH1F("scat_theta_Ana_nInt_noCCal", "scat_theta_Ana_nInt_noCCal", 200, 0 ,200);
+  h_theta_ana_nInt_noCCal->GetXaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_sim_nInt_noCCal = new TH1F("scat_theta_Sim_nInt_noCCal", "scat_theta_Sim_nInt_noCCal", 200, 0 ,200);
+  h_theta_sim_nInt_noCCal->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+
+  h_theta_SimVsAna_noCCal = new TH2F("theta_SimVsAna_noCCal", "theta_SimVsAna_noCCal", 200,0,200, 200,0,200);
+  h_theta_SimVsAna_noCCal ->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+  h_theta_SimVsAna_noCCal ->GetYaxis()->SetTitle("#theta_{Ana}(#circ)");
+
+  h_theta_SimVsAna_nInt_noCCal = new TH2F("theta_SimVsAna_nInt_noCCal", "theta_SimVsAna_nInt_noCCal", 200,0,200, 200,0,200);
+  h_theta_SimVsAna_nInt_noCCal ->GetXaxis()->SetTitle("#theta_{Sim}(#circ)");
+  h_theta_SimVsAna_nInt_noCCal ->GetYaxis()->SetTitle("#theta_{Ana}(#circ)"); 
+
+  h_dTheta_noCCal = new TH1D("dTheta_noCCal", "dTheta_noCCal", 1000, -20. ,180.);
+  h_dTheta_noCCal ->GetXaxis()->SetTitle("#theta_{Sim}-#theta_{Reco}(#circ)");
+
+  h_dTheta_nInt_noCCal = new TH1D("dTheta_nInt_noCCal", "dTheta_nInt_noCCal", 1000, -20. ,180.);
+  h_dTheta_nInt_noCCal ->GetXaxis()->SetTitle("#theta_{Sim}-#theta_{Reco}(#circ)");
 }
 
 AnalyzeLightBSM::AnalyzeLightBSM(const TString &inputFileList, const char *outFileName, const char *detType)

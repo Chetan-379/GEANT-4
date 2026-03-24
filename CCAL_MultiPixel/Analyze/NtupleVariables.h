@@ -45,7 +45,9 @@ class NtupleVariables : public TSelector {
   vector<Int_t>  *Det_row_Idx;
   vector<Int_t>  *Det_col_Idx;
   vector<Int_t>  *Det_clr_Idx;
-
+  vector<Int_t>  *Det_nCompt;
+  vector<Int_t>  *Det_nPhoto;
+  vector<double> *Det_scat_theta;
 
   // List of branches
   TBranch         *b_nOp_GAGG;   //!
@@ -64,6 +66,9 @@ class NtupleVariables : public TSelector {
   TBranch         *b_Det_row_Idx;   //!
   TBranch         *b_Det_col_Idx;   //!
   TBranch         *b_Det_clr_Idx;   //!
+  TBranch         *b_Det_nCompt;   //!
+  TBranch         *b_Det_nPhoto;   //!
+  TBranch         *b_Det_scat_theta;   //!
   
   
   NtupleVariables(TTree * /*tree*/ =0) : fChain(0) { }
@@ -100,6 +105,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
   Det_row_Idx =0;
   Det_col_Idx =0;
   Det_clr_Idx =0;
+  Det_nCompt =0;
+  Det_nPhoto =0;
+  Det_scat_theta =0;
  
    
   // Set branch addresses and branch pointers
@@ -124,6 +132,9 @@ void NtupleVariables::Init(TTree *tree, string nameData)
    fChain->SetBranchAddress("Det_row_Idx", &Det_row_Idx, &b_Det_row_Idx);
    fChain->SetBranchAddress("Det_col_Idx", &Det_col_Idx, &b_Det_col_Idx);
    fChain->SetBranchAddress("Det_clr_Idx", &Det_clr_Idx, &b_Det_clr_Idx);
+   fChain->SetBranchAddress("Det_nCompt", &Det_nCompt, &b_Det_nCompt);
+   fChain->SetBranchAddress("Det_nPhoto", &Det_nPhoto, &b_Det_nPhoto);
+   fChain->SetBranchAddress("Det_scat_theta", &Det_scat_theta, &b_Det_scat_theta);
 
    Notify();
 }

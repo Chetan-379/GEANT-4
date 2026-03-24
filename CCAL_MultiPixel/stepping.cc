@@ -31,7 +31,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4String particleName = particleDef->GetParticleName();
   G4ThreeVector creatPos = track->GetVertexPosition();
 
-  G4String proc = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+  
 
   G4double edep = step->GetTotalEnergyDeposit();
 
@@ -41,6 +41,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   G4TouchableHistory *preTouch = (G4TouchableHistory *)(preStepPoint->GetTouchable());
 
   G4String VolName = preTouch->GetVolume()->GetName();
+  //G4String VolName = track->GetTouchable()->GetVolume()->GetName();
 
   G4String creatProc;
   if (track->GetCreatorProcess())    creatProc = track->GetCreatorProcess()->GetProcessName();
@@ -50,11 +51,15 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
   if (VolName == "GAGG_PV" || VolName == "LYSO_PV")
     {
       G4int Det_cpyNo = preStepPoint->GetTouchable()->GetVolume()->GetCopyNo();
+      //G4int Det_cpyNo = track->GetTouchable()->GetVolume()->GetCopyNo();
       G4int clr_Idx = abs(Det_cpyNo/100);
       G4int row_Idx = abs(G4int ((Det_cpyNo%100)/10))-1;
       G4int col_Idx = abs((Det_cpyNo%100) % 10)-1;
 
-      
+      G4String proc;
+      auto Process = step->GetPostStepPoint()->GetProcessDefinedStep();
+      if(Process != nullptr) proc = Process->GetProcessName();
+  
       if (particleName == "opticalphoton" && creatProc == "Scintillation")
 	{
 	  bool isGAGG = false, isLYSO = false;       
@@ -133,6 +138,25 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
       if (edep > 0.00001) {
 	bool updateEntry = false, addEntry =false;
 	G4int updt_Idx = -999;
+	G4int nCompt =0, nPhoto =0;
+	G4double scat_theta = -1000;
+	G4ThreeVector vin = preStepPoint->GetMomentumDirection();
+	G4ThreeVector vout = postStepPoint->GetMomentumDirection();
+
+	if(parentId == 0 && proc == "compt") {
+	  nCompt++;
+	  //scat_theta = acos(vin.dot(vout));
+
+	  auto secondaries = step->GetSecondaryInCurrentStep();
+	  if (secondaries->size()>0){
+	    auto scat_e_E = (*secondaries)[0]->GetKineticEnergy();	 	 
+	    
+	    scat_theta = acos(1-(0.511*((1/(0.511-scat_e_E)) - (1/0.511))));
+	    //G4cout << "scat theta: " << scat_theta << G4endl;
+	  }
+	}
+	
+	if(parentId == 0 && proc == "phot") nPhoto++;
 	
 	for(int i =0; i< fRunAction->Det_row_Idx.size(); i++){
 	  G4int check_DetId = 100*(fRunAction->Det_clr_Idx[i]) + 10*(fRunAction->Det_row_Idx[i]+1) + fRunAction->Det_col_Idx[i] +1;	  
@@ -152,19 +176,28 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 	  fRunAction->Det_col_Idx.push_back(col_Idx);
 	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
 	  fRunAction->Edep_truth_vec.push_back(edep);
+	  fRunAction->Det_nCompt.push_back(nCompt);
+	  fRunAction->Det_nPhoto.push_back(nPhoto);
+	  fRunAction->Det_theta.push_back(scat_theta);
 	}
 	
 	if (updateEntry) {
 	  fRunAction->Edep_truth_vec[updt_Idx] += edep;
+	  fRunAction->Det_nCompt[updt_Idx] += nCompt;
+	  fRunAction->Det_nPhoto[updt_Idx] += nPhoto;
 	}
 
 	if (fEventAction->storeHit) {
 	  fRunAction->Det_row_Idx.push_back(row_Idx);
 	  fRunAction->Det_col_Idx.push_back(col_Idx);
 	  fRunAction->Det_clr_Idx.push_back(clr_Idx);
-	  fRunAction->Edep_truth_vec.push_back(edep);
-	  fEventAction->storeHit = false;
-	}  //only for storing the 1st interaction of an event
+	  fRunAction->Edep_truth_vec.push_back(edep);	  
+	  fRunAction->Det_nCompt.push_back(nCompt);
+	  fRunAction->Det_nPhoto.push_back(nPhoto);
+	  fRunAction->Det_theta.push_back(scat_theta);
+
+	  fEventAction->storeHit = false; //only for storing the 1st interaction of an event
+	}  
       }      
     }  
 }

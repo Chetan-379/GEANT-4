@@ -40,6 +40,11 @@ void MyDetectorConstruction::DefineMaterials()
   Y = nist->FindOrBuildElement("Y");
   Si = nist->FindOrBuildElement("Si");
   
+  // lyso -> AddElement(Lu, 9);
+  // lyso -> AddElement(Y, 1);
+  // lyso -> AddElement(Si, 5);
+  // lyso -> AddElement(O, 25);
+
   lyso -> AddElement(Lu, 1);
   lyso -> AddElement(Y, 1);
   lyso -> AddElement(Si, 1);
@@ -218,8 +223,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
   std::vector<G4int> PosIdx = {-1, 1};
 
   //-------------------------creating the geomtery ------------------------
-  auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);
-  //auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim);
+  //auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim/2);
+  auto ScintS = new G4Box("Scint", X_dim/2, Y_dim/2, Z_dim);
   
   auto logic_gagg = new G4LogicalVolume(ScintS, gagg, "GAGG_LV");
   G4VisAttributes* visAttr_gagg = new G4VisAttributes(G4Colour(1.3, 1.2, 0.6,1.));
@@ -246,8 +251,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
       for (int k =1; k<2; k++){
 	//GAGG---------------
 	auto *phys_gagg = new G4PVPlacement(nullptr,
-					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2)+(Z_dim/2.))),
-					    //G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2)+(Z_dim))),
+					    //G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2)+(Z_dim/2.))),
+					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2)+(Z_dim))),
 					    logic_gagg,
 					    "GAGG_PV",
 					    logicWorld,
@@ -256,14 +261,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 					    false);
 
 	//LYSO---------------
-	auto *phys_lyso = new G4PVPlacement(nullptr,
-					    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2.)+(3*Z_dim/2))),
-					    logic_lyso,
-					    "LYSO_PV",
-					    logicWorld,
-					    false,
-					    PosIdx[k]*(200+i+1+(10*(j+1))),
-					    false);
+	// auto *phys_lyso = new G4PVPlacement(nullptr,
+	// 				    G4ThreeVector(((-7./2)+i)*(X_dim+gapThick), ((-7./2)+j)*(X_dim+gapThick),PosIdx[k]*((sep/2.)+(3*Z_dim/2))),
+	// 				    logic_lyso,
+	// 				    "LYSO_PV",
+	// 				    logicWorld,
+	// 				    false,
+	// 				    PosIdx[k]*(200+i+1+(10*(j+1))),
+	// 				    false);
 	
 	//SiPMs-------------		
 	auto *phys_SiPM = new G4PVPlacement(nullptr,
@@ -280,8 +285,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 	
 	//-----------Placing the reflectors------------	
 	new G4LogicalBorderSurface("GAGG_Air_Boundary", phys_gagg, physWorld, OpSurface_ScintAir);
-	new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);	
-	new G4LogicalBorderSurface("LYSO_SiPM_Boundary", phys_lyso, phys_SiPM, OpSurface_SiPM);
+	// new G4LogicalBorderSurface("LYSO_Air_Boundary", phys_lyso, physWorld, OpSurface_ScintAir);
+	new G4LogicalBorderSurface("LYSO_SiPM_Boundary", phys_gagg, phys_SiPM, OpSurface_SiPM);
+	// new G4LogicalBorderSurface("LYSO_SiPM_Boundary", phys_lyso, phys_SiPM, OpSurface_SiPM);
 	
       }
     }
@@ -291,4 +297,37 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 }
 
 void MyDetectorConstruction::ConstructSDandField()
-{}
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

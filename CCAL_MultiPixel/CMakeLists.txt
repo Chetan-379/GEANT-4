@@ -21,7 +21,7 @@ file(GLOB MACRO_FILES
 
 file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 
-add_executable(CCal_OpON test.cc ${sources} ${headers})
-target_link_libraries(CCal_OpON ${Geant4_LIBRARIES})
-target_link_libraries(CCal_OpON ${ROOT_LIBRARIES})
-add_custom_target(Simulation DEPENDS CCal_OpON)
+add_executable(CCal test.cc ${sources} ${headers})
+target_link_libraries(CCal ${Geant4_LIBRARIES})
+target_link_libraries(CCal ${ROOT_LIBRARIES})
+add_custom_target(Simulation DEPENDS CCal)

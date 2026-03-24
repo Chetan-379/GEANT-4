@@ -40,6 +40,11 @@ void MyDetectorConstruction::DefineMaterials()
   Y = nist->FindOrBuildElement("Y");
   Si = nist->FindOrBuildElement("Si");
   
+  // lyso -> AddElement(Lu, 9);
+  // lyso -> AddElement(Y, 1);
+  // lyso -> AddElement(Si, 5);
+  // lyso -> AddElement(O, 25);
+
   lyso -> AddElement(Lu, 1);
   lyso -> AddElement(Y, 1);
   lyso -> AddElement(Si, 1);
@@ -291,4 +296,37 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 }
 
 void MyDetectorConstruction::ConstructSDandField()
-{}
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

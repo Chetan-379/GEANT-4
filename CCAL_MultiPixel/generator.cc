@@ -28,7 +28,7 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4float yThetaMax = atan(24.7*cos(rotX) / 15);
   G4float rotY = yThetaMax*((2.*G4UniformRand()) - 1.0);
  
-  //mom = mom.rotate(rotX, XAxis);
+  mom = mom.rotate(rotX, XAxis);
   mom = mom.rotate(rotY, YAxis);  
     
   fParticleGun->SetParticleMomentumDirection(mom);
