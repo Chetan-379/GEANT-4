@@ -23,12 +23,12 @@ cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root
 
 3. To simulate without CCal setup:
 ```md
-`cd ..`  
-`cp noCCal_construction construction.cc`
-`cd build`  
-`make`  
-`./CCal run.mac`  
-`cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`  
+cd ..
+cp noCCal_construction construction.cc
+cd build
+make
+./CCal run.mac
+cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root
 ```
 4. To do the analysis:
 ```md  
