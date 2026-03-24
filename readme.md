@@ -35,11 +35,11 @@ cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root
 cd Analyze
 make
 ```  
-for CCal case:
+- for CCal case:
 ```md
 ./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO
 ```  
-for no CCal case:   
+- for no CCal case:   
 ```md
 ./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG  
 ```
