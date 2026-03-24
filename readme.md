@@ -31,12 +31,15 @@ git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com
 `cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`  
 ```
 4. To do the analysis:
-``bash  
+```bash  
 `cd Analyze`  
 `make`
-``  
-for CCal case:   
-`./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`  
+```  
+for CCal case:
+```bash
+`./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`
+```  
 for no CCal case:   
+```bash
 `./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG`  
-
+```
