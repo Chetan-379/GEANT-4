@@ -7,11 +7,11 @@ In this tag, a scripts are added for the compton scattering angle reconstruction
 =================================  
 To Run the simulation:
 1. clone the git repo
-```bash
+```md
 git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com/Chetan-379/GEANT-4.git
 ```
 2. To simulate with CCal setup:
-```bash
+```md
 cp CCal_construction construction.cc
 mkdir build
 cd build
@@ -22,7 +22,7 @@ cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root
 ```
 
 3. To simulate without CCal setup:
-```bash
+```md
 `cd ..`  
 `cp noCCal_construction construction.cc`
 `cd build`  
@@ -31,15 +31,15 @@ cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root
 `cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`  
 ```
 4. To do the analysis:
-```bash  
+```md  
 `cd Analyze`  
 `make`
 ```  
 for CCal case:
-```bash
+```md
 `./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`
 ```  
 for no CCal case:   
-```bash
+```md
 `./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG`  
 ```
