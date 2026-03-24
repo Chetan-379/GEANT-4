@@ -11,7 +11,7 @@ To Run the simulation:
 git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com/Chetan-379/GEANT-4.git
 ```
 2. To simulate with CCal setup:
-```bash
+```md
 cp CCal_construction construction.cc
 mkdir build
 cd build
