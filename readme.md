@@ -2,12 +2,11 @@ In this tag, a scripts are added for the compton scattering angle reconstruction
 
 - right now the angle reconstruction is done using the true Edep info, not simulating the optical photons there.
 - To simulate the optical photons uncomment the L146 and L147 in the construction.cc file.
-- will have to write by your own the analyzer script to scattering angle reconstruction with optical photons (spread the chosen energy ranges according to the energy resolution).
+- will have to write by your own the analyzer script to scattering angle reconstruction with optical photons (spread the chosen energy ranges according to the energy resolution).  
 
-
-=================================
-To Run the simulation:
-clone the git repository: add git repo name
+=================================  
+To Run the simulation:  
+clone the git repository: 
 
 To simulate with CCal setup:  
 `cp CCal_construction construction.cc`  
@@ -18,17 +17,17 @@ To simulate with CCal setup:
 `./CCal run.mac`  
 `cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`  
 
-To simulate without CCal setup:
-`cd ..`
-`cp noCCal_construction construction.cc`
-Repeat from step 2-6 of CCal case
-`cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`
+To simulate without CCal setup:  
+`cd ..`  
+`cp noCCal_construction construction.cc`  
+Repeat from step 2-6 of CCal case  
+`cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root`  
 
-To do the analysis:
-`cd Analyze`
-`make`
-for CCal case: 
-`./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`
-for no CCal case: 
-`./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG`
+To do the analysis:  
+`cd Analyze`  
+`make`  
+for CCal case:   
+`./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`  
+for no CCal case:   
+`./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG`  
 
