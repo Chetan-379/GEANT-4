@@ -11,16 +11,14 @@ clone the git repository: git clone --branch CCal_OpOFF_angle_reco_multipixel --
 ```
 To simulate with CCal setup:
 ```md
-```bash
 `cp CCal_construction construction.cc`
-```
+
 `mkdir build`  
 `cd build`  
 `cmake ..`  
 `make`  
 `./CCal run.mac`  
 `cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`  
-```
 
 
 To simulate without CCal setup:  
