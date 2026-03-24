@@ -30,7 +30,7 @@ make
 ./CCal run.mac
 cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root
 ```
-4. To do the analysis:
+##To do the analysis:##
 ```md  
 cd Analyze
 make
