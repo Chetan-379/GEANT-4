@@ -5,13 +5,15 @@ In this tag, a scripts are added for the compton scattering angle reconstruction
 - will have to write by your own the analyzer script to scattering angle reconstruction with optical photons (spread the chosen energy ranges according to the energy resolution).  
 
 =================================  
-To Run the simulation:  
+To Run the simulation:
+```md
 ```bash
 clone the git repository: git clone --branch CCal_OpOFF_angle_reco_multipixel --depth 1 https://github.com/Chetan-379/GEANT-4.git
 ```
 To simulate with CCal setup: 
 ```bash
-`cp CCal_construction construction.cc`  
+`cp CCal_construction construction.cc`
+```
 `mkdir build`  
 `cd build`  
 `cmake ..`  
@@ -19,6 +21,7 @@ To simulate with CCal setup:
 `./CCal run.mac`  
 `cp test.root ../Analyze/src_root_files/OpOFF_CCal_100kEvts.root`  
 ```
+
 
 To simulate without CCal setup:  
 `cd ..`  
