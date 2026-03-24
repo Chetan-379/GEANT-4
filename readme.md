@@ -32,14 +32,14 @@ cp test.root ../Analyze/src_root_files/OpOFF_noCCal_100kEvts.root
 ```
 4. To do the analysis:
 ```md  
-`cd Analyze`  
-`make`
+cd Analyze
+make
 ```  
 for CCal case:
 ```md
-`./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO`
+./analyzeLightBSM CCal_inputfiles.txt OpOFF_CCal_100kEvts_out.root GAGG_LYSO
 ```  
 for no CCal case:   
 ```md
-`./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG`  
+./analyzeLightBSM noCCal_inputfiles.txt OpOFF_noCCal_100kEvts_out.root GAGG  
 ```
