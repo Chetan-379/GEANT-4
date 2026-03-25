@@ -11,3 +11,7 @@ References
 *.pdf
 *res/
 *.php
+*submitCondor_*
+*.out
+*.log
+*.err
