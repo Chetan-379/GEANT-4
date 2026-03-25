@@ -1,10 +1,9 @@
 - In this version, a machinery to run the Geant4 simulation on LXPLUS is added.
 - Following is a typical sequence to run the simulation
-  1.
   ```md
   git clone --branch G4_condor --depth 1 https://github.com/Chetan-379/GEANT-4.git
   ```
-  2.
+  
   ```md
   cd GEANT-4/Condor_OpON_MultPixGAGG/condor
   ```
