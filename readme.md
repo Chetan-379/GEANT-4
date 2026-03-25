@@ -1,18 +1,7 @@
-In this version the corrected Working new machinery is implemented for Colour calorimetry in a multipixelated setup.
-
-
-=================================
-To run the simulation:
-
-`mkdir build`
-
-`cd build`
-
-`cmake ..`
-
-`make`
-
-`./CCal_OpON`   (to run with visualization)
-
-`./CCal_OpON run.mac <output file name>`   (to run in batch mode)
-
+- In this version, a machinery to run the Geant4 simulation on LXPLUS is added.
+- Following is a typical sequence to run the simulation
+  `git clone --branch G4_condor --depth 1 https://github.com/Chetan-379/GEANT-4.git`  
+  `cd GEANT-4/Condor_OpON_MultPixGAGG/condor`  
+   Do the relevant modifications in the paths and make the relevant directories in the relevant places.  
+`python3 condor.py`  
+`python3 submit.py`  
