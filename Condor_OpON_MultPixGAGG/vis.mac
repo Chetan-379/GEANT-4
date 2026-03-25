@@ -1,0 +1,12 @@
+/vis/open OGL
+/vis/drawVolume
+/vis/viewer/zoom 30
+/vis/viewer/set/viewpointVector -1 0 0
+/vis/scene/add/axes 0 0 0 1.5 cm
+/vis/viewer/set/autoRefresh true
+/vis/scene/add/trajectories smooth
+/vis/viewer/set/lineSegmentsPerCircle 100
+#/vis/scene/add/scale 10 cm
+/vis/scene/add/eventID
+#/vis/drawOnlyToBeKeptEvents
+/vis/scene/endOfEventAction accumulate 

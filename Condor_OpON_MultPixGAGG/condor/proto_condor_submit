@@ -1,0 +1,13 @@
+executable=/afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/condor.sh
+universe=vanilla
+Arguments= execute ./build/run.mac outfile /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.out /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.err /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.log
+Input = 
+Output = /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.out
+Error  = /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.err
+Log    = /afs/cern.ch/user/c/cagrawal/public/run_G4/GEANT-4/OpON_MultPixGAGG/condor/OpON_case_100kEvts_JobID.log
+notification=never
+should_transfer_files=YES
+request_memory = 5.0 GB
++MaxRuntime = 2*24*60*60
+when_to_transfer_output = ON_EXIT
+queue
