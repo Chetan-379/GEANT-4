@@ -1,2 +1,2 @@
-This git-hub repository contains my scripts of the different projects done using GEANT4 simulation toolkit in my MS and PA tenure at IISER Pune.
+This git-hub repository contains my scripts of the different projects done using GEANT4 simulation toolkit in my MS and PA tenure at IISER Pune in collaboration with people from TIFR Mumbai.  
 Please refer to the different tags in this repository for the codes.
