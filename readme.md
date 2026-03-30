@@ -1,18 +1,2 @@
-In this version the corrected Working new machinery is implemented for Colour calorimetry in a multipixelated setup.
-
-
-=================================
-To run the simulation:
-
-`mkdir build`
-
-`cd build`
-
-`cmake ..`
-
-`make`
-
-`./CCal_OpON`   (to run with visualization)
-
-`./CCal_OpON run.mac <output file name>`   (to run in batch mode)
-
+This git-hub repository contains my scripts of the different projects done using GEANT4 simulation toolkit in my MS and PA tenure at IISER Pune.
+Please refer to the different tags in this repository for the codes.
